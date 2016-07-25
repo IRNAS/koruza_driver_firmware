@@ -32,6 +32,14 @@ int Rx_indx;
 int Transfer_cplt;
 char Rx_last[2] = {0, 0};
 
+enum states{
+	IDLE,
+	MESSAGE_PARSE,
+	ACTICVE_STATE,
+	ERROR_STATE,
+	END_STATE
+};
+
 
 /* UART RX Interrupt callback routine */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
@@ -103,6 +111,8 @@ int main(void)
 	MX_USART1_UART_Init();
 	MX_USART2_UART_Init();
 
+	enum states state = IDLE;
+
 	/* Stepper motors struts */
 	Stepper_t stepper_motor_x;
 	Stepper_t stepper_motor_y;
@@ -127,6 +137,12 @@ int main(void)
 	/* Response message */
 	message_t msg_responce;
 
+	/* Currnet positon*/
+	tlv_motor_position_t current_motor_position;
+	current_motor_position.x = 0;
+	current_motor_position.y = 0;
+	current_motor_position.z = 0;
+
 
 	uint8_t frame[1024];
 	ssize_t frame_size;
@@ -141,85 +157,134 @@ int main(void)
 
 	/* Infinite loop */
 	while(True){
+		test = 0;
 
 		/* Move steppers. */
 		run(&stepper_motor_x);
 		run(&stepper_motor_y);
 		run(&stepper_motor_z);
 
-		test = 0;
-		//frame received
-		if (Transfer_cplt != 0){
+		switch(state){
+			case IDLE:
+				if(Transfer_cplt != 0){
 #ifdef DEBUG_MODE
-			printf("\nReceived serialized protocol message:\n");
-			//HAL_UART_Transmit(&huart1, (uint8_t *)&Rx_Buffer, message_len, 1000);
-			for (size_t i = 0; i < message_len; i++) {
-				printf("%02X ", Rx_Buffer[i]);
-			}
-			printf("\n");
+					printf("\nReceived serialized protocol message:\n");
+					//HAL_UART_Transmit(&huart1, (uint8_t *)&Rx_Buffer, message_len, 1000);
+					for (size_t i = 0; i < message_len; i++) {
+						printf("%02X ", Rx_Buffer[i]);
+					}
+					printf("\n");
 #endif
+					state = MESSAGE_PARSE;
+				}else{
+					state = IDLE;
+				}
+				break;
 
-			//parse received message
-			frame_parser((uint8_t *)&Rx_Buffer, message_len, &msg_parsed);
+			case MESSAGE_PARSE:
+				//parse received message
+				frame_parser((uint8_t *)&Rx_Buffer, message_len, &msg_parsed);
 #ifdef DEBUG_MODE
-			printf("\nParsed protocol message: ");
-			message_print(&msg_parsed);
-			printf("\n");
+				printf("\nParsed protocol message: ");
+				message_print(&msg_parsed);
+				printf("\n");
 #endif
-			//parse received message command
-			if (message_tlv_get_command(&msg_parsed, &parsed_command) != MESSAGE_SUCCESS) {
+				//parse received message command
+				if (message_tlv_get_command(&msg_parsed, &parsed_command) != MESSAGE_SUCCESS) {
 #ifdef DEBUG_MODE
 				printf("Failed to get command TLV.\n");
 #endif
-				message_free(&msg_parsed);
-			}
+					message_free(&msg_parsed);
+					state = ERROR_STATE;
+				}else{
+					state = ACTICVE_STATE;
+				}
+				break;
 
-			switch(parsed_command){
-				case COMMAND_GET_STATUS:
-					//Response message
-					message_init(&msg_responce);
-					message_tlv_add_reply(&msg_responce, REPLY_STATUS_REPORT);
-					message_tlv_add_motor_position(&msg_responce, &position);
-					message_tlv_add_checksum(&msg_responce);
+			case ACTICVE_STATE:
+				switch(parsed_command){
+					case COMMAND_GET_STATUS:
+						//Response message
+						message_init(&msg_responce);
+						message_tlv_add_reply(&msg_responce, REPLY_STATUS_REPORT);
+						message_tlv_add_motor_position(&msg_responce, &current_motor_position);
+						message_tlv_add_checksum(&msg_responce);
 #ifdef DEBUG_MODE
-					printf("\n");
-					printf("Parsed protocol message responce: ");
-					message_print(&msg_responce);
-					printf("\n");
+						printf("\n");
+						printf("Parsed protocol message responce: ");
+						message_print(&msg_responce);
+						printf("\n");
 #endif
-					frame_size = frame_message(frame, sizeof(frame), &msg_responce);
-					//send status message
-					HAL_UART_Transmit(&huart1, (uint8_t *)&frame, frame_size, 1000);
+						frame_size = frame_message(frame, sizeof(frame), &msg_responce);
+						//send status message
+						HAL_UART_Transmit(&huart1, (uint8_t *)&frame, frame_size, 1000);
 
-					message_free(&msg_responce);
-					break;
+						message_free(&msg_responce);
 
-				case COMMAND_MOVE_MOTOR:
-					break;
-				case COMMAND_SEND_IR:
-					break;
-				case COMMAND_REBOOT:
-					break;
-				case COMMAND_FIRMWARE_UPGRADE:
-					break;
+						state = END_STATE;
+						break;
 
-			}
+					case COMMAND_MOVE_MOTOR:
+						/* Get command to move motors */
+						if (message_tlv_get_motor_position(&msg_parsed, &parsed_position) != MESSAGE_SUCCESS) {
+#ifdef DEBUG_MODE
+							printf("Failed to get motor position TLV.\n");
+#endif
+							message_free(&msg_parsed);
+							state = ERROR_STATE;
+						}else{
+#ifdef DEBUG_MODE
+							printf("Parsed command %u and motor position (%d, %d, %d)\n",
+								parsed_command,
+								parsed_position.x, parsed_position.y, parsed_position.z
+							  );
+#endif
+							/* Move motors to sent position */
+							moveTo(&stepper_motor_x, (long)parsed_position.x);
+							moveTo(&stepper_motor_y, (long)parsed_position.y);
+							moveTo(&stepper_motor_z, (long)parsed_position.z);
 
-			/* Enable USART1 interrupt */
-			HAL_NVIC_EnableIRQ(USART1_IRQn);
-			/*Activate UART RX interrupt every time receiving 1 byte.*/
-			HAL_UART_Receive_IT(&huart1, (uint8_t *)&Rx_data, 1);
-			/* Reset transfer_complete flag */
-			Transfer_cplt=0;
+							/* Save currnet motor position */
+							current_motor_position.x = parsed_position.x;
+							current_motor_position.y = parsed_position.y;
+							current_motor_position.z = parsed_position.z;
 
-			//HAL_Delay(500);
-			test++;
+							state = END_STATE;
+						}
 
-		}
-		test = 1;
-	}
+						break;
+					case COMMAND_SEND_IR:
+						break;
+					case COMMAND_REBOOT:
+						break;
+					case COMMAND_FIRMWARE_UPGRADE:
+						break;
 
-}
+				}
+				break;
+
+			case ERROR_STATE:
+
+				state = END_STATE;
+				break;
+
+			case END_STATE:
+				/* Enable USART1 interrupt */
+				HAL_NVIC_EnableIRQ(USART1_IRQn);
+				/*Activate UART RX interrupt every time receiving 1 byte.*/
+				HAL_UART_Receive_IT(&huart1, (uint8_t *)&Rx_data, 1);
+				/* Reset transfer_complete flag */
+				Transfer_cplt=0;
+
+				//HAL_Delay(500);
+
+				state = IDLE;
+				break;
+
+		}//end switch(state)
+	}//end while(true)
+	message_free(&msg_parsed);
+}//end main()
 
 /**Prototype for the printf() function**/
 PUTCHAR_PROTOTYPE
@@ -359,7 +424,7 @@ void Init_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_
 	setMaxSpeed(stepper_x, 500);
 	setSpeed(stepper_x, 500);
 	setAcceleration(stepper_x, 500);
-	moveTo(stepper_x, -10000000);
+	moveTo(stepper_x, 0);
 	enableOutputs(stepper_x);
 
 	/*## Initialize Y axis stepper. ###*/
@@ -367,7 +432,7 @@ void Init_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_
 	setMaxSpeed(stepper_y, 500);
 	setSpeed(stepper_y, 500);
 	setAcceleration(stepper_y, 500);
-	moveTo(stepper_y, -10000000);
+	moveTo(stepper_y, 0);
 	enableOutputs(stepper_y);
 
 	/*## Initialize Z axis stepper. ###*/
@@ -375,7 +440,7 @@ void Init_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_
 	setMaxSpeed(stepper_z, 500);
 	setSpeed(stepper_z, 500);
 	setAcceleration(stepper_z, 500);
-	moveTo(stepper_z, -10000000);
+	moveTo(stepper_z, 0);
 	enableOutputs(stepper_z);
 
 }

@@ -13,7 +13,7 @@
 #define False 0
 
 /* Uncomment to get debug messages in the UART2 terminal*/
-//#define DEBUG_MODE
+#define DEBUG_MODE
 
 #define MOTOR_PIN_X_1 GPIO_PIN_13
 #define MOTOR_PIN_X_2 GPIO_PIN_14
