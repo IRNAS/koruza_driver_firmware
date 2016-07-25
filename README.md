@@ -1,6 +1,6 @@
-# UART_TLV
+# Koruza driver firmware
 
-This repo represents the configuration of TLV protocol over UART with RX interrupt for [STM32F411RET6][MCU_LINK] MCU. This MCU is located on the [STM NUCLEO][BOARD_LINK] board.
+This repo represents the firmware for [STM32F411RET6][MCU_LINK] MCU. This MCU is located on the [Koruza driver board][BOARD_LINK].
 
 ### Why NUCLEO board?
 
@@ -26,14 +26,9 @@ Import project to IDE and compile.
 Information on importing project, compiling, and downloading code to the board, can be found here www.openstm32.org
 
 ### Hardware
-Two UART ports are initalize in software. UART1 and UART2. 
-* UART1 is on port A, pins PA9 (USART1_TX) and PA10 (USART1_RX).
-* UART2 is on port A, pins PA2 (USART2_TX) and PA3 (USART2_RX).
+Check the [Koruza driver board][BOARD_LINK] repository.
 
-
-### TLV protocol
-https://github.com/IRNAS/koruza-driver
 
 
 [MCU_LINK]: <http://www.st.com/web/catalog/mmc/FM141/SC1169/SS1577/LN1877/PF260049>
-[BOARD_LINK]: <http://www.st.com/web/catalog/tools/FM116/SC959/SS1532/LN1847/PF260320#>
+[BOARD_LINK]: <https://github.com/IRNAS/Universal-Stepper-Driver-Rpi>
