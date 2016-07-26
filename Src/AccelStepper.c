@@ -19,6 +19,7 @@
 #include "main.h"
 
 #ifdef DEBUG_MODE
+#ifdef DEBUG_STEPPER
 //Some debugging assistance
 void dump(uint8_t* p, int l)
 {
@@ -31,6 +32,7 @@ void dump(uint8_t* p, int l)
     }
     printf("\n");
 }
+#endif
 #endif
 
 void moveTo(Stepper_t* motor, long absolute)
@@ -183,6 +185,7 @@ void computeNewSpeed(Stepper_t* motor)
 		motor->_speed = -motor->_speed;
 
 #ifdef DEBUG_MODE
+#ifdef DEBUG_STEPPER
     printf("%f\n", motor->_speed);
     printf("%f\n", motor->_acceleration);
     printf("%f\n", motor->_cn);
@@ -191,6 +194,7 @@ void computeNewSpeed(Stepper_t* motor)
     printf("%lu\n", motor->_stepInterval);
 //    Serial.println(distanceTo);
 //    Serial.println(stepsToStop);
+#endif
 #endif
 }
 

@@ -30,6 +30,9 @@
 
 #include "stm32f4xx_hal.h"
 
+/* Uncomment to get debug messages in the UART2 terminal for stepper motors*/
+//#define DEBUG_STEPPER
+
 
 /// \brief Symbolic names for number of pins.
 /// Use this in the interface argument of the InitStepper() fonction to

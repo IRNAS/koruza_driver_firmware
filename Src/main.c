@@ -3,8 +3,10 @@
 #include "message.h"
 #include "frame.h"
 #include "AccelStepper.h"
+#include "stepper.h"
 #include <stdio.h>
 #include "main.h"
+#include <inttypes.h>
 
 
 #ifdef __GNUC__
@@ -119,15 +121,39 @@ int main(void)
 	Stepper_t stepper_motor_z;
 
 	/* Stepper motors initialization */
-	Init_motors(&stepper_motor_x, &stepper_motor_y, &stepper_motor_z);
+	Init_koruza_motors(&stepper_motor_x, &stepper_motor_y, &stepper_motor_z);
 
+#ifdef DEBUG_MODE
 	/* Generate message - test message */
 	message_t msg;
 	message_init(&msg);
 	message_tlv_add_command(&msg, COMMAND_MOVE_MOTOR);
-	tlv_motor_position_t position = {10, 20, -15};
+	tlv_motor_position_t position = {1000, 1000, 1000};
 	message_tlv_add_motor_position(&msg, &position);
 	message_tlv_add_checksum(&msg);
+
+	uint8_t test_frame[1024];
+	ssize_t test_frame_size;
+
+	printf("Generated protocol message: ");
+	message_print(&msg);
+	printf("\n");
+
+	uint8_t buffer[1024];
+	size_t length = message_serialize(buffer, 1024, &msg);
+	printf("Serialized protocol message:\n");
+	for (size_t i = 0; i < length; i++) {
+		printf("%02X ", buffer[i]);
+	}
+	printf("\n");
+
+	test_frame_size = frame_message(test_frame, sizeof(test_frame), &msg);
+	printf("Serialized protocol message with frame:\n");
+	for (size_t i = 0; i < test_frame_size; i++) {
+		printf("%02X ", test_frame[i]);
+	}
+	printf("\n");
+#endif
 
 	/* Parsed message */
 	message_t msg_parsed;
@@ -143,6 +169,11 @@ int main(void)
 	current_motor_position.y = 0;
 	current_motor_position.z = 0;
 
+	/* Move steppers for, from absolute position */
+	tlv_motor_position_t move_steppers;
+	move_steppers.x = 0;
+	move_steppers.y = 0;
+	move_steppers.z = 0;
 
 	uint8_t frame[1024];
 	ssize_t frame_size;
@@ -211,6 +242,10 @@ int main(void)
 						message_tlv_add_checksum(&msg_responce);
 #ifdef DEBUG_MODE
 						printf("\n");
+						printf("Current motor position (%"PRIu32", %"PRIu32", %"PRIu32")\n",
+								current_motor_position.x, current_motor_position.y, current_motor_position.z
+						  );
+						printf("\n");
 						printf("Parsed protocol message responce: ");
 						message_print(&msg_responce);
 						printf("\n");
@@ -234,20 +269,23 @@ int main(void)
 							state = ERROR_STATE;
 						}else{
 #ifdef DEBUG_MODE
-							printf("Parsed command %u and motor position (%d, %d, %d)\n",
+							printf("Parsed command %u and motor position (%"PRIu32", %"PRIu32", %"PRIu32")\n",
 								parsed_command,
 								parsed_position.x, parsed_position.y, parsed_position.z
 							  );
 #endif
-							/* Move motors to sent position */
-							moveTo(&stepper_motor_x, (long)parsed_position.x);
-							moveTo(&stepper_motor_y, (long)parsed_position.y);
-							moveTo(&stepper_motor_z, (long)parsed_position.z);
-
-							/* Save currnet motor position */
+							/* Claculate number of move steps to new position */
+							move_steppers = Claculate_motors_move_steps(&parsed_position, &current_motor_position);
+							/* Save new motor position */
 							current_motor_position.x = parsed_position.x;
 							current_motor_position.y = parsed_position.y;
 							current_motor_position.z = parsed_position.z;
+							/* Move motors to sent position */
+							moveTo(&stepper_motor_x, (long)move_steppers.x);
+							moveTo(&stepper_motor_y, (long)move_steppers.y);
+							moveTo(&stepper_motor_z, (long)move_steppers.z);
+
+
 
 							state = END_STATE;
 						}
@@ -329,7 +367,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-
+  /* It is devided by 100000 because of AccelStepper*/
   HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/100000);
 
   HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
@@ -417,33 +455,6 @@ void MX_GPIO_Init(void)
 }
 
 
-void Init_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z){
-
-	/*## Initialize X axis stepper. ###*/
-	InitStepper(stepper_x, HALF4WIRE, MOTOR_PIN_X_1, MOTOR_PORT_X_1, MOTOR_PIN_X_2, MOTOR_PORT_X_2, MOTOR_PIN_X_3, MOTOR_PORT_X_3, MOTOR_PIN_X_4, MOTOR_PORT_X_4, 1);
-	setMaxSpeed(stepper_x, 500);
-	setSpeed(stepper_x, 500);
-	setAcceleration(stepper_x, 500);
-	moveTo(stepper_x, 0);
-	enableOutputs(stepper_x);
-
-	/*## Initialize Y axis stepper. ###*/
-	InitStepper(stepper_y, HALF4WIRE, MOTOR_PIN_Y_1, MOTOR_PORT_Y_1, MOTOR_PIN_Y_2, MOTOR_PORT_Y_2, MOTOR_PIN_Y_3, MOTOR_PORT_Y_3, MOTOR_PIN_Y_4, MOTOR_PORT_Y_4, 1);
-	setMaxSpeed(stepper_y, 500);
-	setSpeed(stepper_y, 500);
-	setAcceleration(stepper_y, 500);
-	moveTo(stepper_y, 0);
-	enableOutputs(stepper_y);
-
-	/*## Initialize Z axis stepper. ###*/
-	InitStepper(stepper_z, HALF4WIRE, MOTOR_PIN_Z_1, MOTOR_PORT_Z_1, MOTOR_PIN_Z_2, MOTOR_PORT_Z_2, MOTOR_PIN_Z_3, MOTOR_PORT_Z_3, MOTOR_PIN_Z_4, MOTOR_PORT_Z_4, 1);
-	setMaxSpeed(stepper_z, 500);
-	setSpeed(stepper_z, 500);
-	setAcceleration(stepper_z, 500);
-	moveTo(stepper_z, 0);
-	enableOutputs(stepper_z);
-
-}
 
 /**
   * @brief  This function is executed in case of error occurrence.
