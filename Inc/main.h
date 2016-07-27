@@ -17,9 +17,8 @@
 
 void SystemClock_Config(void);
 void Error_Handler(void);
-void MX_GPIO_Init(void);
-void MX_USART1_UART_Init(void);
-void MX_USART2_UART_Init(void);
+
+
 void Init_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z);
 float fast_sqrt(float number);
 
