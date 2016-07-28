@@ -17074,7 +17074,7 @@ LOAD c:/ac6/systemworkbench/plugins/fr.ac6.mcu.externaltools.arm-none.win32_1.7.
                 0x000010c1       0x34 c:/ac6/systemworkbench/plugins/fr.ac6.mcu.externaltools.arm-none.win32_1.7.0.201602121829/tools/compiler/bin/../lib/gcc/arm-none-eabi/5.2.1/armv7e-m/fpu/crtend.o
  .ARM.attributes
                 0x000010f5       0x22 c:/ac6/systemworkbench/plugins/fr.ac6.mcu.externaltools.arm-none.win32_1.7.0.201602121829/tools/compiler/bin/../lib/gcc/arm-none-eabi/5.2.1/armv7e-m/fpu/crtn.o
-OUTPUT(koruza_driver_firmware_1.elf elf32-littlearm)
+OUTPUT(koruza_driver_firmware.elf elf32-littlearm)
 
 .debug_info     0x00000000     0xb6d4
  .debug_info    0x00000000      0x7e8 HAL_Driver/Src/stm32f4xx_hal.o
@@ -17332,7 +17332,7 @@ OUTPUT(koruza_driver_firmware_1.elf elf32-littlearm)
  .debug_macro   0x000158cc      0x449 src/system_stm32f4xx.o
  .debug_macro   0x00015d15      0x44d src/uart.o
 
-.debug_line     0x00000000     0xe782
+.debug_line     0x00000000     0xe7af
  .debug_line    0x00000000      0xbce HAL_Driver/Src/stm32f4xx_hal.o
  .debug_line    0x00000bce      0xe46 HAL_Driver/Src/stm32f4xx_hal_adc.o
  .debug_line    0x00001a14      0xcfe HAL_Driver/Src/stm32f4xx_hal_cortex.o
@@ -17347,17 +17347,17 @@ OUTPUT(koruza_driver_firmware_1.elf elf32-littlearm)
  .debug_line    0x00008706      0x4a4 src/frame.o
  .debug_line    0x00008baa      0xa63 src/gpio.o
  .debug_line    0x0000960d      0x431 src/inet.o
- .debug_line    0x00009a3e      0xc22 src/main.o
- .debug_line    0x0000a660      0x657 src/message.o
- .debug_line    0x0000acb7      0xab1 src/stepper.o
- .debug_line    0x0000b768      0xabf src/stm32f4xx_hal_msp.o
- .debug_line    0x0000c227      0xa91 src/stm32f4xx_it.o
- .debug_line    0x0000ccb8      0x577 src/syscalls.o
- .debug_line    0x0000d22f      0xa53 src/system_stm32f4xx.o
- .debug_line    0x0000dc82      0xa81 src/uart.o
- .debug_line    0x0000e703       0x7f startup/startup_stm32f411xe.o
+ .debug_line    0x00009a3e      0xc4f src/main.o
+ .debug_line    0x0000a68d      0x657 src/message.o
+ .debug_line    0x0000ace4      0xab1 src/stepper.o
+ .debug_line    0x0000b795      0xabf src/stm32f4xx_hal_msp.o
+ .debug_line    0x0000c254      0xa91 src/stm32f4xx_it.o
+ .debug_line    0x0000cce5      0x577 src/syscalls.o
+ .debug_line    0x0000d25c      0xa53 src/system_stm32f4xx.o
+ .debug_line    0x0000dcaf      0xa81 src/uart.o
+ .debug_line    0x0000e730       0x7f startup/startup_stm32f411xe.o
 
-.debug_str      0x00000000    0x74a33
+.debug_str      0x00000000    0x74a76
  .debug_str     0x00000000    0x6f143 HAL_Driver/Src/stm32f4xx_hal.o
                               0x6f4c7 (size before relaxing)
  .debug_str     0x0006f143      0x642 HAL_Driver/Src/stm32f4xx_hal_adc.o
@@ -17386,21 +17386,21 @@ OUTPUT(koruza_driver_firmware_1.elf elf32-littlearm)
                               0x6ebb5 (size before relaxing)
  .debug_str     0x00071c63       0x2f src/inet.o
                                0x6cc7 (size before relaxing)
- .debug_str     0x00071c92     0x185e src/main.o
-                              0x71209 (size before relaxing)
- .debug_str     0x000734f0      0x227 src/message.o
+ .debug_str     0x00071c92     0x18a1 src/main.o
+                              0x71212 (size before relaxing)
+ .debug_str     0x00073533      0x227 src/message.o
                                0x7127 (size before relaxing)
- .debug_str     0x00073717       0x83 src/stepper.o
+ .debug_str     0x0007375a       0x83 src/stepper.o
                               0x6ef23 (size before relaxing)
- .debug_str     0x0007379a      0x151 src/stm32f4xx_hal_msp.o
+ .debug_str     0x000737dd      0x151 src/stm32f4xx_hal_msp.o
                               0x6f523 (size before relaxing)
- .debug_str     0x000738eb       0x62 src/stm32f4xx_it.o
+ .debug_str     0x0007392e       0x62 src/stm32f4xx_it.o
                               0x6eefc (size before relaxing)
- .debug_str     0x0007394d     0x1056 src/syscalls.o
+ .debug_str     0x00073990     0x1056 src/syscalls.o
                                0x7326 (size before relaxing)
- .debug_str     0x000749a3       0x5a src/system_stm32f4xx.o
+ .debug_str     0x000749e6       0x5a src/system_stm32f4xx.o
                               0x6ec79 (size before relaxing)
- .debug_str     0x000749fd       0x36 src/uart.o
+ .debug_str     0x00074a40       0x36 src/uart.o
                               0x6eefc (size before relaxing)
 
 .comment        0x00000000       0x6e

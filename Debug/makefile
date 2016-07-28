@@ -29,13 +29,13 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: koruza_driver_firmware_1.elf
+all: koruza_driver_firmware.elf
 
 # Tool invocations
-koruza_driver_firmware_1.elf: $(OBJS) $(USER_OBJS)
+koruza_driver_firmware.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU GCC Linker'
-	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -T"C:\Users\vojis\Documents\stm_projects\koruza_driver_firmware_1\LinkerScript.ld" -Wl,-Map=output.map -Wl,--gc-sections -lm -o "koruza_driver_firmware_1.elf" @"objects.list" $(USER_OBJS) $(LIBS)
+	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -T"C:\Users\vojis\Documents\stm_projects\koruza_driver_firmware\LinkerScript.ld" -Wl,-Map=output.map -Wl,--gc-sections -lm -o "koruza_driver_firmware.elf" @"objects.list" $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build
@@ -47,8 +47,8 @@ clean:
 
 post-build:
 	-@echo 'Generating binary and Printing size information:'
-	arm-none-eabi-objcopy -O binary "koruza_driver_firmware_1.elf" "koruza_driver_firmware_1.bin"
-	arm-none-eabi-size "koruza_driver_firmware_1.elf"
+	arm-none-eabi-objcopy -O binary "koruza_driver_firmware.elf" "koruza_driver_firmware.bin"
+	arm-none-eabi-size "koruza_driver_firmware.elf"
 	-@echo ' '
 
 .PHONY: all clean dependents
