@@ -15,7 +15,7 @@ startup/%.o: ../startup/%.s
 	@echo 'Building file: $<'
 	@echo 'Invoking: MCU GCC Assembler'
 	@echo %cd%
-	arm-none-eabi-as -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -I"C:/Users/vojis/Documents/stm_projects/koruza_driver/inc" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver/CMSIS/core" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver/CMSIS/device" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver/HAL_Driver/Inc/Legacy" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver/HAL_Driver/Inc" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver/Utilities/STM32F4xx-Nucleo" -g -o "$@" "$<"
+	arm-none-eabi-as -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -I"C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware_1/inc" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware_1/CMSIS/core" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware_1/CMSIS/device" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware_1/HAL_Driver/Inc/Legacy" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware_1/HAL_Driver/Inc" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware_1/Utilities/STM32F4xx-Nucleo" -g -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

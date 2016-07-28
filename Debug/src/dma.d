@@ -1,4 +1,5 @@
-src/main.o: ../src/main.c \
+src/dma.o: ../src/dma.c \
+ C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/dma.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver/HAL_Driver/Inc/stm32f4xx_hal.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver/HAL_Driver/Inc/stm32f4xx_hal_conf.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver/HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
@@ -58,18 +59,9 @@ src/main.o: ../src/main.c \
  C:/Users/vojis/Documents/stm_projects/koruza_driver/HAL_Driver/Inc/stm32f4xx_hal_pcd.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver/HAL_Driver/Inc/stm32f4xx_ll_usb.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver/HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver/HAL_Driver/Inc/stm32f4xx_hal_hcd.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/message.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/frame.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/message.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/AccelStepper.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/stepper.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/AccelStepper.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/uart.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/gpio.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/adc.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/dma.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/main.h
+ C:/Users/vojis/Documents/stm_projects/koruza_driver/HAL_Driver/Inc/stm32f4xx_hal_hcd.h
+
+C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/dma.h:
 
 C:/Users/vojis/Documents/stm_projects/koruza_driver/HAL_Driver/Inc/stm32f4xx_hal.h:
 
@@ -190,25 +182,3 @@ C:/Users/vojis/Documents/stm_projects/koruza_driver/HAL_Driver/Inc/stm32f4xx_ll_
 C:/Users/vojis/Documents/stm_projects/koruza_driver/HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h:
 
 C:/Users/vojis/Documents/stm_projects/koruza_driver/HAL_Driver/Inc/stm32f4xx_hal_hcd.h:
-
-C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/message.h:
-
-C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/frame.h:
-
-C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/message.h:
-
-C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/AccelStepper.h:
-
-C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/stepper.h:
-
-C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/AccelStepper.h:
-
-C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/uart.h:
-
-C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/gpio.h:
-
-C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/adc.h:
-
-C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/dma.h:
-
-C:/Users/vojis/Documents/stm_projects/koruza_driver/inc/main.h:

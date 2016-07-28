@@ -6,6 +6,8 @@
 #include "stepper.h"
 #include "uart.h"
 #include "gpio.h"
+#include "adc.h"
+#include "dma.h"
 #include <stdio.h>
 #include "main.h"
 #include <inttypes.h>
@@ -33,6 +35,9 @@ uint8_t tx_responce_buffer[1024];
 int Rx_indx;
 int Transfer_cplt;
 char Rx_last[2] = {0, 0};
+
+/* Variable used to get converted value */
+__IO uint16_t uhADCxConvertedValue = 0;
 
 enum states{
 	IDLE,
@@ -97,6 +102,14 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	}
 }
 
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* AdcHandle) {
+	if (HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &uhADCxConvertedValue, 1)
+					!= HAL_OK) {
+				/* Start Conversation Error */
+				Error_Handler();
+			}
+}
+
 
 int main(void)
 {
@@ -110,6 +123,8 @@ int main(void)
 
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
+	MX_DMA_Init();
+	MX_ADC1_Init();
 	MX_USART1_UART_Init();
 	MX_USART2_UART_Init();
 
@@ -185,6 +200,17 @@ int main(void)
 
 	/*Activate UART RX interrupt every time receiving 1 byte.*/
 	HAL_UART_Receive_IT(&huart1, (uint8_t *)&Rx_data, 1);
+
+	/*##-3- Start the conversion process and enable interrupt ##################*/
+	/* Note: Considering IT occurring after each number of ADC conversions      */
+	/*       (IT by DMA end of transfer), select sampling time and ADC clock    */
+	/*       with sufficient duration to not create an overhead situation in    */
+	/*       IRQHandler. */
+	if (HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &uhADCxConvertedValue, 1)
+			!= HAL_OK) {
+		/* Start Conversation Error */
+		Error_Handler();
+	}
 
 	/* Infinite loop */
 	while(True){

@@ -5,7 +5,9 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../src/AccelStepper.c \
+../src/adc.c \
 ../src/crc32.c \
+../src/dma.c \
 ../src/frame.c \
 ../src/gpio.c \
 ../src/inet.c \
@@ -20,7 +22,9 @@ C_SRCS += \
 
 OBJS += \
 ./src/AccelStepper.o \
+./src/adc.o \
 ./src/crc32.o \
+./src/dma.o \
 ./src/frame.o \
 ./src/gpio.o \
 ./src/inet.o \
@@ -35,7 +39,9 @@ OBJS += \
 
 C_DEPS += \
 ./src/AccelStepper.d \
+./src/adc.d \
 ./src/crc32.d \
+./src/dma.d \
 ./src/frame.d \
 ./src/gpio.d \
 ./src/inet.d \
@@ -54,7 +60,7 @@ src/%.o: ../src/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: MCU GCC Compiler'
 	@echo %cd%
-	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -DSTM32F4 -DSTM32 -DNUCLEO_F411RE -DSTM32F411RETx -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -I"C:/Users/vojis/Documents/stm_projects/koruza_driver/inc" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver/CMSIS/core" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver/CMSIS/device" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver/HAL_Driver/Inc/Legacy" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver/HAL_Driver/Inc" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver/Utilities/STM32F4xx-Nucleo" -O0 -g3 -Wall -fmessage-length=0 -ffunction-sections -c -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
+	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -DSTM32F4 -DSTM32 -DNUCLEO_F411RE -DSTM32F411RETx -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -I"C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware_1/inc" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware_1/CMSIS/core" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware_1/CMSIS/device" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware_1/HAL_Driver/Inc/Legacy" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware_1/HAL_Driver/Inc" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware_1/Utilities/STM32F4xx-Nucleo" -O0 -g3 -Wall -fmessage-length=0 -ffunction-sections -c -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
