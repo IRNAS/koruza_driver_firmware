@@ -61,3 +61,47 @@ tlv_motor_position_t Claculate_motors_move_steps(tlv_motor_position_t *new_motor
 
 	return move_steppers_for;
 }
+
+void run_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z){
+	//TODO: pogledaj da li stvarno trebaju ostali argumenti
+	run_motor(stepper_x, 1, 2);
+	run_motor(stepper_y, 1, 2);
+	run_motor(stepper_z, 1, 2);
+
+}
+
+uint8_t run_motor(Stepper_t *stepper, /*int32_t *location,*/ int min_pin, int max_pin){
+	// this function runs the stepper motor
+	// returns status of limits reached and motion stopped
+	// 0x00 - idle
+	// 0x01 - moving
+	// 0x1* - minimum reached
+	// 0x2* - maximum reached
+	// 0xff - error
+
+	uint8_t return_data = 0x00;
+
+	// motor movement
+	// motor pins are enabled only while moving to conserve power
+	if(currentPosition(stepper) != targetPosition(stepper)){
+		enableOutputs(stepper);
+		run(stepper);
+
+	    // update the current position
+	    //*location=stepper->currentPosition();
+
+		// return moving status
+		return_data=(return_data|0x01);
+
+		//reset timeout write for storing position
+		//timeout_write_flash=millis()+30000;
+		//write_enable=HIGH;
+	}// idle
+	else{
+		stop(stepper);
+		disableOutputs(stepper);
+		return_data=(return_data|0x00);
+	}
+	return return_data;
+
+}

@@ -64,4 +64,8 @@ void Init_koruza_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *s
  */
 tlv_motor_position_t Claculate_motors_move_steps(tlv_motor_position_t *new_motor_position, tlv_motor_position_t *current_motor_position);
 
+void run_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z);
+
+uint8_t run_motor(Stepper_t *stepper,/* int32_t *location, */int min_pin, int max_pin);
+
 #endif /* STEPPER_H_ */

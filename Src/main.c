@@ -217,9 +217,7 @@ int main(void)
 		test = 0;
 
 		/* Move steppers. */
-		run(&stepper_motor_x);
-		run(&stepper_motor_y);
-		run(&stepper_motor_z);
+		run_motors(&stepper_motor_x, &stepper_motor_y, &stepper_motor_z);
 
 		switch(state){
 			case IDLE:
