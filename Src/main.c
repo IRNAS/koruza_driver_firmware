@@ -23,8 +23,6 @@
 /* Struct FILE is implemented in stdio.h */
 FILE __stdout;
 
-
-
 /* Private variables ---------------------------------------------------------*/
 int test, i = 0;
 int len, message_len = 0;
@@ -38,14 +36,6 @@ char Rx_last[2] = {0, 0};
 
 /* Variable used to get converted value */
 __IO uint16_t uhADCxConvertedValue = 0;
-
-enum states{
-	IDLE,
-	MESSAGE_PARSE,
-	ACTICVE_STATE,
-	ERROR_STATE,
-	END_STATE
-};
 
 
 /* UART RX Interrupt callback routine */
@@ -98,21 +88,27 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 		/* Store last received byte for ESC check */
 		Rx_last[0] = Rx_data[0];
 		/* Activate UART receive interrupt every time */
-		HAL_UART_Receive_IT(&huart1, (uint8_t *)&Rx_data, 1);
+		if(HAL_UART_Receive_IT(&huart1, (uint8_t *)&Rx_data, 1) != HAL_OK){
+			/* Start UART error*/
+			Error_Handler();
+		}
 	}
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* AdcHandle) {
-	if (HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &uhADCxConvertedValue, 1)
-					!= HAL_OK) {
-				/* Start Conversation Error */
-				Error_Handler();
-			}
+	if(HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &uhADCxConvertedValue, 1) != HAL_OK) {
+		/* Start Conversation Error */
+		Error_Handler();
+	}else{
+		if(uhADCxConvertedValue >= OVERCURRENT_LIMIT){
+			//TODO: add current protection system
+			NVIC_SystemReset();
+		}
+	}
 }
 
 
-int main(void)
-{
+int main(void){
 	/* MCU Configuration----------------------------------------------------------*/
 
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
@@ -168,6 +164,7 @@ int main(void)
 		printf("%02X ", test_frame[i]);
 	}
 	printf("\n");
+	message_free(&msg);
 #endif
 
 	/* Parsed message */
@@ -198,16 +195,14 @@ int main(void)
 	printf("\n\n");
 #endif
 
-	/*Activate UART RX interrupt every time receiving 1 byte.*/
-	HAL_UART_Receive_IT(&huart1, (uint8_t *)&Rx_data, 1);
+	/* Activate UART RX interrupt every time receiving 1 byte. */
+	if(HAL_UART_Receive_IT(&huart1, (uint8_t *)&Rx_data, 1) != HAL_OK){
+		/* Start UART error*/
+		Error_Handler();
+	}
 
-	/*##-3- Start the conversion process and enable interrupt ##################*/
-	/* Note: Considering IT occurring after each number of ADC conversions      */
-	/*       (IT by DMA end of transfer), select sampling time and ADC clock    */
-	/*       with sufficient duration to not create an overhead situation in    */
-	/*       IRQHandler. */
-	if (HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &uhADCxConvertedValue, 1)
-			!= HAL_OK) {
+	/* Start the conversion process and enable interrupt */
+	if (HAL_ADC_Start_DMA(&hadc1, (uint32_t*) &uhADCxConvertedValue, 1) != HAL_OK) {
 		/* Start Conversation Error */
 		Error_Handler();
 	}
@@ -247,7 +242,7 @@ int main(void)
 				//parse received message command
 				if (message_tlv_get_command(&msg_parsed, &parsed_command) != MESSAGE_SUCCESS) {
 #ifdef DEBUG_MODE
-				printf("Failed to get command TLV.\n");
+					printf("Failed to get command TLV.\n");
 #endif
 					message_free(&msg_parsed);
 					state = ERROR_STATE;
@@ -270,11 +265,19 @@ int main(void)
 								current_motor_position.x, current_motor_position.y, current_motor_position.z
 						  );
 						printf("\n");
-						printf("Parsed protocol message responce: ");
+						printf("Parsed protocol message response: ");
 						message_print(&msg_responce);
 						printf("\n");
+
 #endif
 						frame_size = frame_message(frame, sizeof(frame), &msg_responce);
+#ifdef DEBUG_MODE
+						printf("\nResponce serialized protocol message:\n");
+						for (size_t i = 0; i < frame_size; i++){
+							printf("%02X ", frame[i]);
+						}
+						printf("\n");
+#endif
 						//send status message
 						HAL_UART_Transmit(&huart1, (uint8_t *)&frame, frame_size, 1000);
 
@@ -298,7 +301,7 @@ int main(void)
 								parsed_position.x, parsed_position.y, parsed_position.z
 							  );
 #endif
-							/* Claculate number of move steps to new position */
+							/* Calculate number of move steps to new position */
 							move_steppers = Claculate_motors_move_steps(&parsed_position, &current_motor_position);
 							/* Save new motor position */
 							current_motor_position.x = parsed_position.x;
@@ -331,6 +334,8 @@ int main(void)
 				break;
 
 			case END_STATE:
+				//free messages memory
+				message_free(&msg_parsed);
 				/* Enable USART1 interrupt */
 				HAL_NVIC_EnableIRQ(USART1_IRQn);
 				/*Activate UART RX interrupt every time receiving 1 byte.*/
@@ -345,7 +350,6 @@ int main(void)
 
 		}//end switch(state)
 	}//end while(true)
-	message_free(&msg_parsed);
 }//end main()
 
 /**Prototype for the printf() function**/
