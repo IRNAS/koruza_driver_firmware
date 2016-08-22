@@ -41,7 +41,6 @@ C_SRCS += \
 ../HAL_Driver/Src/stm32f4xx_hal_lptim.c \
 ../HAL_Driver/Src/stm32f4xx_hal_ltdc.c \
 ../HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.c \
-../HAL_Driver/Src/stm32f4xx_hal_msp_template.c \
 ../HAL_Driver/Src/stm32f4xx_hal_nand.c \
 ../HAL_Driver/Src/stm32f4xx_hal_nor.c \
 ../HAL_Driver/Src/stm32f4xx_hal_pccard.c \
@@ -111,7 +110,6 @@ OBJS += \
 ./HAL_Driver/Src/stm32f4xx_hal_lptim.o \
 ./HAL_Driver/Src/stm32f4xx_hal_ltdc.o \
 ./HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.o \
-./HAL_Driver/Src/stm32f4xx_hal_msp_template.o \
 ./HAL_Driver/Src/stm32f4xx_hal_nand.o \
 ./HAL_Driver/Src/stm32f4xx_hal_nor.o \
 ./HAL_Driver/Src/stm32f4xx_hal_pccard.o \
@@ -181,7 +179,6 @@ C_DEPS += \
 ./HAL_Driver/Src/stm32f4xx_hal_lptim.d \
 ./HAL_Driver/Src/stm32f4xx_hal_ltdc.d \
 ./HAL_Driver/Src/stm32f4xx_hal_ltdc_ex.d \
-./HAL_Driver/Src/stm32f4xx_hal_msp_template.d \
 ./HAL_Driver/Src/stm32f4xx_hal_nand.d \
 ./HAL_Driver/Src/stm32f4xx_hal_nor.d \
 ./HAL_Driver/Src/stm32f4xx_hal_pccard.d \
@@ -219,7 +216,7 @@ HAL_Driver/Src/%.o: ../HAL_Driver/Src/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: MCU GCC Compiler'
 	@echo %cd%
-	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -DSTM32F4 -DSTM32 -DNUCLEO_F411RE -DSTM32F411RETx -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -I"C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/CMSIS/core" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/CMSIS/device" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/Legacy" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc" -I"C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/Utilities/STM32F4xx-Nucleo" -O0 -g3 -Wall -fmessage-length=0 -ffunction-sections -c -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
+	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -DSTM32F4 -DSTM32 -DNUCLEO_F411RE -DSTM32F411RETx -DDEBUG -DUSE_HAL_DRIVER -DSTM32F411xE -I"C:/Users/vojis/workspace/koruza_driver_firmware/inc" -I"C:/Users/vojis/workspace/koruza_driver_firmware/CMSIS/core" -I"C:/Users/vojis/workspace/koruza_driver_firmware/CMSIS/device" -I"C:/Users/vojis/workspace/koruza_driver_firmware/HAL_Driver/Inc/Legacy" -I"C:/Users/vojis/workspace/koruza_driver_firmware/HAL_Driver/Inc" -I"C:/Users/vojis/workspace/koruza_driver_firmware/Utilities/STM32F4xx-Nucleo" -O0 -g3 -Wall -fmessage-length=0 -ffunction-sections -c -MMD -MP -MF"$(@:%.o=%.d)" -MT"$@" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

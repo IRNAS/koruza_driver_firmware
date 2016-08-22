@@ -35,7 +35,7 @@ all: koruza_driver_firmware.elf
 koruza_driver_firmware.elf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU GCC Linker'
-	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -T"C:\Users\vojis\Documents\stm_projects\koruza_driver_firmware\LinkerScript.ld" -Wl,-Map=output.map -Wl,--gc-sections -lm -o "koruza_driver_firmware.elf" @"objects.list" $(USER_OBJS) $(LIBS)
+	arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=hard -mfpu=fpv4-sp-d16 -T"C:\Users\vojis\workspace\koruza_driver_firmware\LinkerScript.ld" -Wl,-Map=output.map -Wl,--gc-sections -lm -o "koruza_driver_firmware.elf" @"objects.list" $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build
