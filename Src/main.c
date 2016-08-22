@@ -33,7 +33,7 @@ uint8_t tx_responce_buffer[1024];
 int Rx_indx;
 int Transfer_cplt;
 char Rx_last[2] = {0, 0};
-
+char test1 = 0;
 /* Variable used to get converted value */
 __IO uint16_t uhADCxConvertedValue = 0;
 
