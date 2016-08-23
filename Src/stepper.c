@@ -16,7 +16,7 @@ tlv_motor_position_t current_motor_position;
 void Init_koruza_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z){
 
 	/*## Initialize X axis stepper. ###*/
-	InitStepper(stepper_x, HALF4WIRE, MOTOR_PIN_X_1, MOTOR_PORT_X_1, MOTOR_PIN_X_2, MOTOR_PORT_X_2, MOTOR_PIN_X_3, MOTOR_PORT_X_3, MOTOR_PIN_X_4, MOTOR_PORT_X_4, 1);
+	InitStepper(stepper_x, HALF4WIRE, MOTOR_PIN_X_4, MOTOR_PORT_X_4, MOTOR_PIN_X_3, MOTOR_PORT_X_3, MOTOR_PIN_X_2, MOTOR_PORT_X_2, MOTOR_PIN_X_1, MOTOR_PORT_X_1, 1);
 	setMaxSpeed(stepper_x, 500);
 	setSpeed(stepper_x, 500);
 	setAcceleration(stepper_x, 500);
@@ -24,7 +24,7 @@ void Init_koruza_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *s
 	enableOutputs(stepper_x);
 
 	/*## Initialize Y axis stepper. ###*/
-	InitStepper(stepper_y, HALF4WIRE, MOTOR_PIN_Y_1, MOTOR_PORT_Y_1, MOTOR_PIN_Y_2, MOTOR_PORT_Y_2, MOTOR_PIN_Y_3, MOTOR_PORT_Y_3, MOTOR_PIN_Y_4, MOTOR_PORT_Y_4, 1);
+	InitStepper(stepper_y, HALF4WIRE, MOTOR_PIN_Y_4, MOTOR_PORT_Y_4, MOTOR_PIN_Y_3, MOTOR_PORT_Y_3, MOTOR_PIN_Y_2, MOTOR_PORT_Y_2, MOTOR_PIN_Y_1, MOTOR_PORT_Y_1, 1);
 	setMaxSpeed(stepper_y, 500);
 	setSpeed(stepper_y, 500);
 	setAcceleration(stepper_y, 500);
@@ -32,7 +32,7 @@ void Init_koruza_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *s
 	enableOutputs(stepper_y);
 
 	/*## Initialize Z axis stepper. ###*/
-	InitStepper(stepper_z, HALF4WIRE, MOTOR_PIN_Z_1, MOTOR_PORT_Z_1, MOTOR_PIN_Z_2, MOTOR_PORT_Z_2, MOTOR_PIN_Z_3, MOTOR_PORT_Z_3, MOTOR_PIN_Z_4, MOTOR_PORT_Z_4, 1);
+	InitStepper(stepper_z, HALF4WIRE, MOTOR_PIN_Z_4, MOTOR_PORT_Z_4, MOTOR_PIN_Z_3, MOTOR_PORT_Z_3, MOTOR_PIN_Z_2, MOTOR_PORT_Z_2, MOTOR_PIN_Z_1, MOTOR_PORT_Z_1, 1);
 	setMaxSpeed(stepper_z, 500);
 	setSpeed(stepper_z, 500);
 	setAcceleration(stepper_z, 500);

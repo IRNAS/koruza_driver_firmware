@@ -19,7 +19,7 @@
 #define OVERCURRENT_LIMIT 5000
 
 /* Uncomment to get debug messages in the UART2 terminal*/
-#define DEBUG_MODE
+//#define DEBUG_MODE
 
 enum states{
 	IDLE,
