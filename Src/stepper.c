@@ -8,7 +8,10 @@
 #include "stepper.h"
 #include "stm32f4xx_hal.h"
 #include "AccelStepper.h"
+#include "main.h"
 #include <stdio.h>
+
+tlv_motor_position_t current_motor_position;
 
 void Init_koruza_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z){
 
@@ -17,7 +20,7 @@ void Init_koruza_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *s
 	setMaxSpeed(stepper_x, 500);
 	setSpeed(stepper_x, 500);
 	setAcceleration(stepper_x, 500);
-	moveTo(stepper_x, 0);
+	moveTo(stepper_x, 1);
 	enableOutputs(stepper_x);
 
 	/*## Initialize Y axis stepper. ###*/
@@ -25,7 +28,7 @@ void Init_koruza_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *s
 	setMaxSpeed(stepper_y, 500);
 	setSpeed(stepper_y, 500);
 	setAcceleration(stepper_y, 500);
-	moveTo(stepper_y, 0);
+	moveTo(stepper_y, 1);
 	enableOutputs(stepper_y);
 
 	/*## Initialize Z axis stepper. ###*/
@@ -33,8 +36,12 @@ void Init_koruza_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *s
 	setMaxSpeed(stepper_z, 500);
 	setSpeed(stepper_z, 500);
 	setAcceleration(stepper_z, 500);
-	moveTo(stepper_z, 0);
+	moveTo(stepper_z, 1);
 	enableOutputs(stepper_z);
+
+	current_motor_position.x = 0;
+	current_motor_position.y = 0;
+	current_motor_position.z = 0;
 
 }
 
@@ -64,13 +71,13 @@ tlv_motor_position_t Claculate_motors_move_steps(tlv_motor_position_t *new_motor
 
 void run_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z){
 	//TODO: pogledaj da li stvarno trebaju ostali argumenti
-	run_motor(stepper_x, 1, 2);
-	run_motor(stepper_y, 1, 2);
-	run_motor(stepper_z, 1, 2);
+	run_motor(stepper_x, &current_motor_position.x, 1, 2);
+	run_motor(stepper_y, &current_motor_position.y, 1, 2);
+	run_motor(stepper_z, &current_motor_position.z, 1, 2);
 
 }
 
-uint8_t run_motor(Stepper_t *stepper, /*int32_t *location,*/ int min_pin, int max_pin){
+uint8_t run_motor(Stepper_t *stepper, int32_t *location, int min_pin, int max_pin){
 	// this function runs the stepper motor
 	// returns status of limits reached and motion stopped
 	// 0x00 - idle
@@ -88,7 +95,7 @@ uint8_t run_motor(Stepper_t *stepper, /*int32_t *location,*/ int min_pin, int ma
 		run(stepper);
 
 	    // update the current position
-	    //*location=stepper->currentPosition();
+	    *location = (int32_t)currentPosition(stepper);
 
 		// return moving status
 		return_data=(return_data|0x01);

@@ -10,6 +10,7 @@
 #ifndef STEPPER_H_
 #define STEPPER_H_
 
+extern tlv_motor_position_t current_motor_position;
 
 #define MOTOR_PIN_X_1 GPIO_PIN_13
 #define MOTOR_PIN_X_2 GPIO_PIN_14
@@ -66,6 +67,6 @@ tlv_motor_position_t Claculate_motors_move_steps(tlv_motor_position_t *new_motor
 
 void run_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z);
 
-uint8_t run_motor(Stepper_t *stepper,/* int32_t *location, */int min_pin, int max_pin);
+uint8_t run_motor(Stepper_t *stepper, int32_t *location, int min_pin, int max_pin);
 
 #endif /* STEPPER_H_ */

@@ -5,6 +5,8 @@
  *      Author: vojis
  */
 
+#include "message.h"
+
 #ifndef MAIN_H_
 #define MAIN_H_
 
@@ -33,6 +35,6 @@ void Error_Handler(void);
 
 
 void Init_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z);
-float fast_sqrt(float number);
+
 
 #endif /* MAIN_H_ */

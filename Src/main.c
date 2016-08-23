@@ -1,6 +1,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
-#include "message.h"
+
 #include "frame.h"
 #include "AccelStepper.h"
 #include "stepper.h"
@@ -175,11 +175,10 @@ int main(void){
 	/* Response message */
 	message_t msg_responce;
 
-	/* Currnet positon*/
-	tlv_motor_position_t current_motor_position;
-	current_motor_position.x = 0;
-	current_motor_position.y = 0;
-	current_motor_position.z = 0;
+	tlv_motor_position_t next_motor_position;
+	next_motor_position.x = 0;
+	next_motor_position.y = 0;
+	next_motor_position.z = 0;
 
 	/* Move steppers for, from absolute position */
 	tlv_motor_position_t move_steppers;
@@ -261,8 +260,8 @@ int main(void){
 						message_tlv_add_checksum(&msg_responce);
 #ifdef DEBUG_MODE
 						printf("\n");
-						printf("Current motor position (%"PRIu32", %"PRIu32", %"PRIu32")\n",
-								current_motor_position.x, current_motor_position.y, current_motor_position.z
+						printf("Current motor position (%ld, %ld, %ld)\n",
+								(long)current_motor_position.x, (long)current_motor_position.y, (long)current_motor_position.z
 						  );
 						printf("\n");
 						printf("Parsed protocol message response: ");
@@ -304,13 +303,13 @@ int main(void){
 							/* Calculate number of move steps to new position */
 							move_steppers = Claculate_motors_move_steps(&parsed_position, &current_motor_position);
 							/* Save new motor position */
-							current_motor_position.x = parsed_position.x;
-							current_motor_position.y = parsed_position.y;
-							current_motor_position.z = parsed_position.z;
+							next_motor_position.x = parsed_position.x;
+							next_motor_position.y = parsed_position.y;
+							next_motor_position.z = parsed_position.z;
 							/* Move motors to sent position */
-							moveTo(&stepper_motor_x, (long)move_steppers.x);
-							moveTo(&stepper_motor_y, (long)move_steppers.y);
-							moveTo(&stepper_motor_z, (long)move_steppers.z);
+							move(&stepper_motor_x, (long)move_steppers.x);
+							move(&stepper_motor_y, (long)move_steppers.y);
+							move(&stepper_motor_z, (long)move_steppers.z);
 
 
 
