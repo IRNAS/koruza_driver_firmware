@@ -138,9 +138,10 @@ int main(void){
 	/* Generate message - test message */
 	message_t msg;
 	message_init(&msg);
-	message_tlv_add_command(&msg, COMMAND_MOVE_MOTOR);
+	//message_tlv_add_command(&msg, COMMAND_MOVE_MOTOR);
+	message_tlv_add_command(&msg, COMMAND_FIRMWARE_UPGRADE);
 	tlv_motor_position_t position = {1000, 1000, 1000};
-	message_tlv_add_motor_position(&msg, &position);
+	//message_tlv_add_motor_position(&msg, &position);
 	message_tlv_add_checksum(&msg);
 
 	uint8_t test_frame[1024];
@@ -322,8 +323,13 @@ int main(void){
 					case COMMAND_REBOOT:
 						break;
 					case COMMAND_FIRMWARE_UPGRADE:
-						break;
+						/* Go to Bootloader mode, and whait for new firmware */
+						printf("bootloder.\n");
+						JumpToBootLoader();
 
+						state = END_STATE;
+						break;
+						printf("bootloader test2");
 				}
 				break;
 

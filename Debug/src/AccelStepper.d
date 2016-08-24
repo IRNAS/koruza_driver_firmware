@@ -61,7 +61,8 @@ src/AccelStepper.o: ../src/AccelStepper.c \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal_hcd.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/AccelStepper.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/main.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/message.h
+ C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/message.h \
+ C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/bootloader.h
 
 C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal.h:
 
@@ -188,3 +189,5 @@ C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/AccelStepper.h:
 C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/main.h:
 
 C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/message.h:
+
+C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/bootloader.h:

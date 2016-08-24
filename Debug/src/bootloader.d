@@ -1,6 +1,5 @@
-src/stepper.o: ../src/stepper.c \
- C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/stepper.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/AccelStepper.h \
+src/bootloader.o: ../src/bootloader.c \
+ C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/bootloader.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal_conf.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
@@ -60,15 +59,9 @@ src/stepper.o: ../src/stepper.c \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal_pcd.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_ll_usb.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal_hcd.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/message.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/AccelStepper.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/main.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/bootloader.h
+ C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal_hcd.h
 
-C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/stepper.h:
-
-C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/AccelStepper.h:
+C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/bootloader.h:
 
 C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal.h:
 
@@ -189,11 +182,3 @@ C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm3
 C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h:
 
 C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal_hcd.h:
-
-C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/message.h:
-
-C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/AccelStepper.h:
-
-C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/main.h:
-
-C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/bootloader.h:

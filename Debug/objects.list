@@ -68,6 +68,7 @@
 "Utilities/STM32F4xx-Nucleo/stm32f4xx_nucleo.o"
 "src/AccelStepper.o"
 "src/adc.o"
+"src/bootloader.o"
 "src/crc32.o"
 "src/dma.o"
 "src/frame.o"

@@ -6,6 +6,7 @@
 C_SRCS += \
 ../src/AccelStepper.c \
 ../src/adc.c \
+../src/bootloader.c \
 ../src/crc32.c \
 ../src/dma.c \
 ../src/frame.c \
@@ -23,6 +24,7 @@ C_SRCS += \
 OBJS += \
 ./src/AccelStepper.o \
 ./src/adc.o \
+./src/bootloader.o \
 ./src/crc32.o \
 ./src/dma.o \
 ./src/frame.o \
@@ -40,6 +42,7 @@ OBJS += \
 C_DEPS += \
 ./src/AccelStepper.d \
 ./src/adc.d \
+./src/bootloader.d \
 ./src/crc32.d \
 ./src/dma.d \
 ./src/frame.d \
