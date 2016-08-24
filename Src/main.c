@@ -139,7 +139,7 @@ int main(void){
 	message_t msg;
 	message_init(&msg);
 	//message_tlv_add_command(&msg, COMMAND_MOVE_MOTOR);
-	message_tlv_add_command(&msg, COMMAND_FIRMWARE_UPGRADE);
+	message_tlv_add_command(&msg, COMMAND_REBOOT);
 	tlv_motor_position_t position = {1000, 1000, 1000};
 	//message_tlv_add_motor_position(&msg, &position);
 	message_tlv_add_checksum(&msg);
@@ -167,7 +167,6 @@ int main(void){
 	printf("\n");
 	message_free(&msg);
 #endif
-
 	/* Parsed message */
 	message_t msg_parsed;
 	tlv_command_t parsed_command;
@@ -321,15 +320,18 @@ int main(void){
 					case COMMAND_SEND_IR:
 						break;
 					case COMMAND_REBOOT:
+						NVIC_SystemReset();
+						state = END_STATE;
 						break;
 					case COMMAND_FIRMWARE_UPGRADE:
+#ifdef DEBUG_MODE
+						printf("Entering bootloder mode.\n");
+#endif
 						/* Go to Bootloader mode, and whait for new firmware */
-						printf("bootloder.\n");
 						JumpToBootLoader();
 
 						state = END_STATE;
 						break;
-						printf("bootloader test2");
 				}
 				break;
 
