@@ -110,5 +110,28 @@ uint8_t run_motor(Stepper_t *stepper, int32_t *location, int min_pin, int max_pi
 		return_data=(return_data|0x00);
 	}
 	return return_data;
+}
 
+void Set_motor_coordinate(Stepper_t *stepper, long coordinate){
+	setCurrentPosition(stepper, coordinate);
+}
+
+void Set_motors_coordinates(Stepper_t *stepper_x, int coordinate_x, Stepper_t *stepper_y, int coordinate_y, Stepper_t *stepper_z, int coordinate_z){
+	Set_motor_coordinate(stepper_x, coordinate_x);
+	Set_motor_coordinate(stepper_y, coordinate_y);
+	Set_motor_coordinate(stepper_z, coordinate_z);
+
+	current_motor_position.x = coordinate_x;
+	current_motor_position.y = coordinate_y;
+	current_motor_position.z = coordinate_z;
+}
+
+void Set_home_coordinates(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z){
+	Set_motor_coordinate(stepper_x, 0);
+	Set_motor_coordinate(stepper_y, 0);
+	Set_motor_coordinate(stepper_z, 0);
+
+	current_motor_position.x = 0;
+	current_motor_position.y = 0;
+	current_motor_position.z = 0;
 }

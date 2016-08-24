@@ -318,17 +318,25 @@ int main(void){
 
 						break;
 					case COMMAND_SEND_IR:
+
 						break;
 					case COMMAND_REBOOT:
+#ifdef DEBUG_MODE
+						printf("Restarting MCU software....\n");
+#endif
+						/* Software restart of the system */
 						NVIC_SystemReset();
 						state = END_STATE;
 						break;
 					case COMMAND_FIRMWARE_UPGRADE:
 #ifdef DEBUG_MODE
+
 						printf("Entering bootloder mode.\n");
 #endif
 						/* Go to Bootloader mode, and whait for new firmware */
-						JumpToBootLoader();
+						//JumpToBootLoader();
+
+						Set_motors_coordinates(&stepper_motor_x,  0, &stepper_motor_y, 1000, &stepper_motor_z, 1000);
 
 						state = END_STATE;
 						break;

@@ -69,4 +69,10 @@ void run_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z
 
 uint8_t run_motor(Stepper_t *stepper, int32_t *location, int min_pin, int max_pin);
 
+void Set_motor_coordinate(Stepper_t *stepper, long coordinate);
+
+void Set_motors_coordinates(Stepper_t *stepper_x, int coordinate_x, Stepper_t *stepper_y, int coordinate_y, Stepper_t *stepper_z, int coordinate_z);
+
+void Set_home_coordinates(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z);
+
 #endif /* STEPPER_H_ */
