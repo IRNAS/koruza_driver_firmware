@@ -72,7 +72,6 @@
 "src/bootloader.o"
 "src/crc32.o"
 "src/dma.o"
-"src/encoder.o"
 "src/frame.o"
 "src/gpio.o"
 "src/inet.o"

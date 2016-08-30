@@ -144,11 +144,16 @@ int main(void){
 	/* Initialize AS4047D */
 	encoder_x.encoder_num = 1;
 	encoder_y.encoder_num = 2;
-	AS5047D_Init();
-	AS5047D_SetZero();
+	encoder_x.CS_port = AS4047D_CS1_Port;
+	encoder_x.CS_pin = AS4047D_CS1_Pin;
+	AS5047D_Init(&encoder_x);
+	AS5047D_SetZero(&encoder_x);
 
 	HAL_TIM_Base_MspInit(&TimHandle);
-
+while(1){
+	HAL_Delay(1000);
+	printf("\nAngle: %f", encoder_x.true_angle);
+}
 	enum states state = IDLE;
 
 	/* Stepper motors struts */

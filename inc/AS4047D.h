@@ -24,8 +24,10 @@ typedef struct{
 	uint16_t ZPOSL;
 	uint16_t SETTINGS1;
 	uint16_t SETTINGS2;
-	float true_angle;
+	float    true_angle;
 	uint8_t  encoder_num;
+	uint16_t CS_pin;
+	GPIO_TypeDef *CS_port;
 }encoder_as5047_t;
 
 
@@ -54,21 +56,21 @@ typedef struct{
 #define AS4047D_CS2_Port GPIOC
 #define AS4047D_CS2_Pin GPIO_PIN_6
 
-extern void AS5047D_Init(void);
+extern void AS5047D_Init(encoder_as5047_t *encoder);
 
 extern void AS5047D_Write(GPIO_TypeDef* CS_GPIO_Port, uint16_t CS_GPIO_Pin, uint16_t address, uint16_t data);
 extern uint16_t AS5047D_Read(GPIO_TypeDef* CS_GPIO_Port, uint16_t CS_GPIO_Pin, uint16_t address);
 
-extern void AS5047D_Check_Transmission_Error(void);
-extern void AS5047D_SetZero(void);
-extern uint16_t AS5047D_GetZero(void);
-extern uint8_t AS5047D_Get_AGC_Value(void);
+extern void AS5047D_Check_Transmission_Error(encoder_as5047_t *encoder);
+extern void AS5047D_SetZero(encoder_as5047_t *encoder);
+extern uint16_t AS5047D_GetZero(encoder_as5047_t *encoder);
+extern uint8_t AS5047D_Get_AGC_Value(encoder_as5047_t *encoder);
 
-extern uint16_t AS5047D_Get_CORDICMAG_Value(void);
-extern uint16_t AS5047D_Get_ANGLEUNC_Value(void);
-extern uint16_t AS5047D_Get_ANGLECOM_Value(void);
+extern uint16_t AS5047D_Get_CORDICMAG_Value(encoder_as5047_t *encoder);
+extern uint16_t AS5047D_Get_ANGLEUNC_Value(encoder_as5047_t *encoder);
+extern uint16_t AS5047D_Get_ANGLECOM_Value(encoder_as5047_t *encoder);
 
-extern float AS5047D_Get_True_Angle_Value(void);
+extern float AS5047D_Get_True_Angle_Value(encoder_as5047_t *encoder);
 extern void AS5047D_Get_All_Data(encoder_as5047_t *encoder);
 
 #define AS5047D_Check_MAG_TooLow(DIAAGC)      ((DIAAGC >> 11) & 0x0001)

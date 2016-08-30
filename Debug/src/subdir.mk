@@ -10,7 +10,6 @@ C_SRCS += \
 ../src/bootloader.c \
 ../src/crc32.c \
 ../src/dma.c \
-../src/encoder.c \
 ../src/frame.c \
 ../src/gpio.c \
 ../src/inet.c \
@@ -32,7 +31,6 @@ OBJS += \
 ./src/bootloader.o \
 ./src/crc32.o \
 ./src/dma.o \
-./src/encoder.o \
 ./src/frame.o \
 ./src/gpio.o \
 ./src/inet.o \
@@ -54,7 +52,6 @@ C_DEPS += \
 ./src/bootloader.d \
 ./src/crc32.d \
 ./src/dma.d \
-./src/encoder.d \
 ./src/frame.d \
 ./src/gpio.d \
 ./src/inet.d \

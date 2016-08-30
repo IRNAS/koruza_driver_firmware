@@ -10,7 +10,6 @@
 #include "spi.h"
 #include "tim.h"
 #include "AS4047D.h"
-#include "encoder.h"
 
 #ifndef MAIN_H_
 #define MAIN_H_

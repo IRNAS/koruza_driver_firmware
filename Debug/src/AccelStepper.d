@@ -66,8 +66,7 @@ src/AccelStepper.o: ../src/AccelStepper.c \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/spi.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/tim.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/AS4047D.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/gpio.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/encoder.h
+ C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/gpio.h
 
 C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal.h:
 
@@ -204,5 +203,3 @@ C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/tim.h:
 C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/AS4047D.h:
 
 C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/gpio.h:
-
-C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/encoder.h:

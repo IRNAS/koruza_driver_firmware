@@ -92,7 +92,7 @@ uint16_t AS5047D_Read(GPIO_TypeDef* CS_GPIO_Port, uint16_t CS_GPIO_Pin, uint16_t
 	return data;
 }
 
-void AS5047D_Check_Transmission_Error(void)
+void AS5047D_Check_Transmission_Error(encoder_as5047_t *encoder)
 {
 	/** Check if transmission error **/
 	if(AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_ERRFL) != 0)
@@ -101,7 +101,7 @@ void AS5047D_Check_Transmission_Error(void)
 	}
 }
 
-void AS5047D_SetZero(void)
+void AS5047D_SetZero(encoder_as5047_t *encoder)
 {
 	/** Check diagnostics reg **/
 	uint16_t DIAAGC = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_DIAAGC);
@@ -122,7 +122,7 @@ void AS5047D_SetZero(void)
 	//AS5047D_Check_Transmission_Error();
 }
 
-uint16_t AS5047D_GetZero(void)
+uint16_t AS5047D_GetZero(encoder_as5047_t *encoder)
 {
 	uint16_t ZPOSM = 0;
 	uint16_t ZPOSL = 0;
@@ -135,7 +135,7 @@ uint16_t AS5047D_GetZero(void)
 	return (((ZPOSM << 6) & 0x3FC0) | (ZPOSL & 0x003F));
 }
 
-uint8_t AS5047D_Get_AGC_Value(void)
+uint8_t AS5047D_Get_AGC_Value(encoder_as5047_t *encoder)
 {
 	/** Read diagnostics reg **/
 	uint16_t DIAAGC = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_DIAAGC);
@@ -143,68 +143,54 @@ uint8_t AS5047D_Get_AGC_Value(void)
 	return (uint8_t)((DIAAGC >> 8) & 0x00FF);
 }
 
-void AS5047D_Init(void)
+void AS5047D_Init(encoder_as5047_t *encoder)
 {
 	/* Initiaize AS4047D */
-	AS5047D_Write(AS4047D_CS1_Port, AS4047D_CS1_Pin , AS4047D_SETTINGS1, 0b00000101);
+	AS5047D_Write(encoder->CS_port, encoder->CS_pin, AS4047D_SETTINGS1, 0b00000101);
 	//AS5047D_Check_Transmission_Error();
-	AS5047D_Write(AS4047D_CS1_Port, AS4047D_CS1_Pin , AS4047D_SETTINGS2, 0b00000000);
+	AS5047D_Write(encoder->CS_port, encoder->CS_pin, AS4047D_SETTINGS2, 0b00000000);
 	//AS5047D_Check_Transmission_Error();
 }
 
-uint16_t AS5047D_Get_CORDICMAG_Value(void)
+uint16_t AS5047D_Get_CORDICMAG_Value(encoder_as5047_t *encoder)
 {
-	uint16_t CORDICMAG = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_CORDICMAG);
+	uint16_t CORDICMAG = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_CORDICMAG);
 	//AS5047D_Check_Transmission_Error();
 	return CORDICMAG;
 }
 
-uint16_t AS5047D_Get_ANGLEUNC_Value(void)
+uint16_t AS5047D_Get_ANGLEUNC_Value(encoder_as5047_t *encoder)
 {
-	uint16_t ANGLEUNC = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_ANGLEUNC);
+	uint16_t ANGLEUNC = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_ANGLEUNC);
 	//AS5047D_Check_Transmission_Error();
 	return ANGLEUNC;
 }
 
-uint16_t AS5047D_Get_ANGLECOM_Value(void)
+uint16_t AS5047D_Get_ANGLECOM_Value(encoder_as5047_t *encoder)
 {
-	uint16_t ANGLECOM = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_ANGLECOM);
+	uint16_t ANGLECOM = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_ANGLECOM);
 	//AS5047D_Check_Transmission_Error();
 	return ANGLECOM;
 }
 
-float AS5047D_Get_True_Angle_Value(void)
+float AS5047D_Get_True_Angle_Value(encoder_as5047_t *encoder)
 {
-	return((float)AS5047D_Get_ANGLEUNC_Value() * 360.0f / 16383.0f);
+	return((float)AS5047D_Get_ANGLEUNC_Value(encoder) * 360.0f / 16383.0f);
 	//return((float)AS5047D_Get_ANGLECOM_Value() * 360.0f / 16383.0f);
 }
 
 void AS5047D_Get_All_Data(encoder_as5047_t *encoder){
-	if(encoder->encoder_num == 1){
-		encoder->ERRFL = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_ERRFL);
-		encoder->PROG = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_PROG);
-		encoder->DIAAGC = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_DIAAGC);
-		encoder->ANGLEUNC = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_ANGLEUNC);
-		encoder->NOP = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_NOP);
-		encoder->CORDICMAG = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_CORDICMAG);
-		encoder->ANGLECOM = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_ANGLECOM);
-		encoder->ZPOSM = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_ZPOSM);
-		encoder->ZPOSL = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_ZPOSL);
-		encoder->SETTINGS1 = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_SETTINGS1);
-		encoder->SETTINGS2 = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_SETTINGS2);
-		encoder->true_angle = AS5047D_Get_True_Angle_Value();
-	}else if(encoder->encoder_num == 2){
-		encoder->ERRFL = AS5047D_Read(AS4047D_CS2_Port, AS4047D_CS2_Pin, AS4047D_ERRFL);
-		encoder->PROG = AS5047D_Read(AS4047D_CS2_Port, AS4047D_CS2_Pin, AS4047D_PROG);
-		encoder->DIAAGC = AS5047D_Read(AS4047D_CS2_Port, AS4047D_CS2_Pin, AS4047D_DIAAGC);
-		encoder->ANGLEUNC = AS5047D_Read(AS4047D_CS2_Port, AS4047D_CS2_Pin, AS4047D_ANGLEUNC);
-		encoder->NOP = AS5047D_Read(AS4047D_CS2_Port, AS4047D_CS2_Pin, AS4047D_NOP);
-		encoder->CORDICMAG = AS5047D_Read(AS4047D_CS2_Port, AS4047D_CS2_Pin, AS4047D_CORDICMAG);
-		encoder->ANGLECOM = AS5047D_Read(AS4047D_CS2_Port, AS4047D_CS2_Pin, AS4047D_ANGLECOM);
-		encoder->ZPOSM = AS5047D_Read(AS4047D_CS2_Port, AS4047D_CS2_Pin, AS4047D_ZPOSM);
-		encoder->ZPOSL = AS5047D_Read(AS4047D_CS2_Port, AS4047D_CS2_Pin, AS4047D_ZPOSL);
-		encoder->SETTINGS1 = AS5047D_Read(AS4047D_CS2_Port, AS4047D_CS2_Pin, AS4047D_SETTINGS1);
-		encoder->SETTINGS2 = AS5047D_Read(AS4047D_CS2_Port, AS4047D_CS2_Pin, AS4047D_SETTINGS2);
-		encoder->true_angle = AS5047D_Get_True_Angle_Value();
-	}
+		encoder->ERRFL = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_ERRFL);
+		encoder->PROG = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_PROG);
+		encoder->DIAAGC = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_DIAAGC);
+		encoder->ANGLEUNC = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_ANGLEUNC);
+		encoder->NOP = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_NOP);
+		encoder->CORDICMAG = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_CORDICMAG);
+		encoder->ANGLECOM = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_ANGLECOM);
+		encoder->ZPOSM = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_ZPOSM);
+		encoder->ZPOSL = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_ZPOSL);
+		encoder->SETTINGS1 = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_SETTINGS1);
+		encoder->SETTINGS2 = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_SETTINGS2);
+		encoder->true_angle = AS5047D_Get_True_Angle_Value(encoder);
+
 }
