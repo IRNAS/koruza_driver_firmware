@@ -59,7 +59,9 @@ src/gpio.o: ../src/gpio.c \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal_pcd.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_ll_usb.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal_hcd.h
+ C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal_hcd.h \
+ C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/AS4047D.h \
+ C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/gpio.h
 
 C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/gpio.h:
 
@@ -182,3 +184,7 @@ C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm3
 C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal_pcd_ex.h:
 
 C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal_hcd.h:
+
+C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/AS4047D.h:
+
+C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/gpio.h:

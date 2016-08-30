@@ -37,6 +37,8 @@ char test1 = 0;
 /* Variable used to get converted value */
 __IO uint16_t uhADCxConvertedValue = 0;
 
+encoder_as5047_t encoder_x;
+encoder_as5047_t encoder_y;
 
 /* UART RX Interrupt callback routine */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
@@ -107,6 +109,18 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* AdcHandle) {
 	}
 }
 
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+	if(htim->Instance==TIM3){
+		/* Register dump */
+		AS5047D_Get_All_Data(&encoder_x);
+		AS5047D_Get_All_Data(&encoder_y);
+	}
+}
 
 int main(void){
 	/* MCU Configuration----------------------------------------------------------*/
@@ -123,6 +137,17 @@ int main(void){
 	MX_ADC1_Init();
 	MX_USART1_UART_Init();
 	MX_USART2_UART_Init();
+
+	MX_SPI2_Init();
+	MX_TIM3_Init();
+
+	/* Initialize AS4047D */
+	encoder_x.encoder_num = 1;
+	encoder_y.encoder_num = 2;
+	AS5047D_Init();
+	AS5047D_SetZero();
+
+	HAL_TIM_Base_MspInit(&TimHandle);
 
 	enum states state = IDLE;
 
@@ -188,6 +213,8 @@ int main(void){
 
 	uint8_t frame[1024];
 	ssize_t frame_size;
+
+
 
 #ifdef DEBUG_MODE
 	printf("Hello\r\nKoruza driver terminal \r\n");
@@ -334,10 +361,7 @@ int main(void){
 						printf("Entering bootloder mode.\n");
 #endif
 						/* Go to Bootloader mode, and whait for new firmware */
-						//JumpToBootLoader();
-
-						Set_motors_coordinates(&stepper_motor_x,  0, &stepper_motor_y, 1000, &stepper_motor_z, 1000);
-
+						JumpToBootLoader();
 						state = END_STATE;
 						break;
 				}
@@ -420,7 +444,17 @@ void SystemClock_Config(void)
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 
-
+/**
+ * @brief  SPI error callbacks
+ * @param  hspi: SPI handle
+ * @note   This example shows a simple way to report transfer error, and you can
+ *         add your own implementation.
+ * @retval None
+ */
+void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
+{
+	Error_Handler();
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.

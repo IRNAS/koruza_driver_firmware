@@ -1,14 +1,11 @@
 /**
   ******************************************************************************
-  * @file    Templates/Inc/stm32f4xx_it.h 
-  * @author  MCD Application Team
-  * @version V1.1.5
-  * @date    06-May-2016
-  * @brief   This file contains the headers of the interrupt handlers.
+  * File Name          : SPI.h
+  * Description        : This file provides code for the configuration
+  *                      of the SPI instances.
   ******************************************************************************
-  * @attention
   *
-  * <h2><center>&copy; COPYRIGHT(c) 2016 STMicroelectronics</center></h2>
+  * COPYRIGHT(c) 2016 STMicroelectronics
   *
   * Redistribution and use in source and binary forms, with or without modification,
   * are permitted provided that the following conditions are met:
@@ -34,41 +31,33 @@
   *
   ******************************************************************************
   */
-
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F4xx_IT_H
-#define __STM32F4xx_IT_H
-
+#ifndef __spi_H
+#define __spi_H
 #ifdef __cplusplus
  extern "C" {
-#endif 
+#endif
 
 /* Includes ------------------------------------------------------------------*/
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */
-extern DMA_HandleTypeDef hdma_adc1;
+#include "stm32f4xx_hal.h"
 
-void NMI_Handler(void);
-void HardFault_Handler(void);
-void MemManage_Handler(void);
-void BusFault_Handler(void);
-void UsageFault_Handler(void);
-void SVC_Handler(void);
-void DebugMon_Handler(void);
-void PendSV_Handler(void);
-void SysTick_Handler(void);
-void USART1_IRQHandler(void);
-void DMA2_Stream0_IRQHandler(void);
-void TIM1_BRK_TIM9_IRQHandler(void);
-void TIM3_IRQHandler(void);
-void SPI2_IRQHandler(void);
+extern SPI_HandleTypeDef hspi2;
+
+extern void Error_Handler(void);
+
+void MX_SPI2_Init(void);
 
 #ifdef __cplusplus
 }
 #endif
+#endif /*__ spi_H */
 
-#endif /* __STM32F4xx_IT_H */
+/**
+  * @}
+  */
+
+/**
+  * @}
+  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -26,6 +26,10 @@
 extern UART_HandleTypeDef huart1;
 DMA_HandleTypeDef hdma_adc1;
 
+extern TIM_HandleTypeDef    TimHandle;
+extern SPI_HandleTypeDef hspi2;
+extern TIM_HandleTypeDef htim9;
+
 /******************************************************************************/
 /*            	  	    Processor Exceptions Handlers                         */
 /******************************************************************************/
@@ -62,5 +66,31 @@ void DMA2_Stream0_IRQHandler(void)
 
   HAL_DMA_IRQHandler(&hdma_adc1);
 
+}
+
+/**
+* @brief This function handles TIM1 break interrupt and TIM9 global interrupt.
+*/
+void TIM1_BRK_TIM9_IRQHandler(void)
+{
+	HAL_TIM_IRQHandler(&htim9);
+}
+
+/**
+  * @brief  This function handles TIM interrupt request.
+  * @param  None
+  * @retval None
+  */
+void TIM3_IRQHandler(void)
+{
+	HAL_TIM_IRQHandler(&TimHandle);
+}
+
+/**
+* @brief This function handles SPI2 global interrupt.
+*/
+void SPI2_IRQHandler(void)
+{
+  HAL_SPI_IRQHandler(&hspi2);
 }
 

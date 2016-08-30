@@ -7,6 +7,10 @@
 
 #include "message.h"
 #include "bootloader.h"
+#include "spi.h"
+#include "tim.h"
+#include "AS4047D.h"
+#include "encoder.h"
 
 #ifndef MAIN_H_
 #define MAIN_H_
@@ -33,9 +37,6 @@ enum states{
 
 void SystemClock_Config(void);
 void Error_Handler(void);
-
-
-void Init_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z);
 
 
 #endif /* MAIN_H_ */

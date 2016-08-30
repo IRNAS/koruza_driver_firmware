@@ -5,7 +5,7 @@
  *      Author: vojis
  */
 #include "gpio.h"
-
+#include "AS4047D.h"
 
 
 
@@ -19,7 +19,7 @@
 void MX_GPIO_Init(void)
 {
 
-  //GPIO_InitTypeDef GPIO_InitStruct;
+  GPIO_InitTypeDef GPIO_InitStruct;
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
@@ -46,4 +46,23 @@ void MX_GPIO_Init(void)
   /*
   HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
 */
+/*Configure GPIO pin Output Level */
+HAL_GPIO_WritePin(AS4047D_CS1_Port, AS4047D_CS1_Pin, GPIO_PIN_RESET);
+
+/*Configure GPIO pin Output Level */
+HAL_GPIO_WritePin(AS4047D_CS2_Port, AS4047D_CS2_Pin, GPIO_PIN_RESET);
+
+/*Configure GPIO pin : PB12 */
+GPIO_InitStruct.Pin = AS4047D_CS1_Pin;
+GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+GPIO_InitStruct.Pull = GPIO_PULLUP;
+GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+HAL_GPIO_Init(AS4047D_CS1_Port, &GPIO_InitStruct);
+
+/*Configure GPIO pin : PC6 */
+GPIO_InitStruct.Pin = AS4047D_CS2_Pin;
+GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+GPIO_InitStruct.Pull = GPIO_PULLUP;
+GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+HAL_GPIO_Init(AS4047D_CS2_Port, &GPIO_InitStruct);
 }

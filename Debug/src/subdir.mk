@@ -4,57 +4,69 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../src/AS4047D.c \
 ../src/AccelStepper.c \
 ../src/adc.c \
 ../src/bootloader.c \
 ../src/crc32.c \
 ../src/dma.c \
+../src/encoder.c \
 ../src/frame.c \
 ../src/gpio.c \
 ../src/inet.c \
 ../src/main.c \
 ../src/message.c \
+../src/spi.c \
 ../src/stepper.c \
 ../src/stm32f4xx_hal_msp.c \
 ../src/stm32f4xx_it.c \
 ../src/syscalls.c \
 ../src/system_stm32f4xx.c \
+../src/tim.c \
 ../src/uart.c 
 
 OBJS += \
+./src/AS4047D.o \
 ./src/AccelStepper.o \
 ./src/adc.o \
 ./src/bootloader.o \
 ./src/crc32.o \
 ./src/dma.o \
+./src/encoder.o \
 ./src/frame.o \
 ./src/gpio.o \
 ./src/inet.o \
 ./src/main.o \
 ./src/message.o \
+./src/spi.o \
 ./src/stepper.o \
 ./src/stm32f4xx_hal_msp.o \
 ./src/stm32f4xx_it.o \
 ./src/syscalls.o \
 ./src/system_stm32f4xx.o \
+./src/tim.o \
 ./src/uart.o 
 
 C_DEPS += \
+./src/AS4047D.d \
 ./src/AccelStepper.d \
 ./src/adc.d \
 ./src/bootloader.d \
 ./src/crc32.d \
 ./src/dma.d \
+./src/encoder.d \
 ./src/frame.d \
 ./src/gpio.d \
 ./src/inet.d \
 ./src/main.d \
 ./src/message.d \
+./src/spi.d \
 ./src/stepper.d \
 ./src/stm32f4xx_hal_msp.d \
 ./src/stm32f4xx_it.d \
 ./src/syscalls.d \
 ./src/system_stm32f4xx.d \
+./src/tim.d \
 ./src/uart.d 
 
 
