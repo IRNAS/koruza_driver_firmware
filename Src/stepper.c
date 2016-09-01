@@ -12,8 +12,12 @@
 #include <stdio.h>
 
 tlv_motor_position_t current_motor_position;
+/* Stepper motors struts */
+Stepper_t stepper_motor_x;
+Stepper_t stepper_motor_y;
+Stepper_t stepper_motor_z;
 
-void Init_koruza_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z){
+void koruza_motors_init(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z){
 
 	/*## Initialize X axis stepper. ###*/
 	InitStepper(stepper_x, HALF4WIRE, MOTOR_PIN_X_4, MOTOR_PORT_X_4, MOTOR_PIN_X_3, MOTOR_PORT_X_3, MOTOR_PIN_X_2, MOTOR_PORT_X_2, MOTOR_PIN_X_1, MOTOR_PORT_X_1, 1);
@@ -134,4 +138,8 @@ void Set_home_coordinates(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t 
 	current_motor_position.x = 0;
 	current_motor_position.y = 0;
 	current_motor_position.z = 0;
+}
+
+void koruza_homing(void){
+
 }

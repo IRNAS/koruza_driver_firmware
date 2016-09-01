@@ -11,6 +11,9 @@
 #define STEPPER_H_
 
 extern tlv_motor_position_t current_motor_position;
+extern Stepper_t stepper_motor_x;
+extern Stepper_t stepper_motor_y;
+extern Stepper_t stepper_motor_z;
 
 #define MOTOR_PIN_X_1 GPIO_PIN_13
 #define MOTOR_PIN_X_2 GPIO_PIN_14
@@ -54,7 +57,7 @@ extern tlv_motor_position_t current_motor_position;
  * @param Stepper Z struct address
  * @return none
  */
-void Init_koruza_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z);
+void koruza_motors_init(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z);
 
 /**
  * Calculates how much steps motors need to be moved
@@ -74,5 +77,7 @@ void Set_motor_coordinate(Stepper_t *stepper, long coordinate);
 void Set_motors_coordinates(Stepper_t *stepper_x, int coordinate_x, Stepper_t *stepper_y, int coordinate_y, Stepper_t *stepper_z, int coordinate_z);
 
 void Set_home_coordinates(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z);
+
+void koruza_homing(void);
 
 #endif /* STEPPER_H_ */

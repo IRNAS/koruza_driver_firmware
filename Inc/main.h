@@ -10,6 +10,7 @@
 #include "spi.h"
 #include "tim.h"
 #include "AS4047D.h"
+#include "encoder.h"
 
 #ifndef MAIN_H_
 #define MAIN_H_
@@ -25,13 +26,13 @@
 /* Uncomment to get debug messages in the UART2 terminal*/
 #define DEBUG_MODE
 
-enum states{
-	IDLE,
-	MESSAGE_PARSE,
-	ACTICVE_STATE,
-	ERROR_STATE,
-	END_STATE
-};
+typedef enum states{
+	IDLE = 1,
+	MESSAGE_PARSE = 2,
+	ACTICVE_STATE = 3,
+	ERROR_STATE = 4,
+	END_STATE = 5
+}driver_state_t;
 
 
 void SystemClock_Config(void);

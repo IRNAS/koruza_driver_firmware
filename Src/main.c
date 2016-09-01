@@ -37,8 +37,6 @@ char test1 = 0;
 /* Variable used to get converted value */
 __IO uint16_t uhADCxConvertedValue = 0;
 
-encoder_as5047_t encoder_x;
-encoder_as5047_t encoder_y;
 
 /* UART RX Interrupt callback routine */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
@@ -116,9 +114,10 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* AdcHandle) {
   */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	if(htim->Instance==TIM3){
-		/* Register dump */
-		AS5047D_Get_All_Data(&encoder_x);
-		AS5047D_Get_All_Data(&encoder_y);
+		/* Get angles form encoder X and encoder Y */
+		koruza_encoders_get_angles(&koruza_encoders);
+		/* Calculate absolute position of encoders */
+		koruza_encoders_absolute_position(&koruza_encoders);
 	}
 }
 
@@ -140,29 +139,22 @@ int main(void){
 
 	MX_SPI2_Init();
 	MX_TIM3_Init();
-
-	/* Initialize AS4047D */
-	encoder_x.encoder_num = 1;
-	encoder_y.encoder_num = 2;
-	encoder_x.CS_port = AS4047D_CS1_Port;
-	encoder_x.CS_pin = AS4047D_CS1_Pin;
-	AS5047D_Init(&encoder_x);
-	AS5047D_SetZero(&encoder_x);
-
 	HAL_TIM_Base_MspInit(&TimHandle);
-while(1){
-	HAL_Delay(1000);
-	printf("\nAngle: %f", encoder_x.true_angle);
-}
-	enum states state = IDLE;
 
-	/* Stepper motors struts */
-	Stepper_t stepper_motor_x;
-	Stepper_t stepper_motor_y;
-	Stepper_t stepper_motor_z;
+	koruza_encoders_init(&koruza_encoders, CONNECTED, NOT_CONNECTED);
+/*
+while(1){
+	HAL_Delay(5000);
+	printf("\nAngle X: %f", koruza_encoders.encoder_x.true_angle);
+	printf("\nAngle Y: %f", koruza_encoders.encoder_y.true_angle);
+}
+*/
+	driver_state_t state = IDLE;
+
+
 
 	/* Stepper motors initialization */
-	Init_koruza_motors(&stepper_motor_x, &stepper_motor_y, &stepper_motor_z);
+	koruza_motors_init(&stepper_motor_x, &stepper_motor_y, &stepper_motor_z);
 
 #ifdef DEBUG_MODE
 	/* Generate message - test message */

@@ -25,7 +25,6 @@ typedef struct{
 	uint16_t SETTINGS1;
 	uint16_t SETTINGS2;
 	float    true_angle;
-	uint8_t  encoder_num;
 	uint16_t CS_pin;
 	GPIO_TypeDef *CS_port;
 }encoder_as5047_t;
@@ -50,11 +49,6 @@ typedef struct{
 #define AS4047D_RD 0x4000    // bit 14 = "1" is Read + parity even
 #define AS4047D_WR 0x3FFF    // bit 14 = "0" is Write
 
-#define AS4047D_CS1_Port GPIOB
-#define AS4047D_CS1_Pin GPIO_PIN_12
-
-#define AS4047D_CS2_Port GPIOC
-#define AS4047D_CS2_Pin GPIO_PIN_6
 
 extern void AS5047D_Init(encoder_as5047_t *encoder);
 

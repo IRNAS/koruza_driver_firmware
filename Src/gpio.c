@@ -5,7 +5,7 @@
  *      Author: vojis
  */
 #include "gpio.h"
-#include "AS4047D.h"
+#include "encoder.h"
 
 
 

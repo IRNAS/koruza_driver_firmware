@@ -95,7 +95,7 @@ uint16_t AS5047D_Read(GPIO_TypeDef* CS_GPIO_Port, uint16_t CS_GPIO_Pin, uint16_t
 void AS5047D_Check_Transmission_Error(encoder_as5047_t *encoder)
 {
 	/** Check if transmission error **/
-	if(AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_ERRFL) != 0)
+	if(AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_ERRFL) != 0)
 	{
 		Error_Handler();
 	}
@@ -104,7 +104,7 @@ void AS5047D_Check_Transmission_Error(encoder_as5047_t *encoder)
 void AS5047D_SetZero(encoder_as5047_t *encoder)
 {
 	/** Check diagnostics reg **/
-	uint16_t DIAAGC = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_DIAAGC);
+	uint16_t DIAAGC = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_DIAAGC);
 	//AS5047D_Check_Transmission_Error();
 	//if((AS5047D_Check_MAG_TooLow(DIAAGC)) || (AS5047D_Check_MAG_TooHigh(DIAAGC)) || (AS5047D_Check_CORDIC_Overflow(DIAAGC)) || !(AS5047D_Check_LF_finished(DIAAGC)))
 	//{
@@ -112,13 +112,13 @@ void AS5047D_SetZero(encoder_as5047_t *encoder)
 	//}
 
 	/** Get uncompensated angle reg value **/
-	uint16_t ANGLEUNC = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_ANGLEUNC);
+	uint16_t ANGLEUNC = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_ANGLEUNC);
 	//AS5047D_Check_Transmission_Error();
 
 	/** Write to zero pos regs **/
-	AS5047D_Write(AS4047D_CS1_Port, AS4047D_CS1_Pin , AS4047D_ZPOSM, (ANGLEUNC >> 6) & 0x00FF);
+	AS5047D_Write(encoder->CS_port, encoder->CS_pin, AS4047D_ZPOSM, (ANGLEUNC >> 6) & 0x00FF);
 	//AS5047D_Check_Transmission_Error();
-	AS5047D_Write(AS4047D_CS1_Port, AS4047D_CS1_Pin , AS4047D_ZPOSL, ANGLEUNC & 0x003F);
+	AS5047D_Write(encoder->CS_port, encoder->CS_pin, AS4047D_ZPOSL, ANGLEUNC & 0x003F);
 	//AS5047D_Check_Transmission_Error();
 }
 
@@ -127,9 +127,9 @@ uint16_t AS5047D_GetZero(encoder_as5047_t *encoder)
 	uint16_t ZPOSM = 0;
 	uint16_t ZPOSL = 0;
 
-	ZPOSM = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_ZPOSM);
+	ZPOSM = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_ZPOSM);
 	//AS5047D_Check_Transmission_Error();
-	ZPOSL = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_ZPOSL);
+	ZPOSL = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_ZPOSL);
 	//AS5047D_Check_Transmission_Error();
 
 	return (((ZPOSM << 6) & 0x3FC0) | (ZPOSL & 0x003F));
@@ -138,7 +138,7 @@ uint16_t AS5047D_GetZero(encoder_as5047_t *encoder)
 uint8_t AS5047D_Get_AGC_Value(encoder_as5047_t *encoder)
 {
 	/** Read diagnostics reg **/
-	uint16_t DIAAGC = AS5047D_Read(AS4047D_CS1_Port, AS4047D_CS1_Pin, AS4047D_DIAAGC);
+	uint16_t DIAAGC = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_DIAAGC);
 	//AS5047D_Check_Transmission_Error();
 	return (uint8_t)((DIAAGC >> 8) & 0x00FF);
 }
