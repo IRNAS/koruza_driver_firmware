@@ -33,7 +33,7 @@ typedef struct{
 	long last_angle;
 	long new_angle;
 	long abs_angle;
-	uint8_t turn_cnt;
+	int turn_cnt;
 }koruza_encoder_t;
 
 typedef struct{
@@ -48,5 +48,6 @@ void koruza_encoders_init(koruza_encoders_t *encoders, encoder_connected_t encod
 void koruza_encoders_get_angles(koruza_encoders_t *encoders);
 void koruza_encoders_get_all_data(koruza_encoders_t *encoders);
 void koruza_encoders_absolute_position(koruza_encoders_t *encoders);
+int  koruza_encoder_end(koruza_encoder_t encoder);
 
 #endif /* ENCODER_H_ */

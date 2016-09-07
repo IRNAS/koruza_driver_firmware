@@ -118,6 +118,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 		koruza_encoders_get_angles(&koruza_encoders);
 		/* Calculate absolute position of encoders */
 		koruza_encoders_absolute_position(&koruza_encoders);
+		/* check stepper motor error */
+
 	}
 }
 
@@ -138,23 +140,24 @@ int main(void){
 	MX_USART2_UART_Init();
 
 	MX_SPI2_Init();
-	MX_TIM3_Init();
-	HAL_TIM_Base_MspInit(&TimHandle);
+
 
 	koruza_encoders_init(&koruza_encoders, CONNECTED, NOT_CONNECTED);
+
+	MX_TIM3_Init();
+	HAL_TIM_Base_MspInit(&TimHandle);
 /*
 while(1){
 	HAL_Delay(5000);
-	printf("\nAngle X: %f", koruza_encoders.encoder_x.true_angle);
-	printf("\nAngle Y: %f", koruza_encoders.encoder_y.true_angle);
+	printf("\nAngle X: %ld", koruza_encoders.encoder_x.abs_angle);
+	printf("\nAngle Y: %ld", koruza_encoders.encoder_y.abs_angle);
 }
 */
 	driver_state_t state = IDLE;
 
 
-
 	/* Stepper motors initialization */
-	koruza_motors_init(&stepper_motor_x, &stepper_motor_y, &stepper_motor_z);
+	koruza_motors_init(&koruza_steppers, STEPPER_CONNECTED, STEPPER_CONNECTED, STEPPER_CONNECTED);
 
 #ifdef DEBUG_MODE
 	/* Generate message - test message */
@@ -197,10 +200,6 @@ while(1){
 	/* Response message */
 	message_t msg_responce;
 
-	tlv_motor_position_t next_motor_position;
-	next_motor_position.x = 0;
-	next_motor_position.y = 0;
-	next_motor_position.z = 0;
 
 	/* Move steppers for, from absolute position */
 	tlv_motor_position_t move_steppers;
@@ -235,7 +234,7 @@ while(1){
 		test = 0;
 
 		/* Move steppers. */
-		run_motors(&stepper_motor_x, &stepper_motor_y, &stepper_motor_z);
+		run_motors(&koruza_steppers);
 
 		switch(state){
 			case IDLE:
@@ -324,17 +323,31 @@ while(1){
 								parsed_position.x, parsed_position.y, parsed_position.z
 							  );
 #endif
-							/* Calculate number of move steps to new position */
-							move_steppers = Claculate_motors_move_steps(&parsed_position, &current_motor_position);
-							/* Save new motor position */
-							next_motor_position.x = parsed_position.x;
-							next_motor_position.y = parsed_position.y;
-							next_motor_position.z = parsed_position.z;
-							/* Move motors to sent position */
-							move(&stepper_motor_x, (long)move_steppers.x);
-							move(&stepper_motor_y, (long)move_steppers.y);
-							move(&stepper_motor_z, (long)move_steppers.z);
+							/* Koruza motors X and Y homing*/
+							/*
+							if(parsed_position.x == -1 && parsed_position.y == -1 && parsed_position.z == -1){
+								parsed_position.x = HOME_X_COORDINATE;
+								parsed_position.y = HOME_Y_COORDINATE;
+								parsed_position.z = 0;
+								/* Calculate number of move steps to new position */
+							/*	move_steppers = Claculate_motors_move_steps(&parsed_position, &current_motor_position);
 
+								/* Move motors to homing position */
+							/*	move(&koruza_steppers.stepper_x.stepper, (long)move_steppers.x);
+								move(&koruza_steppers.stepper_y.stepper, (long)move_steppers.y);
+								move(&koruza_steppers.stepper_z.stepper, (long)move_steppers.z);
+
+							}*/
+							/* Move Koruza motors to received coordinates*/
+							//else{
+								/* Calculate number of move steps to new position */
+								move_steppers = Claculate_motors_move_steps(&parsed_position, &current_motor_position);
+
+								/* Move motors to sent position */
+								move(&koruza_steppers.stepper_x.stepper, (long)move_steppers.x);
+								move(&koruza_steppers.stepper_y.stepper, (long)move_steppers.y);
+								move(&koruza_steppers.stepper_z.stepper, (long)move_steppers.z);
+							//}
 
 
 							state = END_STATE;

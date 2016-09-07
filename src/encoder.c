@@ -88,3 +88,7 @@ void koruza_encoders_absolute_position(koruza_encoders_t *encoders){
 	encoders->encoder_y.last_angle = encoders->encoder_y.new_angle;
 }
 
+int  koruza_encoder_end(koruza_encoder_t encoder){
+	/*check if the ecoder */
+	//encoder.abs_angle
+}

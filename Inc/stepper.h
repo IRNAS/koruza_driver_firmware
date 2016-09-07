@@ -11,9 +11,27 @@
 #define STEPPER_H_
 
 extern tlv_motor_position_t current_motor_position;
-extern Stepper_t stepper_motor_x;
-extern Stepper_t stepper_motor_y;
-extern Stepper_t stepper_motor_z;
+//extern Stepper_t stepper_motor_x;
+//extern Stepper_t stepper_motor_y;
+//extern Stepper_t stepper_motor_z;
+
+typedef enum{
+	STEPPER_NOT_CONNECTED = 0,
+	STEPPER_CONNECTED = 1,
+}stepper_connected_t;
+
+typedef struct{
+	Stepper_t stepper;
+	stepper_connected_t encoder_connected;
+}koruza_stepper_t;
+
+typedef struct{
+	koruza_stepper_t stepper_x;
+	koruza_stepper_t stepper_y;
+	koruza_stepper_t stepper_z;
+}koruza_steppers_t;
+
+extern koruza_steppers_t koruza_steppers;
 
 #define MOTOR_PIN_X_1 GPIO_PIN_13
 #define MOTOR_PIN_X_2 GPIO_PIN_14
@@ -47,7 +65,8 @@ extern Stepper_t stepper_motor_z;
 #define MOTOR_PORT_Z_3 GPIOA
 #define MOTOR_PORT_Z_4 GPIOA
 
-
+#define HOME_X_COORDINATE 50000
+#define HOME_Y_COORDINATE HOME_X_COORDINATE
 /**
  * Initializes Koruza driver steppers.
  * This function should be called when program is in initialization
@@ -57,7 +76,7 @@ extern Stepper_t stepper_motor_z;
  * @param Stepper Z struct address
  * @return none
  */
-void koruza_motors_init(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z);
+void koruza_motors_init(koruza_steppers_t *steppers, stepper_connected_t stepper_con_x, stepper_connected_t stepper_con_y, stepper_connected_t stepper_con_z);
 
 /**
  * Calculates how much steps motors need to be moved
@@ -68,16 +87,16 @@ void koruza_motors_init(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *s
  */
 tlv_motor_position_t Claculate_motors_move_steps(tlv_motor_position_t *new_motor_position, tlv_motor_position_t *current_motor_position);
 
-void run_motors(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z);
+void run_motors(koruza_steppers_t *steppers);
 
 uint8_t run_motor(Stepper_t *stepper, int32_t *location, int min_pin, int max_pin);
 
-void Set_motor_coordinate(Stepper_t *stepper, long coordinate);
+void set_motor_coordinate(Stepper_t *stepper, long coordinate);
 
-void Set_motors_coordinates(Stepper_t *stepper_x, int coordinate_x, Stepper_t *stepper_y, int coordinate_y, Stepper_t *stepper_z, int coordinate_z);
+void set_motors_coordinates(koruza_steppers_t *steppers, int coordinate_x, int coordinate_y, int coordinate_z);
 
-void Set_home_coordinates(Stepper_t *stepper_x, Stepper_t *stepper_y, Stepper_t *stepper_z);
+void set_home_coordinates(koruza_steppers_t *steppers);
 
-void koruza_homing(void);
+void koruza_homing(koruza_steppers_t *steppers);
 
 #endif /* STEPPER_H_ */
