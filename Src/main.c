@@ -149,10 +149,15 @@ int main(void){
 /*
 while(1){
 	HAL_Delay(5000);
-	printf("\nAngle X: %ld", koruza_encoders.encoder_x.abs_angle);
-	printf("\nAngle Y: %ld", koruza_encoders.encoder_y.abs_angle);
-}
-*/
+	if(koruza_encoders.encoder_x.turn_cnt >= 0){
+		printf("\nAngle X: %ld", koruza_encoders.encoder_x.abs_angle);
+	}
+	else{
+		printf("\nAngle X: -%ld", koruza_encoders.encoder_x.abs_angle);
+	}
+	//printf("\nAngle Y: %ld", koruza_encoders.encoder_y.abs_angle);
+}*/
+
 	driver_state_t state = IDLE;
 
 
@@ -164,9 +169,9 @@ while(1){
 	message_t msg;
 	message_init(&msg);
 	//message_tlv_add_command(&msg, COMMAND_MOVE_MOTOR);
-	message_tlv_add_command(&msg, COMMAND_REBOOT);
-	tlv_motor_position_t position = {1000, 1000, 1000};
-	//message_tlv_add_motor_position(&msg, &position);
+	message_tlv_add_command(&msg, COMMAND_MOVE_MOTOR);
+	tlv_motor_position_t position = {50000, 0, 0};
+	message_tlv_add_motor_position(&msg, &position);
 	message_tlv_add_checksum(&msg);
 
 	uint8_t test_frame[1024];
@@ -232,7 +237,14 @@ while(1){
 	/* Infinite loop */
 	while(True){
 		test = 0;
-
+#ifdef DEBUG_MODE
+		if(koruza_encoders.encoder_x.turn_cnt >= 0){
+			printf("\nAngle X: %ld", koruza_encoders.encoder_x.abs_angle);
+		}
+		else{
+			printf("\nAngle X: -%ld", koruza_encoders.encoder_x.abs_angle);
+		}
+#endif
 		/* Move steppers. */
 		run_motors(&koruza_steppers);
 
@@ -324,32 +336,33 @@ while(1){
 							  );
 #endif
 							/* Koruza motors X and Y homing*/
-							/*
 							if(parsed_position.x == -1 && parsed_position.y == -1 && parsed_position.z == -1){
+								//TODO: add if the encoders are not connected, just send the motors to specified location
+								koruza_steppers.mode = STEPPERS_HOMING_MODE;
+#ifdef DEBUG_MODE
+								printf("\nStart homing routin");
+#endif
 								parsed_position.x = HOME_X_COORDINATE;
 								parsed_position.y = HOME_Y_COORDINATE;
 								parsed_position.z = 0;
 								/* Calculate number of move steps to new position */
-							/*	move_steppers = Claculate_motors_move_steps(&parsed_position, &current_motor_position);
-
+								move_steppers = Claculate_motors_move_steps(&parsed_position, &current_motor_position);
 								/* Move motors to homing position */
-							/*	move(&koruza_steppers.stepper_x.stepper, (long)move_steppers.x);
+								move(&koruza_steppers.stepper_x.stepper, (long)move_steppers.x);
 								move(&koruza_steppers.stepper_y.stepper, (long)move_steppers.y);
 								move(&koruza_steppers.stepper_z.stepper, (long)move_steppers.z);
 
-							}*/
+							}
 							/* Move Koruza motors to received coordinates*/
-							//else{
+							else{
+								koruza_steppers.mode = STEPPERS_IDLE_MODE;
 								/* Calculate number of move steps to new position */
 								move_steppers = Claculate_motors_move_steps(&parsed_position, &current_motor_position);
-
 								/* Move motors to sent position */
 								move(&koruza_steppers.stepper_x.stepper, (long)move_steppers.x);
 								move(&koruza_steppers.stepper_y.stepper, (long)move_steppers.y);
 								move(&koruza_steppers.stepper_z.stepper, (long)move_steppers.z);
-							//}
-
-
+							}
 							state = END_STATE;
 						}
 

@@ -25,6 +25,8 @@ void koruza_motors_init(koruza_steppers_t *steppers, stepper_connected_t stepper
 	koruza_steppers.stepper_y.encoder_connected = stepper_con_y;
 	koruza_steppers.stepper_z.encoder_connected = stepper_con_z;
 
+	koruza_steppers.mode = STEPPERS_IDLE_MODE;
+
 	/*## Initialize X axis stepper. ###*/
 	if(steppers->stepper_x.encoder_connected == STEPPER_CONNECTED){
 		InitStepper(&steppers->stepper_x.stepper, HALF4WIRE, MOTOR_PIN_X_4, MOTOR_PORT_X_4, MOTOR_PIN_X_3, MOTOR_PORT_X_3, MOTOR_PIN_X_2, MOTOR_PORT_X_2, MOTOR_PIN_X_1, MOTOR_PORT_X_1, 1);
@@ -85,33 +87,64 @@ tlv_motor_position_t Claculate_motors_move_steps(tlv_motor_position_t *new_motor
 }
 
 void run_motors(koruza_steppers_t *steppers){
+	koruza_stepper_mode moving_x;
+	koruza_stepper_mode moving_y;
 	//TODO: pogledaj da li stvarno trebaju ostali argumenti
-	run_motor(&steppers->stepper_x.stepper, &current_motor_position.x, 1, 2);
-	run_motor(&steppers->stepper_y.stepper, &current_motor_position.y, 1, 2);
-	run_motor(&steppers->stepper_z.stepper, &current_motor_position.z, 1, 2);
+	/* Koruza stepper motors moving to new sent coordinates */
+	if(steppers->mode == STEPPERS_IDLE_MODE){
+		run_motor(&steppers->stepper_x.stepper, &current_motor_position.x, 1, 2);
+		run_motor(&steppers->stepper_y.stepper, &current_motor_position.y, 1, 2);
+		run_motor(&steppers->stepper_z.stepper, &current_motor_position.z, 1, 2);
+	}
+	/* Koruza stepper motors doing the homing routin */
+	else{
+		moving_x = run_motor(&steppers->stepper_x.stepper, &current_motor_position.x, 1, 2);
+		moving_y = run_motor(&steppers->stepper_y.stepper, &current_motor_position.y, 1, 2);
+		/* Both Koruza motors reached the maximum or minimum movement */
+		if((moving_x == STEPPER_MINIMUM_REACHED || moving_x == STEPPER_MAXIMUM_REACHED) && (moving_y == STEPPER_MINIMUM_REACHED || moving_y == STEPPER_MAXIMUM_REACHED)){
+			/* Move motors to the center of the picture */
+			move(&steppers->stepper_x.stepper, STEPPER_X_CENTER);
+			move(&steppers->stepper_y.stepper, STEPPER_Y_CENTER);
+		}
+		/* Center of the picture reached */
+		else if(moving_x == STEPPER_IDLE && moving_y == STEPPER_IDLE){
+			/* Set the zero coordinates */
+			set_home_coordinates(steppers);
+			/* Set the Koruza steppers mode to IDLE*/
+			steppers->mode = STEPPERS_IDLE_MODE;
+		}
+	}
 
 }
 
-uint8_t run_motor(Stepper_t *stepper, int32_t *location, int min_pin, int max_pin){
+koruza_stepper_mode run_motor(Stepper_t *stepper, int32_t *location, int min_pin, int max_pin){
 	// this function runs the stepper motor
 	// returns status of limits reached and motion stopped
-	// 0x00 - idle
-	// 0x01 - moving
-	// 0x1* - minimum reached
-	// 0x2* - maximum reached
-	// 0xff - error
+	// 1 - idle
+	// 2 - moving
+	// 3 - minimum reached
+	// 4 - maximum reached
+	// 5 - error
 
-	uint8_t return_data = 0x00;
-
+	koruza_stepper_mode return_data = STEPPER_IDLE;
+	//TODO: proveri ovaj deo koda
 	/* Negative direction end reached */
-	//if(koruza_encoder_end()){
-
-	//}
-
+	/*if(koruza_encoder_end()){
+		if(targetPosition(stepper) < currentPosition(stepper)){
+			stop(stepper);
+			moveTo(currentPosition(stepper));
+			return_data = STEPPER_MINIMUM_REACHED;
+		}
+	}
+*/
 	/* Positive direction end reached */
-	//if(koruza_encoder_end()){
-
-	//}
+	/*if(koruza_encoder_end()){
+		if(targetPosition(stepper) > currentPosition(stepper)){
+			stop(stepper);
+			moveTo(currentPosition(stepper));
+			return_data = STEPPER_MAXIMUM_REACHED;
+		}
+	//}*/
 	// motor movement
 	// motor pins are enabled only while moving to conserve power
 	if(currentPosition(stepper) != targetPosition(stepper)){
@@ -122,7 +155,7 @@ uint8_t run_motor(Stepper_t *stepper, int32_t *location, int min_pin, int max_pi
 		*location = (int32_t)currentPosition(stepper);
 
 		// return moving status
-		return_data=(return_data|0x01);
+		return_data=STEPPER_MOVING;
 
 		//reset timeout write for storing position
 		//timeout_write_flash=millis()+30000;
@@ -131,7 +164,7 @@ uint8_t run_motor(Stepper_t *stepper, int32_t *location, int min_pin, int max_pi
 	else{
 		stop(stepper);
 		disableOutputs(stepper);
-		return_data=(return_data|0x00);
+		return_data=STEPPER_IDLE;
 	}
 	return return_data;
 }

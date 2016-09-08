@@ -11,7 +11,8 @@
 #include "AS4047D.h"
 #include "gpio.h"
 //TODO: proveri koji bi ovo bio ugao
-#define MAX_DIF_ANGLE 50
+#define MAX_DIF_ANGLE 50   //degrees
+#define ENCODER_END_DIF 20 //degrees
 
 /* Encoder X port and pin for chip select*/
 #define AS4047D_CS1_Port GPIOB

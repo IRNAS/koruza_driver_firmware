@@ -16,9 +16,22 @@ extern tlv_motor_position_t current_motor_position;
 //extern Stepper_t stepper_motor_z;
 
 typedef enum{
+	STEPPER_IDLE = 0,
+	STEPPER_MOVING = 1,
+	STEPPER_MINIMUM_REACHED = 2,
+	STEPPER_MAXIMUM_REACHED = 3,
+	STEPPER_ERROR = 4,
+}koruza_stepper_mode;
+
+typedef enum{
 	STEPPER_NOT_CONNECTED = 0,
 	STEPPER_CONNECTED = 1,
 }stepper_connected_t;
+
+typedef enum{
+	STEPPERS_IDLE_MODE = 0,
+	STEPPERS_HOMING_MODE = 1,
+}koruza_steppers_mode;
 
 typedef struct{
 	Stepper_t stepper;
@@ -29,6 +42,7 @@ typedef struct{
 	koruza_stepper_t stepper_x;
 	koruza_stepper_t stepper_y;
 	koruza_stepper_t stepper_z;
+	koruza_steppers_mode mode;
 }koruza_steppers_t;
 
 extern koruza_steppers_t koruza_steppers;
@@ -67,6 +81,10 @@ extern koruza_steppers_t koruza_steppers;
 
 #define HOME_X_COORDINATE 50000
 #define HOME_Y_COORDINATE HOME_X_COORDINATE
+
+//TODO: put the right values for the center coordinates of the stepper
+#define STEPPER_X_CENTER 100
+#define STEPPER_Y_CENTER 100
 /**
  * Initializes Koruza driver steppers.
  * This function should be called when program is in initialization
@@ -89,7 +107,7 @@ tlv_motor_position_t Claculate_motors_move_steps(tlv_motor_position_t *new_motor
 
 void run_motors(koruza_steppers_t *steppers);
 
-uint8_t run_motor(Stepper_t *stepper, int32_t *location, int min_pin, int max_pin);
+koruza_stepper_mode run_motor(Stepper_t *stepper, int32_t *location, int min_pin, int max_pin);
 
 void set_motor_coordinate(Stepper_t *stepper, long coordinate);
 

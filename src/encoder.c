@@ -68,7 +68,14 @@ void koruza_encoders_absolute_position(koruza_encoders_t *encoders){
 				encoders->encoder_x.turn_cnt--;
 			}
 		}
-		dif_angle_x = encoders->encoder_x.turn_cnt * 360 + encoders->encoder_x.new_angle - encoders->encoder_x.abs_angle;
+		/* Calculate positive direction dif_angle */
+		if(encoders->encoder_x.turn_cnt >= 0){
+			dif_angle_x = encoders->encoder_x.turn_cnt * 360 + encoders->encoder_x.new_angle - encoders->encoder_x.abs_angle;
+		}
+		/* Calculate negative direction dif_angle */
+		else{
+			dif_angle_x = (abs(encoders->encoder_x.turn_cnt)-1) * 360 + (360 - encoders->encoder_x.new_angle) - encoders->encoder_x.abs_angle;
+		}
 		encoders->encoder_x.abs_angle += dif_angle_x;
 	}
 	if(encoders->encoder_y.encoder_connected == CONNECTED){
@@ -80,7 +87,15 @@ void koruza_encoders_absolute_position(koruza_encoders_t *encoders){
 				encoders->encoder_y.turn_cnt--;
 			}
 		}
-		dif_angle_y = encoders->encoder_y.turn_cnt * 360 + encoders->encoder_y.new_angle - encoders->encoder_y.abs_angle;
+		/* Calculate positive direction dif_angle */
+		if(encoders->encoder_y.turn_cnt >= 0){
+			dif_angle_y = encoders->encoder_y.turn_cnt * 360 + encoders->encoder_y.new_angle - encoders->encoder_y.abs_angle;
+		}
+		/* Calculate negative direction dif_angle */
+		else{
+			dif_angle_y = (abs(encoders->encoder_y.turn_cnt)-1) * 360 + (360 - encoders->encoder_y.new_angle) - encoders->encoder_y.abs_angle;
+		}
+
 		encoders->encoder_y.abs_angle += dif_angle_y;
 	}
 
@@ -91,4 +106,5 @@ void koruza_encoders_absolute_position(koruza_encoders_t *encoders){
 int  koruza_encoder_end(koruza_encoder_t encoder){
 	/*check if the ecoder */
 	//encoder.abs_angle
+	return 0;
 }
