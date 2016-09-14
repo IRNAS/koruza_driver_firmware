@@ -6,10 +6,12 @@
  */
 
 #include "stepper.h"
-#include "stm32f4xx_hal.h"
-#include "AccelStepper.h"
-#include "main.h"
+//#include "stm32f4xx_hal.h"
+//#include "AccelStepper.h"
+//#include "main.h"
 #include <stdio.h>
+#include "stdlib.h"
+
 
 tlv_motor_position_t current_motor_position;
 /* Stepper motors struts */
@@ -21,14 +23,14 @@ koruza_steppers_t koruza_steppers;
 
 void koruza_motors_init(koruza_steppers_t *steppers, stepper_connected_t stepper_con_x, stepper_connected_t stepper_con_y, stepper_connected_t stepper_con_z){
 
-	koruza_steppers.stepper_x.encoder_connected = stepper_con_x;
-	koruza_steppers.stepper_y.encoder_connected = stepper_con_y;
-	koruza_steppers.stepper_z.encoder_connected = stepper_con_z;
+	koruza_steppers.stepper_x.stepper_connected = stepper_con_x;
+	koruza_steppers.stepper_y.stepper_connected = stepper_con_y;
+	koruza_steppers.stepper_z.stepper_connected = stepper_con_z;
 
 	koruza_steppers.mode = STEPPERS_IDLE_MODE;
 
 	/*## Initialize X axis stepper. ###*/
-	if(steppers->stepper_x.encoder_connected == STEPPER_CONNECTED){
+	if(steppers->stepper_x.stepper_connected == STEPPER_CONNECTED){
 		InitStepper(&steppers->stepper_x.stepper, HALF4WIRE, MOTOR_PIN_X_4, MOTOR_PORT_X_4, MOTOR_PIN_X_3, MOTOR_PORT_X_3, MOTOR_PIN_X_2, MOTOR_PORT_X_2, MOTOR_PIN_X_1, MOTOR_PORT_X_1, 1);
 		setMaxSpeed(&steppers->stepper_x.stepper, 500);
 		setSpeed(&steppers->stepper_x.stepper, 500);
@@ -38,7 +40,7 @@ void koruza_motors_init(koruza_steppers_t *steppers, stepper_connected_t stepper
 	}
 
 	/*## Initialize Y axis stepper. ###*/
-	if(steppers->stepper_y.encoder_connected == STEPPER_CONNECTED){
+	if(steppers->stepper_y.stepper_connected == STEPPER_CONNECTED){
 		InitStepper(&steppers->stepper_y.stepper, HALF4WIRE, MOTOR_PIN_Y_4, MOTOR_PORT_Y_4, MOTOR_PIN_Y_3, MOTOR_PORT_Y_3, MOTOR_PIN_Y_2, MOTOR_PORT_Y_2, MOTOR_PIN_Y_1, MOTOR_PORT_Y_1, 1);
 		setMaxSpeed(&steppers->stepper_y.stepper, 500);
 		setSpeed(&steppers->stepper_y.stepper, 500);
@@ -47,7 +49,7 @@ void koruza_motors_init(koruza_steppers_t *steppers, stepper_connected_t stepper
 		enableOutputs(&steppers->stepper_y.stepper);
 	}
 	/*## Initialize Z axis stepper. ###*/
-	if(steppers->stepper_z.encoder_connected == STEPPER_CONNECTED){
+	if(steppers->stepper_z.stepper_connected == STEPPER_CONNECTED){
 		InitStepper(&steppers->stepper_z.stepper, HALF4WIRE, MOTOR_PIN_Z_4, MOTOR_PORT_Z_4, MOTOR_PIN_Z_3, MOTOR_PORT_Z_3, MOTOR_PIN_Z_2, MOTOR_PORT_Z_2, MOTOR_PIN_Z_1, MOTOR_PORT_Z_1, 1);
 		setMaxSpeed(&steppers->stepper_z.stepper, 500);
 		setSpeed(&steppers->stepper_z.stepper, 500);
@@ -86,28 +88,29 @@ tlv_motor_position_t Claculate_motors_move_steps(tlv_motor_position_t *new_motor
 	return move_steppers_for;
 }
 
-void run_motors(koruza_steppers_t *steppers){
-	koruza_stepper_mode moving_x;
-	koruza_stepper_mode moving_y;
+void run_motors(koruza_steppers_t *steppers, koruza_encoders_t *encoders){
 	//TODO: pogledaj da li stvarno trebaju ostali argumenti
 	/* Koruza stepper motors moving to new sent coordinates */
 	if(steppers->mode == STEPPERS_IDLE_MODE){
-		run_motor(&steppers->stepper_x.stepper, &current_motor_position.x, 1, 2);
-		run_motor(&steppers->stepper_y.stepper, &current_motor_position.y, 1, 2);
-		run_motor(&steppers->stepper_z.stepper, &current_motor_position.z, 1, 2);
+		steppers->stepper_x.mode = run_motor(&steppers->stepper_x.stepper, &current_motor_position.x, 1, 2);
+		steppers->stepper_y.mode = run_motor(&steppers->stepper_y.stepper, &current_motor_position.y, 1, 2);
+		steppers->stepper_z.mode = run_motor(&steppers->stepper_z.stepper, &current_motor_position.z, 1, 2);
 	}
-	/* Koruza stepper motors doing the homing routin */
+	/* STEPPERS_HOMMING_MODE Koruza stepper motors doing the homing routin */
 	else{
-		moving_x = run_motor(&steppers->stepper_x.stepper, &current_motor_position.x, 1, 2);
-		moving_y = run_motor(&steppers->stepper_y.stepper, &current_motor_position.y, 1, 2);
+		steppers->stepper_x.mode = run_motor(&steppers->stepper_x.stepper, &current_motor_position.x, 1, 2);
+		steppers->stepper_y.mode = run_motor(&steppers->stepper_y.stepper, &current_motor_position.y, 1, 2);
 		/* Both Koruza motors reached the maximum or minimum movement */
-		if((moving_x == STEPPER_MINIMUM_REACHED || moving_x == STEPPER_MAXIMUM_REACHED) && (moving_y == STEPPER_MINIMUM_REACHED || moving_y == STEPPER_MAXIMUM_REACHED)){
-			/* Move motors to the center of the picture */
-			move(&steppers->stepper_x.stepper, STEPPER_X_CENTER);
-			move(&steppers->stepper_y.stepper, STEPPER_Y_CENTER);
+		if((steppers->stepper_x.mode == STEPPER_MOVING) && (steppers->stepper_y.mode == STEPPER_MOVING)){
+			/* Encoders stoped moving */
+			if((encoders->encoder_x.end != ENCODER_RUN) && (encoders->encoder_y.end != ENCODER_RUN)){
+				/* Move motors to the center of the picture */
+				move(&steppers->stepper_x.stepper, STEPPER_X_CENTER);
+				move(&steppers->stepper_y.stepper, STEPPER_Y_CENTER);
+			}
 		}
 		/* Center of the picture reached */
-		else if(moving_x == STEPPER_IDLE && moving_y == STEPPER_IDLE){
+		else if(steppers->stepper_x.mode == STEPPER_IDLE && steppers->stepper_y.mode == STEPPER_IDLE){
 			/* Set the zero coordinates */
 			set_home_coordinates(steppers);
 			/* Set the Koruza steppers mode to IDLE*/
@@ -197,3 +200,30 @@ void koruza_homing(koruza_steppers_t *steppers){
 
 	//run_motors(stepper_x, stepper_y, stepper_z);
 }
+
+void koruza_encoder_stepper_error(koruza_steppers_t *steppers, koruza_encoders_t *encoders){
+	if(labs((long)encoders->encoder_x.steps - steppers->stepper_x.stepper._currentPos) > ENCODER_STEPPER_MAX_ERROR){
+		if(encoders->encoder_x.turn_cnt >= 0){
+			encoders->encoder_x.end = ENCODER_END_MAX;
+		}
+		else{
+			encoders->encoder_x.end = ENCODER_END_MIN;
+		}
+	}
+	else{
+		encoders->encoder_x.end = ENCODER_RUN;
+	}
+
+	if(labs((long)encoders->encoder_y.steps - steppers->stepper_y.stepper._currentPos) > ENCODER_STEPPER_MAX_ERROR){
+		if(encoders->encoder_y.turn_cnt >= 0){
+			encoders->encoder_y.end = ENCODER_END_MAX;
+		}
+		else{
+			encoders->encoder_y.end = ENCODER_END_MIN;
+		}
+	}
+	else{
+		encoders->encoder_y.end = ENCODER_RUN;
+	}
+}
+

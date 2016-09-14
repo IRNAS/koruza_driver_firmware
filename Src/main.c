@@ -2,8 +2,8 @@
 #include "stm32f4xx_hal.h"
 
 #include "frame.h"
-#include "AccelStepper.h"
-#include "stepper.h"
+//#include "AccelStepper.h"
+//#include "stepper.h"
 #include "uart.h"
 #include "gpio.h"
 #include "adc.h"
@@ -119,6 +119,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 		/* Calculate absolute position of encoders */
 		koruza_encoders_absolute_position(&koruza_encoders);
 		/* check stepper motor error */
+		koruza_encoders_absolute_position_steps(&koruza_encoders);
+
+		koruza_encoder_stepper_error(&koruza_steppers, &koruza_encoders);
+
 
 	}
 }
@@ -147,22 +151,33 @@ int main(void){
 	MX_TIM3_Init();
 	HAL_TIM_Base_MspInit(&TimHandle);
 /*
+	int a = 0;
+	while(koruza_encoders.encoder_x.abs_angle == 0);{
+		a++;
+		if(a > 1000){
+			break;
+		}
+	}*/
+
+/*
 while(1){
 	HAL_Delay(5000);
 	if(koruza_encoders.encoder_x.turn_cnt >= 0){
-		printf("\nAngle X: %ld", koruza_encoders.encoder_x.abs_angle);
+		printf("\ntrue angle X: %f\tabs angle X: %f", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_x.abs_angle);
 	}
 	else{
-		printf("\nAngle X: -%ld", koruza_encoders.encoder_x.abs_angle);
+		printf("\ntrue angle X: %f\tabs angle X: -%f", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_x.abs_angle);
 	}
 	//printf("\nAngle Y: %ld", koruza_encoders.encoder_y.abs_angle);
-}*/
-
+}
+*/
 	driver_state_t state = IDLE;
 
 
 	/* Stepper motors initialization */
 	koruza_motors_init(&koruza_steppers, STEPPER_CONNECTED, STEPPER_CONNECTED, STEPPER_CONNECTED);
+	set_motor_coordinate(&koruza_steppers.stepper_x.stepper, (long)koruza_encoders.encoder_x.steps);
+	current_motor_position.x = (uint32_t)koruza_encoders.encoder_x.steps;
 
 #ifdef DEBUG_MODE
 	/* Generate message - test message */
@@ -170,7 +185,7 @@ while(1){
 	message_init(&msg);
 	//message_tlv_add_command(&msg, COMMAND_MOVE_MOTOR);
 	message_tlv_add_command(&msg, COMMAND_MOVE_MOTOR);
-	tlv_motor_position_t position = {50000, 0, 0};
+	tlv_motor_position_t position = {-1024, 0, 0};
 	message_tlv_add_motor_position(&msg, &position);
 	message_tlv_add_checksum(&msg);
 
@@ -238,15 +253,29 @@ while(1){
 	while(True){
 		test = 0;
 #ifdef DEBUG_MODE
+		/*
 		if(koruza_encoders.encoder_x.turn_cnt >= 0){
-			printf("\nAngle X: %ld", koruza_encoders.encoder_x.abs_angle);
+			printf("\ntrue angle X: %f\tabs angle X: %f", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_x.abs_angle);
 		}
 		else{
-			printf("\nAngle X: -%ld", koruza_encoders.encoder_x.abs_angle);
+			printf("\ntrue angle X: %f\tabs angle X: -%f", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_x.abs_angle);
+		}*/
+		//printf("$%d,%d;", (int)koruza_encoders.encoder_x.steps, (int)koruza_steppers.stepper_x.stepper._currentPos);
+		//printf("\nAngle X: -%f\tStepper X: %ld", koruza_encoders.encoder_x.encoder.true_angle, koruza_steppers.stepper_x.stepper._currentPos);
+
+		if(koruza_encoders.encoder_x.end != ENCODER_RUN){
+			printf("\nencoder end X: %d", koruza_encoders.encoder_x.end);
 		}
+		if(koruza_encoders.encoder_x.turn_cnt < 0){
+			printf("\nAngle X: -%f\tSteps X: %f\tStepper X: %ld", koruza_encoders.encoder_x.abs_angle, koruza_encoders.encoder_x.steps, koruza_steppers.stepper_x.stepper._currentPos);
+
+		}else{
+			printf("\nAngle X: %f\tSteps X: %f\tStepper X: %ld", koruza_encoders.encoder_x.abs_angle, koruza_encoders.encoder_x.steps, koruza_steppers.stepper_x.stepper._currentPos);
+		}
+
 #endif
 		/* Move steppers. */
-		run_motors(&koruza_steppers);
+		run_motors(&koruza_steppers, &koruza_encoders);
 
 		switch(state){
 			case IDLE:

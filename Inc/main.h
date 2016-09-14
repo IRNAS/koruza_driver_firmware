@@ -9,8 +9,9 @@
 #include "bootloader.h"
 #include "spi.h"
 #include "tim.h"
-#include "AS4047D.h"
-#include "encoder.h"
+//#include "AS4047D.h"
+//#include "encoder.h"
+#include "stepper.h"
 
 #ifndef MAIN_H_
 #define MAIN_H_
@@ -24,7 +25,7 @@
 #define OVERCURRENT_LIMIT 5000
 
 /* Uncomment to get debug messages in the UART2 terminal*/
-#define DEBUG_MODE
+//#define DEBUG_MODE
 
 typedef enum states{
 	IDLE = 1,

@@ -6,6 +6,7 @@
  */
 #include "AccelStepper.h"
 #include "message.h"
+#include "encoder.h"
 
 #ifndef STEPPER_H_
 #define STEPPER_H_
@@ -35,7 +36,8 @@ typedef enum{
 
 typedef struct{
 	Stepper_t stepper;
-	stepper_connected_t encoder_connected;
+	stepper_connected_t stepper_connected;
+	koruza_stepper_mode mode;
 }koruza_stepper_t;
 
 typedef struct{
@@ -105,7 +107,7 @@ void koruza_motors_init(koruza_steppers_t *steppers, stepper_connected_t stepper
  */
 tlv_motor_position_t Claculate_motors_move_steps(tlv_motor_position_t *new_motor_position, tlv_motor_position_t *current_motor_position);
 
-void run_motors(koruza_steppers_t *steppers);
+void run_motors(koruza_steppers_t *steppers, koruza_encoders_t *encoders);
 
 koruza_stepper_mode run_motor(Stepper_t *stepper, int32_t *location, int min_pin, int max_pin);
 
@@ -116,5 +118,7 @@ void set_motors_coordinates(koruza_steppers_t *steppers, int coordinate_x, int c
 void set_home_coordinates(koruza_steppers_t *steppers);
 
 void koruza_homing(koruza_steppers_t *steppers);
+
+void koruza_encoder_stepper_error(koruza_steppers_t *steppers, koruza_encoders_t *encoders);
 
 #endif /* STEPPER_H_ */
