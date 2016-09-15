@@ -145,11 +145,15 @@ int main(void){
 
 	MX_SPI2_Init();
 
+	/* Stepper motors initialization */
+	koruza_motors_init(&koruza_steppers, STEPPER_CONNECTED, STEPPER_CONNECTED, STEPPER_CONNECTED);
 
 	koruza_encoders_init(&koruza_encoders, CONNECTED, NOT_CONNECTED);
 
+	/* Start timer for checking encoders*/
 	MX_TIM3_Init();
 	HAL_TIM_Base_MspInit(&TimHandle);
+
 /*
 	int a = 0;
 	while(koruza_encoders.encoder_x.abs_angle == 0);{
@@ -174,10 +178,12 @@ while(1){
 	driver_state_t state = IDLE;
 
 
-	/* Stepper motors initialization */
-	koruza_motors_init(&koruza_steppers, STEPPER_CONNECTED, STEPPER_CONNECTED, STEPPER_CONNECTED);
+
+	//TODO: calculate the read delay for the encoders, so they start working properly
+	HAL_Delay(200000);
 	set_motor_coordinate(&koruza_steppers.stepper_x.stepper, (long)koruza_encoders.encoder_x.steps);
-	current_motor_position.x = (uint32_t)koruza_encoders.encoder_x.steps;
+	current_motor_position.x = (int32_t)(koruza_encoders.encoder_x.steps);
+	//current_motor_position.x = 100;
 
 #ifdef DEBUG_MODE
 	/* Generate message - test message */
@@ -248,6 +254,8 @@ while(1){
 		/* Start Conversation Error */
 		Error_Handler();
 	}
+
+
 
 	/* Infinite loop */
 	while(True){

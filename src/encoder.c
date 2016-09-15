@@ -26,6 +26,8 @@ void koruza_encoders_init(koruza_encoders_t *encoders, encoder_connected_t encod
 		AS5047D_Init(&encoders->encoder_y.encoder);
 		AS5047D_SetZero(&encoders->encoder_y.encoder);
 	}
+	encoders->encoder_x.end = ENCODER_RUN;
+	encoders->encoder_y.end = ENCODER_RUN;
 }
 static float koruza_encoders_get_x_angle(koruza_encoders_t *encoders){
 	return AS5047D_Get_True_Angle_Value(&encoders->encoder_x.encoder);

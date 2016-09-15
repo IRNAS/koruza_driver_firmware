@@ -109,7 +109,7 @@ tlv_motor_position_t Claculate_motors_move_steps(tlv_motor_position_t *new_motor
 
 void run_motors(koruza_steppers_t *steppers, koruza_encoders_t *encoders);
 
-koruza_stepper_mode run_motor(Stepper_t *stepper, int32_t *location, int min_pin, int max_pin);
+koruza_stepper_mode run_motor(Stepper_t *stepper, int32_t *location, koruza_encoder_t *encoder);
 
 void set_motor_coordinate(Stepper_t *stepper, long coordinate);
 

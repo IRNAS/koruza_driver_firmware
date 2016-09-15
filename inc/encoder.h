@@ -16,7 +16,7 @@
 #define MAX_DIF_ANGLE 50   //degrees
 //#define ENCODER_END_DIF 20 //degrees
 //TODO: check for the real value, 4096 is only for test homing
-#define ENCODER_STEPPER_MAX_ERROR 4096//100
+#define ENCODER_STEPPER_MAX_ERROR 1000//100
 
 #define STEPS_PER_ROTATION 4096
 #define ONE_ANGLE_STEPPS 11.37777777777778
@@ -33,7 +33,8 @@
 typedef enum{
 	ENCODER_END_MAX = 0,
 	ENCODER_END_MIN = 1,
-	ENCODER_RUN = 2,
+	ENCODER_END = 2,
+	ENCODER_RUN = 3,
 }encoder_end_t;
 
 typedef enum{

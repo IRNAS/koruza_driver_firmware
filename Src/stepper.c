@@ -92,14 +92,39 @@ void run_motors(koruza_steppers_t *steppers, koruza_encoders_t *encoders){
 	//TODO: pogledaj da li stvarno trebaju ostali argumenti
 	/* Koruza stepper motors moving to new sent coordinates */
 	if(steppers->mode == STEPPERS_IDLE_MODE){
-		steppers->stepper_x.mode = run_motor(&steppers->stepper_x.stepper, &current_motor_position.x, 1, 2);
-		steppers->stepper_y.mode = run_motor(&steppers->stepper_y.stepper, &current_motor_position.y, 1, 2);
-		steppers->stepper_z.mode = run_motor(&steppers->stepper_z.stepper, &current_motor_position.z, 1, 2);
+		/* Motor X*/
+		if((steppers->stepper_x.mode == STEPPER_IDLE) || (steppers->stepper_x.mode == STEPPER_MOVING)){
+			steppers->stepper_x.mode = run_motor(&steppers->stepper_x.stepper, &current_motor_position.x, &encoders->encoder_x);
+		}
+		else if((steppers->stepper_x.mode == STEPPER_MAXIMUM_REACHED) || (steppers->stepper_x.mode == STEPPER_MINIMUM_REACHED)){
+			set_motor_coordinate(&steppers->stepper_x.stepper, encoders->encoder_x.steps);
+			current_motor_position.x = (uint32_t)steppers->stepper_x.stepper._currentPos;
+			steppers->stepper_x.mode = STEPPER_IDLE;
+		}
+		/* STEPPER_ERROR*/
+		else{
+			steppers->stepper_x.mode = run_motor(&steppers->stepper_x.stepper, &current_motor_position.x, &encoders->encoder_x);
+		}
+
+		/* Motor Y*/
+		if((steppers->stepper_y.mode == STEPPER_IDLE) || (steppers->stepper_y.mode == STEPPER_MOVING)){
+			steppers->stepper_y.mode = run_motor(&steppers->stepper_y.stepper, &current_motor_position.y, &encoders->encoder_y);
+		}
+		else if((steppers->stepper_y.mode == STEPPER_MAXIMUM_REACHED) || (steppers->stepper_y.mode == STEPPER_MINIMUM_REACHED)){
+			set_motor_coordinate(&steppers->stepper_y.stepper, encoders->encoder_y.steps);
+			current_motor_position.y = (uint32_t)steppers->stepper_y.stepper._currentPos;
+			steppers->stepper_x.mode = STEPPER_IDLE;
+		}
+		/* STEPPER_ERROR*/
+		else{
+			steppers->stepper_y.mode = run_motor(&steppers->stepper_y.stepper, &current_motor_position.y, &encoders->encoder_y);
+		}
+		//steppers->stepper_z.mode = run_motor(&steppers->stepper_z.stepper, &current_motor_position.z, 1, 2);
 	}
 	/* STEPPERS_HOMMING_MODE Koruza stepper motors doing the homing routin */
 	else{
-		steppers->stepper_x.mode = run_motor(&steppers->stepper_x.stepper, &current_motor_position.x, 1, 2);
-		steppers->stepper_y.mode = run_motor(&steppers->stepper_y.stepper, &current_motor_position.y, 1, 2);
+		steppers->stepper_x.mode = run_motor(&steppers->stepper_x.stepper, &current_motor_position.x, &encoders->encoder_x);
+		steppers->stepper_y.mode = run_motor(&steppers->stepper_y.stepper, &current_motor_position.y, &encoders->encoder_y);
 		/* Both Koruza motors reached the maximum or minimum movement */
 		if((steppers->stepper_x.mode == STEPPER_MOVING) && (steppers->stepper_y.mode == STEPPER_MOVING)){
 			/* Encoders stoped moving */
@@ -120,7 +145,7 @@ void run_motors(koruza_steppers_t *steppers, koruza_encoders_t *encoders){
 
 }
 
-koruza_stepper_mode run_motor(Stepper_t *stepper, int32_t *location, int min_pin, int max_pin){
+koruza_stepper_mode run_motor(Stepper_t *stepper, int32_t *location, koruza_encoder_t *encoder){
 	// this function runs the stepper motor
 	// returns status of limits reached and motion stopped
 	// 1 - idle
@@ -132,42 +157,60 @@ koruza_stepper_mode run_motor(Stepper_t *stepper, int32_t *location, int min_pin
 	koruza_stepper_mode return_data = STEPPER_IDLE;
 	//TODO: proveri ovaj deo koda
 	/* Negative direction end reached */
-	/*if(koruza_encoder_end()){
+	/*
+	if(encoder->end == ENCODER_END_MIN){
 		if(targetPosition(stepper) < currentPosition(stepper)){
 			stop(stepper);
-			moveTo(currentPosition(stepper));
+			moveTo(stepper, currentPosition(stepper));
 			return_data = STEPPER_MINIMUM_REACHED;
 		}
 	}
 */
 	/* Positive direction end reached */
-	/*if(koruza_encoder_end()){
+	/*
+	else if(encoder->end == ENCODER_END_MAX){
 		if(targetPosition(stepper) > currentPosition(stepper)){
 			stop(stepper);
-			moveTo(currentPosition(stepper));
+			moveTo(stepper, currentPosition(stepper));
 			return_data = STEPPER_MAXIMUM_REACHED;
 		}
-	//}*/
-	// motor movement
-	// motor pins are enabled only while moving to conserve power
-	if(currentPosition(stepper) != targetPosition(stepper)){
-		enableOutputs(stepper);
-		run(stepper);
-
-		// update the current position
-		*location = (int32_t)currentPosition(stepper);
-
-		// return moving status
-		return_data=STEPPER_MOVING;
-
-		//reset timeout write for storing position
-		//timeout_write_flash=millis()+30000;
-		//write_enable=HIGH;
-	}// idle
+	}*/
+	if(encoder->end == ENCODER_END){
+		/* Negative direction end reached */
+		if(targetPosition(stepper) < currentPosition(stepper)){
+			stop(stepper);
+			return_data = STEPPER_MINIMUM_REACHED;
+		}
+		/* Positive direction end reached */
+		if(targetPosition(stepper) > currentPosition(stepper)){
+			stop(stepper);
+			return_data = STEPPER_MAXIMUM_REACHED;
+		}
+		moveTo(stepper, currentPosition(stepper));
+	}
+	/* encoder.end is in ENCODER_RUN mode */
 	else{
-		stop(stepper);
-		disableOutputs(stepper);
-		return_data=STEPPER_IDLE;
+		// motor movement
+		// motor pins are enabled only while moving to conserve power
+		if(currentPosition(stepper) != targetPosition(stepper)){
+			enableOutputs(stepper);
+			run(stepper);
+
+			// update the current position
+			*location = (int32_t)currentPosition(stepper);
+
+			// return moving status
+			return_data=STEPPER_MOVING;
+
+			//reset timeout write for storing position
+			//timeout_write_flash=millis()+30000;
+			//write_enable=HIGH;
+		}// idle
+		else{
+			stop(stepper);
+			disableOutputs(stepper);
+			return_data=STEPPER_IDLE;
+		}
 	}
 	return return_data;
 }
@@ -202,28 +245,43 @@ void koruza_homing(koruza_steppers_t *steppers){
 }
 
 void koruza_encoder_stepper_error(koruza_steppers_t *steppers, koruza_encoders_t *encoders){
-	if(labs((long)encoders->encoder_x.steps - steppers->stepper_x.stepper._currentPos) > ENCODER_STEPPER_MAX_ERROR){
-		if(encoders->encoder_x.turn_cnt >= 0){
-			encoders->encoder_x.end = ENCODER_END_MAX;
+	if(encoders->encoder_x.encoder_connected == CONNECTED){
+		if(labs((long)encoders->encoder_x.steps - steppers->stepper_x.stepper._currentPos) > ENCODER_STEPPER_MAX_ERROR){
+			/*if(encoders->encoder_x.turn_cnt >= 0){
+				encoders->encoder_x.end = ENCODER_END_MAX;
+			}
+			else{
+				encoders->encoder_x.end = ENCODER_END_MIN;
+			}*/
+			encoders->encoder_x.end = ENCODER_END;
 		}
 		else{
-			encoders->encoder_x.end = ENCODER_END_MIN;
+			encoders->encoder_x.end = ENCODER_RUN;
 		}
 	}
 	else{
+		/* If the encoder is not connected it will be in the ENCODER_RUN mode, so the motors can move*/
 		encoders->encoder_x.end = ENCODER_RUN;
 	}
 
-	if(labs((long)encoders->encoder_y.steps - steppers->stepper_y.stepper._currentPos) > ENCODER_STEPPER_MAX_ERROR){
-		if(encoders->encoder_y.turn_cnt >= 0){
-			encoders->encoder_y.end = ENCODER_END_MAX;
+	if(encoders->encoder_y.encoder_connected == CONNECTED){
+		if(labs((long)encoders->encoder_y.steps - steppers->stepper_y.stepper._currentPos) > ENCODER_STEPPER_MAX_ERROR){
+			/*if(encoders->encoder_y.turn_cnt >= 0){
+				encoders->encoder_y.end = ENCODER_END_MAX;
+			}
+			else{
+				encoders->encoder_y.end = ENCODER_END_MIN;
+			}*/
+			encoders->encoder_y.end = ENCODER_END;
 		}
 		else{
-			encoders->encoder_y.end = ENCODER_END_MIN;
+			encoders->encoder_y.end = ENCODER_RUN;
 		}
 	}
 	else{
+		/* If the encoder is not connected it will be in the ENCODER_RUN mode, so the motors can move*/
 		encoders->encoder_y.end = ENCODER_RUN;
 	}
+
 }
 
