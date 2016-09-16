@@ -191,7 +191,7 @@ while(1){
 	message_init(&msg);
 	//message_tlv_add_command(&msg, COMMAND_MOVE_MOTOR);
 	message_tlv_add_command(&msg, COMMAND_MOVE_MOTOR);
-	tlv_motor_position_t position = {-1024, 0, 0};
+	tlv_motor_position_t position = {-1, -1, -1};
 	message_tlv_add_motor_position(&msg, &position);
 	message_tlv_add_checksum(&msg);
 

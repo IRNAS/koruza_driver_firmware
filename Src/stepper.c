@@ -21,6 +21,9 @@ tlv_motor_position_t current_motor_position;
 
 koruza_steppers_t koruza_steppers;
 
+int home_x_flag = 0;
+int home_y_flag = 0;
+
 void koruza_motors_init(koruza_steppers_t *steppers, stepper_connected_t stepper_con_x, stepper_connected_t stepper_con_y, stepper_connected_t stepper_con_z){
 
 	koruza_steppers.stepper_x.stepper_connected = stepper_con_x;
@@ -126,29 +129,37 @@ void run_motors(koruza_steppers_t *steppers, koruza_encoders_t *encoders){
 		steppers->stepper_x.mode = run_motor(&steppers->stepper_x.stepper, &current_motor_position.x, &encoders->encoder_x);
 		steppers->stepper_y.mode = run_motor(&steppers->stepper_y.stepper, &current_motor_position.y, &encoders->encoder_y);
 
+		/* Whait for encoder x to reach end */
 		if(steppers->stepper_x.mode == STEPPER_MAXIMUM_REACHED){
+
 			set_motor_coordinate(&steppers->stepper_x.stepper, encoders->encoder_x.steps);
 			current_motor_position.x = (int32_t)steppers->stepper_x.stepper._currentPos;
 			steppers->stepper_x.mode = STEPPER_IDLE;
+			home_x_flag = 1;
 		}
-		/* Both Koruza motors reached the maximum or minimum movement */
-		if((steppers->stepper_x.mode == STEPPER_MOVING) && (steppers->stepper_y.mode == STEPPER_MOVING)){
-			/* Encoders stoped moving */
-			if((encoders->encoder_x.end != ENCODER_RUN) && (encoders->encoder_y.end != ENCODER_RUN)){
-				/* Move motors to the center of the picture */
-				move(&steppers->stepper_x.stepper, STEPPER_X_CENTER);
-				move(&steppers->stepper_y.stepper, STEPPER_Y_CENTER);
-			}
+
+		/* Whait for encoder y to reach end */
+		if(steppers->stepper_y.mode == STEPPER_MAXIMUM_REACHED){
+
+			set_motor_coordinate(&steppers->stepper_y.stepper, encoders->encoder_y.steps);
+			current_motor_position.y = (int32_t)steppers->stepper_y.stepper._currentPos;
+			steppers->stepper_y.mode = STEPPER_IDLE;
+			home_y_flag = 1;
 		}
-		/* Center of the picture reached */
-		else if(steppers->stepper_x.mode == STEPPER_IDLE && steppers->stepper_y.mode == STEPPER_IDLE){
+
+		/* Both Koruza motors reached the maximum movement */
+		if((home_x_flag == 1) && (home_y_flag == 1)){
+			move(&steppers->stepper_x.stepper, STEPPER_X_CENTER);
+			move(&steppers->stepper_y.stepper, STEPPER_Y_CENTER);
+			//TODO: set home coordinates for steppers and encoders
 			/* Set the zero coordinates */
-			set_home_coordinates(steppers);
+			//set_home_coordinates(steppers);
 			/* Set the Koruza steppers mode to IDLE*/
 			steppers->mode = STEPPERS_IDLE_MODE;
+			home_x_flag = 0;
+			home_y_flag = 0;
 		}
 	}
-
 }
 
 koruza_stepper_mode run_motor(Stepper_t *stepper, int32_t *location, koruza_encoder_t *encoder){
