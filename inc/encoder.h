@@ -13,7 +13,7 @@
 //#include "stepper.h"
 //TODO: proveri koji bi ovo bio ugao
 /* Maximum angle to check when the full circle*/
-#define MAX_DIF_ANGLE 50   //degrees
+#define MAX_DIF_ANGLE 200   //degrees
 //#define ENCODER_END_DIF 20 //degrees
 //TODO: check for the real value, 4096 is only for test homing
 #define ENCODER_STEPPER_MAX_ERROR 1000//100

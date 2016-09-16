@@ -98,7 +98,7 @@ void run_motors(koruza_steppers_t *steppers, koruza_encoders_t *encoders){
 		}
 		else if((steppers->stepper_x.mode == STEPPER_MAXIMUM_REACHED) || (steppers->stepper_x.mode == STEPPER_MINIMUM_REACHED)){
 			set_motor_coordinate(&steppers->stepper_x.stepper, encoders->encoder_x.steps);
-			current_motor_position.x = (uint32_t)steppers->stepper_x.stepper._currentPos;
+			current_motor_position.x = (int32_t)steppers->stepper_x.stepper._currentPos;
 			steppers->stepper_x.mode = STEPPER_IDLE;
 		}
 		/* STEPPER_ERROR*/
@@ -112,7 +112,7 @@ void run_motors(koruza_steppers_t *steppers, koruza_encoders_t *encoders){
 		}
 		else if((steppers->stepper_y.mode == STEPPER_MAXIMUM_REACHED) || (steppers->stepper_y.mode == STEPPER_MINIMUM_REACHED)){
 			set_motor_coordinate(&steppers->stepper_y.stepper, encoders->encoder_y.steps);
-			current_motor_position.y = (uint32_t)steppers->stepper_y.stepper._currentPos;
+			current_motor_position.y = (int32_t)steppers->stepper_y.stepper._currentPos;
 			steppers->stepper_x.mode = STEPPER_IDLE;
 		}
 		/* STEPPER_ERROR*/
@@ -125,6 +125,12 @@ void run_motors(koruza_steppers_t *steppers, koruza_encoders_t *encoders){
 	else{
 		steppers->stepper_x.mode = run_motor(&steppers->stepper_x.stepper, &current_motor_position.x, &encoders->encoder_x);
 		steppers->stepper_y.mode = run_motor(&steppers->stepper_y.stepper, &current_motor_position.y, &encoders->encoder_y);
+
+		if(steppers->stepper_x.mode == STEPPER_MAXIMUM_REACHED){
+			set_motor_coordinate(&steppers->stepper_x.stepper, encoders->encoder_x.steps);
+			current_motor_position.x = (int32_t)steppers->stepper_x.stepper._currentPos;
+			steppers->stepper_x.mode = STEPPER_IDLE;
+		}
 		/* Both Koruza motors reached the maximum or minimum movement */
 		if((steppers->stepper_x.mode == STEPPER_MOVING) && (steppers->stepper_y.mode == STEPPER_MOVING)){
 			/* Encoders stoped moving */
