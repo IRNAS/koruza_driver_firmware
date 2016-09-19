@@ -10,21 +10,47 @@
 
 koruza_encoders_t koruza_encoders;
 
+void koruza_encoder_check(koruza_encoders_t *encoders){
+
+}
 void koruza_encoders_init(koruza_encoders_t *encoders, encoder_connected_t encoder_x_con, encoder_connected_t encoder_y_con){
 	/* Initialize AS4047D */
+
 	encoders->encoder_x.encoder_connected = encoder_x_con;
 	encoders->encoder_y.encoder_connected = encoder_y_con;
 	if(encoders->encoder_x.encoder_connected == CONNECTED){
 		encoders->encoder_x.encoder.CS_port = AS4047D_CS1_Port;
 		encoders->encoder_x.encoder.CS_pin = AS4047D_CS1_Pin;
+		AS5047D_Get_All_Data(&encoders->encoder_x.encoder);
 		AS5047D_Init(&encoders->encoder_x.encoder);
 		AS5047D_SetZero(&encoders->encoder_x.encoder);
+
+		if(AS5047D_check_MAG(&encoders->encoder_x.encoder) == 0){
+#ifdef DEBUG_MODE
+			printf("\nencoder X magnet problem");
+#endif
+		}
+		if(AS5047D_check_encoder(&encoders->encoder_x.encoder) == 0){
+			encoders->encoder_x.encoder_connected = NOT_CONNECTED;
+		}
+		//AS5047D_enable_MAG(&encoders->encoder_x.encoder);
 	}
 	if(encoders->encoder_y.encoder_connected == CONNECTED){
 		encoders->encoder_y.encoder.CS_port = AS4047D_CS2_Port;
 		encoders->encoder_y.encoder.CS_pin = AS4047D_CS2_Pin;
+		AS5047D_Get_All_Data(&encoders->encoder_y.encoder);
 		AS5047D_Init(&encoders->encoder_y.encoder);
 		AS5047D_SetZero(&encoders->encoder_y.encoder);
+
+		if(AS5047D_check_MAG(&encoders->encoder_y.encoder) == 0){
+#ifdef DEBUG_MODE
+			printf("\nencoder %Y magnet problem");
+#endif
+		}
+		if(AS5047D_check_encoder(&encoders->encoder_y.encoder) == 0){
+			encoders->encoder_y.encoder_connected = NOT_CONNECTED;
+		}
+		//AS5047D_enable_MAG(&encoders->encoder_y.encoder);
 	}
 	encoders->encoder_x.end = ENCODER_RUN;
 	encoders->encoder_y.end = ENCODER_RUN;
@@ -116,10 +142,10 @@ void koruza_encoders_absolute_position_steps(koruza_encoders_t *encoders){
 	}
 	if(encoders->encoder_y.encoder_connected == CONNECTED){
 		if(encoders->encoder_y.turn_cnt >= 0){
-			encoders->encoder_y.steps = encoders->encoder_y.abs_angle * (STEPS_PER_ROTATION / 360) * CORRECTION_FACOTR;
+			encoders->encoder_y.steps = encoders->encoder_y.abs_angle * ONE_ANGLE_STEPPS;
 		}
 		else{
-			encoders->encoder_y.steps = 0 - (encoders->encoder_y.abs_angle * (STEPS_PER_ROTATION / 360)* CORRECTION_FACOTR);
+			encoders->encoder_y.steps = 0 - (encoders->encoder_y.abs_angle * ONE_ANGLE_STEPPS);
 		}
 	}
 }

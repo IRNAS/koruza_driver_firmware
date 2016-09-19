@@ -100,7 +100,7 @@ void AS5047D_Check_Transmission_Error(encoder_as5047_t *encoder)
 		Error_Handler();
 	}
 }
-
+/*TODO: check this function, it does not work*/
 void AS5047D_SetZero(encoder_as5047_t *encoder)
 {
 	/** Check diagnostics reg **/
@@ -193,4 +193,33 @@ void AS5047D_Get_All_Data(encoder_as5047_t *encoder){
 		encoder->SETTINGS2 = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_SETTINGS2);
 		encoder->true_angle = AS5047D_Get_True_Angle_Value(encoder);
 
+}
+
+void AS5047D_enable_MAG(encoder_as5047_t *encoder){
+	AS5047D_Write(encoder->CS_port, encoder->CS_pin, AS4047D_ZPOSL, 0b00000011);
+}
+
+int AS5047D_check_MAG(encoder_as5047_t *encoder){
+	//encoder->DIAAGC = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_DIAAGC);
+	AS5047D_Get_All_Data(encoder);
+	if((encoder->DIAAGC & 0x00FF) == 0x00FF){
+		return 0;
+	}
+	else if((encoder->DIAAGC & 0x00FF) == 0x0000){
+		return 0;
+	}
+	else{
+		return 1;
+	}
+}
+
+int AS5047D_check_encoder(encoder_as5047_t *encoder){
+	//encoder->SETTINGS1 = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_SETTINGS1);
+	AS5047D_Get_All_Data(encoder);
+	if(encoder->SETTINGS1 != 0){
+		return 1;
+	}
+	else{
+		return 0;
+	}
 }

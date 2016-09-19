@@ -81,12 +81,12 @@ extern koruza_steppers_t koruza_steppers;
 #define MOTOR_PORT_Z_3 GPIOA
 #define MOTOR_PORT_Z_4 GPIOA
 
-#define HOME_X_COORDINATE 50000
+#define HOME_X_COORDINATE 80000
 #define HOME_Y_COORDINATE HOME_X_COORDINATE
 
 //TODO: put the right values for the center coordinates of the stepper
-#define STEPPER_X_CENTER -1000
-#define STEPPER_Y_CENTER -1000
+#define STEPPER_X_CENTER -40000
+#define STEPPER_Y_CENTER -40000
 /**
  * Initializes Koruza driver steppers.
  * This function should be called when program is in initialization

@@ -31,19 +31,32 @@ typedef struct{
 
 
 
-/** volatile **/
+/** Volatile registers**/
+/* No operation register */
 #define AS4047D_NOP 0x0000
+/* Error register */
 #define AS4047D_ERRFL 0x0001
+/* Programming register */
 #define AS4047D_PROG 0x0003
+/* Diagnostic and AGC */
+/* Default value: 0x0180 */
 #define AS4047D_DIAAGC 0x3FFC
+/* CORDIC magnitude */
 #define AS4047D_CORDICMAG 0x3FFD
+/* Measured angle without dynamic angle error compensation */
 #define AS4047D_ANGLEUNC 0x3FFE
+/* Measured angle with dynamic angle error compensation */
 #define AS4047D_ANGLECOM 0x3FFF
 
-/** non-volatile **/
+/** Non-volatile registers **/
+/* Zero position MSB */
 #define AS4047D_ZPOSM 0x0016
+/* Zero position LSB/MAG diagnostic */
 #define AS4047D_ZPOSL 0x0017
+/* Custom setting register 1 */
+/* Default value: 0x0001 */
 #define AS4047D_SETTINGS1 0x0018
+/* Custom setting register 2 */
 #define AS4047D_SETTINGS2 0x0019
 
 #define AS4047D_RD 0x4000    // bit 14 = "1" is Read + parity even
@@ -66,6 +79,14 @@ extern uint16_t AS5047D_Get_ANGLECOM_Value(encoder_as5047_t *encoder);
 
 extern float AS5047D_Get_True_Angle_Value(encoder_as5047_t *encoder);
 extern void AS5047D_Get_All_Data(encoder_as5047_t *encoder);
+/*This function enables the contribution of MAGH and MAGL (magnetic field strength too high and too low) to the error flag*/
+void AS5047D_enable_MAG(encoder_as5047_t *encoder);
+/* Magnetic field strength too low; AGC=0xFF */
+/*  Magnetic field strength too high; AGC=0x00 */
+int AS5047D_check_MAG(encoder_as5047_t *encoder);
+/* Check if the encoder is connected */
+int AS5047D_check_encoder(encoder_as5047_t *encoder);
+
 
 #define AS5047D_Check_MAG_TooLow(DIAAGC)      ((DIAAGC >> 11) & 0x0001)
 #define AS5047D_Check_MAG_TooHigh(DIAAGC)     ((DIAAGC >> 10) & 0x0001)

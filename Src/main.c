@@ -148,7 +148,7 @@ int main(void){
 	/* Stepper motors initialization */
 	koruza_motors_init(&koruza_steppers, STEPPER_CONNECTED, STEPPER_CONNECTED, STEPPER_CONNECTED);
 
-	koruza_encoders_init(&koruza_encoders, CONNECTED, NOT_CONNECTED);
+	koruza_encoders_init(&koruza_encoders, CONNECTED, CONNECTED);
 
 	/* Start timer for checking encoders*/
 	MX_TIM3_Init();
@@ -180,10 +180,16 @@ while(1){
 
 
 	//TODO: calculate the read delay for the encoders, so they start working properly
+	/* Delay for encoders to start working properly*/
+	/* Encoders max power-on time is 10 ms */
 	HAL_Delay(200000);
 	set_motor_coordinate(&koruza_steppers.stepper_x.stepper, (long)koruza_encoders.encoder_x.steps);
 	current_motor_position.x = (int32_t)(koruza_encoders.encoder_x.steps);
+
+	set_motor_coordinate(&koruza_steppers.stepper_y.stepper, (long)koruza_encoders.encoder_y.steps);
+	current_motor_position.y = (int32_t)(koruza_encoders.encoder_y.steps);
 	//current_motor_position.x = 100;
+	AS5047D_Get_All_Data(&koruza_encoders.encoder_x.encoder);
 
 #ifdef DEBUG_MODE
 	/* Generate message - test message */
@@ -288,7 +294,7 @@ while(1){
 		switch(state){
 			case IDLE:
 				if(Transfer_cplt != 0){
-#ifdef DEBUG_MODE
+#ifdef DEBUG_STATUS_MODE
 					printf("\nReceived serialized protocol message:\n");
 					//HAL_UART_Transmit(&huart1, (uint8_t *)&Rx_Buffer, message_len, 1000);
 					for (size_t i = 0; i < message_len; i++) {
@@ -342,7 +348,7 @@ while(1){
 
 #endif
 						frame_size = frame_message(frame, sizeof(frame), &msg_responce);
-#ifdef DEBUG_MODE
+#ifdef DEBUG_STATUS_MODE
 						printf("\nResponce serialized protocol message:\n");
 						for (size_t i = 0; i < frame_size; i++){
 							printf("%02X ", frame[i]);
@@ -373,7 +379,7 @@ while(1){
 							  );
 #endif
 							/* Koruza motors X and Y homing*/
-							if(parsed_position.x == -1 && parsed_position.y == -1 && parsed_position.z == -1){
+							if(parsed_position.x == -100000 && parsed_position.y == -100000 && parsed_position.z == -100000){
 								//TODO: add if the encoders are not connected, just send the motors to specified location
 								koruza_steppers.mode = STEPPERS_HOMING_MODE;
 #ifdef DEBUG_MODE

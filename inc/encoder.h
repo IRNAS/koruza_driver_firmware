@@ -62,6 +62,7 @@ typedef struct{
 
 extern koruza_encoders_t koruza_encoders;
 
+void koruza_encoder_check(koruza_encoders_t *encoders);
 void koruza_encoders_init(koruza_encoders_t *encoders, encoder_connected_t encoder_x_con, encoder_connected_t encoder_y_con);
 void koruza_encoders_get_angles(koruza_encoders_t *encoders);
 void koruza_encoders_get_all_data(koruza_encoders_t *encoders);

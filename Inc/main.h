@@ -26,6 +26,8 @@
 
 /* Uncomment to get debug messages in the UART2 terminal*/
 //#define DEBUG_MODE
+/* Uncomment to get debug messages in the UART2 terminal about GET_STATUS command*/
+#define DEBUG_STATUS_MODE
 
 typedef enum states{
 	IDLE = 1,
