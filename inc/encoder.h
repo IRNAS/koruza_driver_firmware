@@ -11,6 +11,10 @@
 #include "AS4047D.h"
 #include "gpio.h"
 //#include "stepper.h"
+
+/* Uncomment to get debug messages in the UART2 terminal about encoder status */
+//#define DEBUG_ENCODER_MODE
+
 //TODO: proveri koji bi ovo bio ugao
 /* Maximum angle to check when the full circle*/
 #define MAX_DIF_ANGLE 200   //degrees

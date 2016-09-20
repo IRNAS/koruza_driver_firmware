@@ -143,12 +143,54 @@ int main(void){
 	MX_USART1_UART_Init();
 	MX_USART2_UART_Init();
 
+#ifdef DEBUG_MODE
+	printf("\n*********Hello*********\r\nKoruza driver terminal \r\n");
+	printf("***********************");
+	printf("\n\n");
+#endif
 	MX_SPI2_Init();
+
+	/* Wait for encoders to boot*/
+	HAL_Delay(200000);
 
 	/* Stepper motors initialization */
 	koruza_motors_init(&koruza_steppers, STEPPER_CONNECTED, STEPPER_CONNECTED, STEPPER_CONNECTED);
-
 	koruza_encoders_init(&koruza_encoders, CONNECTED, CONNECTED);
+#ifdef DEBUG_MODE
+	if(koruza_encoders.encoder_x.encoder_connected == CONNECTED){
+		printf("encoder X: CONNECTED\n");
+		if((koruza_encoders.encoder_x.encoder.DIAAGC & 0x00FF) == 0x00FF){
+			printf("encoder X: Magnetic field strength too low\n");
+		}
+		else if((koruza_encoders.encoder_x.encoder.DIAAGC & 0x00FF) == 0x0000){
+			printf("encoder X: Magnetic field strength too high\n");
+		}
+		else{
+			printf("encoder X: Magnetic field strength OK\n");
+		}
+	}
+	else{
+		printf("encoder X: NOT CONNECTED\n");
+	}
+
+
+	if(koruza_encoders.encoder_y.encoder_connected == CONNECTED){
+		printf("encoder Y: CONNECTED\n");
+		if((koruza_encoders.encoder_y.encoder.DIAAGC & 0x00FF) == 0x00FF){
+			printf("encoder Y: Magnetic field strength too low\n");
+		}
+		else if((koruza_encoders.encoder_y.encoder.DIAAGC & 0x00FF) == 0x0000){
+			printf("encoder Y: Magnetic field strength too high\n");
+		}
+		else{
+			printf("encoder Y: Magnetic field strength OK\n");
+		}
+	}
+	else{
+		printf("encoder Y: NOT CONNECTED\n");
+	}
+#endif
+
 
 	/* Start timer for checking encoders*/
 	MX_TIM3_Init();
@@ -191,7 +233,7 @@ while(1){
 	//current_motor_position.x = 100;
 	AS5047D_Get_All_Data(&koruza_encoders.encoder_x.encoder);
 
-#ifdef DEBUG_MODE
+#ifdef DEBUG_MODE_MSG_GENERATOR
 	/* Generate message - test message */
 	message_t msg;
 	message_init(&msg);
@@ -242,13 +284,6 @@ while(1){
 	uint8_t frame[1024];
 	ssize_t frame_size;
 
-
-
-#ifdef DEBUG_MODE
-	printf("Hello\r\nKoruza driver terminal \r\n");
-	printf("\n\n");
-#endif
-
 	/* Activate UART RX interrupt every time receiving 1 byte. */
 	if(HAL_UART_Receive_IT(&huart1, (uint8_t *)&Rx_data, 1) != HAL_OK){
 		/* Start UART error*/
@@ -262,21 +297,13 @@ while(1){
 	}
 
 
-
+#ifdef DEBUG_MODE
+	printf("\nKoruza driver ready\n");
+#endif
 	/* Infinite loop */
 	while(True){
 		test = 0;
-#ifdef DEBUG_MODE
-		/*
-		if(koruza_encoders.encoder_x.turn_cnt >= 0){
-			printf("\ntrue angle X: %f\tabs angle X: %f", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_x.abs_angle);
-		}
-		else{
-			printf("\ntrue angle X: %f\tabs angle X: -%f", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_x.abs_angle);
-		}*/
-		//printf("$%d,%d;", (int)koruza_encoders.encoder_x.steps, (int)koruza_steppers.stepper_x.stepper._currentPos);
-		//printf("\nAngle X: -%f\tStepper X: %ld", koruza_encoders.encoder_x.encoder.true_angle, koruza_steppers.stepper_x.stepper._currentPos);
-
+#ifdef DEBUG_ENCODER_POSITION_MODE
 		if(koruza_encoders.encoder_x.end != ENCODER_RUN){
 			printf("\nencoder end X: %d", koruza_encoders.encoder_x.end);
 		}
@@ -286,7 +313,6 @@ while(1){
 		}else{
 			printf("\nAngle X: %f\tSteps X: %f\tStepper X: %ld", koruza_encoders.encoder_x.abs_angle, koruza_encoders.encoder_x.steps, koruza_steppers.stepper_x.stepper._currentPos);
 		}
-
 #endif
 		/* Move steppers. */
 		run_motors(&koruza_steppers, &koruza_encoders);
@@ -294,7 +320,7 @@ while(1){
 		switch(state){
 			case IDLE:
 				if(Transfer_cplt != 0){
-#ifdef DEBUG_STATUS_MODE
+#ifdef DEBUG_RECEIVE_MSG_MODE
 					printf("\nReceived serialized protocol message:\n");
 					//HAL_UART_Transmit(&huart1, (uint8_t *)&Rx_Buffer, message_len, 1000);
 					for (size_t i = 0; i < message_len; i++) {
@@ -311,7 +337,7 @@ while(1){
 			case MESSAGE_PARSE:
 				//parse received message
 				frame_parser((uint8_t *)&Rx_Buffer, message_len, &msg_parsed);
-#ifdef DEBUG_MODE
+#ifdef DEBUG_RECEIVE_MSG_MODE
 				printf("\nParsed protocol message: ");
 				message_print(&msg_parsed);
 				printf("\n");
@@ -336,19 +362,16 @@ while(1){
 						message_tlv_add_reply(&msg_responce, REPLY_STATUS_REPORT);
 						message_tlv_add_motor_position(&msg_responce, &current_motor_position);
 						message_tlv_add_checksum(&msg_responce);
-#ifdef DEBUG_MODE
-						printf("\n");
+#ifdef DEBUG_STATUS_MODE
+						printf("message receive: GET_STATUS\n");
 						printf("Current motor position (%ld, %ld, %ld)\n",
 								(long)current_motor_position.x, (long)current_motor_position.y, (long)current_motor_position.z
 						  );
-						printf("\n");
-						printf("Parsed protocol message response: ");
-						message_print(&msg_responce);
-						printf("\n");
-
+						//printf("\nParsed protocol message response: ");
+						//message_print(&msg_responce);
 #endif
 						frame_size = frame_message(frame, sizeof(frame), &msg_responce);
-#ifdef DEBUG_STATUS_MODE
+#ifdef DEBUG_STATUS_SERIAL_MODE
 						printf("\nResponce serialized protocol message:\n");
 						for (size_t i = 0; i < frame_size; i++){
 							printf("%02X ", frame[i]);
@@ -372,7 +395,8 @@ while(1){
 							message_free(&msg_parsed);
 							state = ERROR_STATE;
 						}else{
-#ifdef DEBUG_MODE
+#ifdef DEBUG_MOTOR_MOVE_MODE
+							printf("message receive: MOTOR_MOVE\n");
 							printf("Parsed command %u and motor position (%"PRIu32", %"PRIu32", %"PRIu32")\n",
 								parsed_command,
 								parsed_position.x, parsed_position.y, parsed_position.z

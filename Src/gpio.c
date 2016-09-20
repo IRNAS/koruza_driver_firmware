@@ -47,10 +47,10 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
 */
 /*Configure GPIO pin Output Level */
-HAL_GPIO_WritePin(AS4047D_CS1_Port, AS4047D_CS1_Pin, GPIO_PIN_RESET);
+HAL_GPIO_WritePin(AS4047D_CS1_Port, AS4047D_CS1_Pin, GPIO_PIN_SET);
 
 /*Configure GPIO pin Output Level */
-HAL_GPIO_WritePin(AS4047D_CS2_Port, AS4047D_CS2_Pin, GPIO_PIN_RESET);
+HAL_GPIO_WritePin(AS4047D_CS2_Port, AS4047D_CS2_Pin, GPIO_PIN_SET);
 
 /*Configure GPIO pin : PB12 */
 GPIO_InitStruct.Pin = AS4047D_CS1_Pin;

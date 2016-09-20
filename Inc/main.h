@@ -25,9 +25,22 @@
 #define OVERCURRENT_LIMIT 5000
 
 /* Uncomment to get debug messages in the UART2 terminal*/
-//#define DEBUG_MODE
+#define DEBUG_MODE
+
+/* Uncomment to get debug messages in the UART2 terminal about received message command*/
+//#define DEBUG_RECEIVE_MSG_MODE
+
 /* Uncomment to get debug messages in the UART2 terminal about GET_STATUS command*/
 #define DEBUG_STATUS_MODE
+
+/* Uncomment to get debug messages in the UART2 terminal about MOTOR_MOVE command*/
+#define DEBUG_MOTOR_MOVE_MODE
+
+/* Uncomment to get debug messages in the UART2 terminal about encoder positions */
+//#define DEBUG_ENCODER_POSITION_MODE
+
+/* Uncoment to get generated TLV message at the beginning */
+//#define DEBUG_MODE_MSG_GENERATOR
 
 typedef enum states{
 	IDLE = 1,

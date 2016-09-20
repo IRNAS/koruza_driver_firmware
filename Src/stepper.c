@@ -30,11 +30,14 @@ void koruza_motors_init(koruza_steppers_t *steppers, stepper_connected_t stepper
 	koruza_steppers.stepper_y.stepper_connected = stepper_con_y;
 	koruza_steppers.stepper_z.stepper_connected = stepper_con_z;
 
+	//steppers->stepper_x.stepper._direction = DIRECTION_CCW;
+	//steppers->stepper_y.stepper._direction = DIRECTION_CCW;
+
 	koruza_steppers.mode = STEPPERS_IDLE_MODE;
 
 	/*## Initialize X axis stepper. ###*/
 	if(steppers->stepper_x.stepper_connected == STEPPER_CONNECTED){
-		InitStepper(&steppers->stepper_x.stepper, HALF4WIRE, MOTOR_PIN_X_4, MOTOR_PORT_X_4, MOTOR_PIN_X_3, MOTOR_PORT_X_3, MOTOR_PIN_X_2, MOTOR_PORT_X_2, MOTOR_PIN_X_1, MOTOR_PORT_X_1, 1);
+		InitStepper(&steppers->stepper_x.stepper, HALF4WIRE, MOTOR_PIN_X_1, MOTOR_PORT_X_1, MOTOR_PIN_X_2, MOTOR_PORT_X_2, MOTOR_PIN_X_3, MOTOR_PORT_X_3, MOTOR_PIN_X_4, MOTOR_PORT_X_4, 1);
 		setMaxSpeed(&steppers->stepper_x.stepper, 500);
 		setSpeed(&steppers->stepper_x.stepper, 500);
 		setAcceleration(&steppers->stepper_x.stepper, 500);
@@ -44,7 +47,7 @@ void koruza_motors_init(koruza_steppers_t *steppers, stepper_connected_t stepper
 
 	/*## Initialize Y axis stepper. ###*/
 	if(steppers->stepper_y.stepper_connected == STEPPER_CONNECTED){
-		InitStepper(&steppers->stepper_y.stepper, HALF4WIRE, MOTOR_PIN_Y_4, MOTOR_PORT_Y_4, MOTOR_PIN_Y_3, MOTOR_PORT_Y_3, MOTOR_PIN_Y_2, MOTOR_PORT_Y_2, MOTOR_PIN_Y_1, MOTOR_PORT_Y_1, 1);
+		InitStepper(&steppers->stepper_y.stepper, HALF4WIRE, MOTOR_PIN_Y_1, MOTOR_PORT_Y_1, MOTOR_PIN_Y_2, MOTOR_PORT_Y_2, MOTOR_PIN_Y_3, MOTOR_PORT_Y_3, MOTOR_PIN_Y_4, MOTOR_PORT_Y_4, 1);
 		setMaxSpeed(&steppers->stepper_y.stepper, 500);
 		setSpeed(&steppers->stepper_y.stepper, 500);
 		setAcceleration(&steppers->stepper_y.stepper, 500);

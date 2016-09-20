@@ -216,7 +216,7 @@ int AS5047D_check_MAG(encoder_as5047_t *encoder){
 int AS5047D_check_encoder(encoder_as5047_t *encoder){
 	//encoder->SETTINGS1 = AS5047D_Read(encoder->CS_port, encoder->CS_pin, AS4047D_SETTINGS1);
 	AS5047D_Get_All_Data(encoder);
-	if(encoder->SETTINGS1 != 0){
+	if((encoder->SETTINGS1 != 0) && (encoder->SETTINGS1 != 0x3fff)){
 		return 1;
 	}
 	else{
