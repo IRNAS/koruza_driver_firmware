@@ -133,18 +133,20 @@ void run_motors(koruza_steppers_t *steppers, koruza_encoders_t *encoders){
 		steppers->stepper_y.mode = run_motor(&steppers->stepper_y.stepper, &current_motor_position.y, &encoders->encoder_y);
 
 		/* Whait for encoder x to reach end */
-		if(steppers->stepper_x.mode == STEPPER_MAXIMUM_REACHED){
-
-			set_motor_coordinate(&steppers->stepper_x.stepper, encoders->encoder_x.steps);
+		if((steppers->stepper_x.mode == STEPPER_MAXIMUM_REACHED) || (steppers->stepper_x.stepper._currentPos > 80000)){
+			if(encoders->encoder_x.encoder_connected == CONNECTED){
+				set_motor_coordinate(&steppers->stepper_x.stepper, encoders->encoder_x.steps);
+			}
 			current_motor_position.x = (int32_t)steppers->stepper_x.stepper._currentPos;
 			steppers->stepper_x.mode = STEPPER_IDLE;
 			home_x_flag = 1;
 		}
 
 		/* Whait for encoder y to reach end */
-		if(steppers->stepper_y.mode == STEPPER_MAXIMUM_REACHED){
-
-			set_motor_coordinate(&steppers->stepper_y.stepper, encoders->encoder_y.steps);
+		if((steppers->stepper_y.mode == STEPPER_MAXIMUM_REACHED) || (steppers->stepper_y.stepper._currentPos > 80000)){
+			if(encoders->encoder_y.encoder_connected == CONNECTED){
+				set_motor_coordinate(&steppers->stepper_y.stepper, encoders->encoder_y.steps);
+			}
 			current_motor_position.y = (int32_t)steppers->stepper_y.stepper._currentPos;
 			steppers->stepper_y.mode = STEPPER_IDLE;
 			home_y_flag = 1;
