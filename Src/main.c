@@ -161,9 +161,13 @@ int main(void){
 		printf("encoder X: CONNECTED\n");
 		if((koruza_encoders.encoder_x.encoder.DIAAGC & 0x00FF) == 0x00FF){
 			printf("encoder X: Magnetic field strength too low\n");
+			printf("encoder X: NOT CONNECTED - magnet problems");
+			koruza_encoders.encoder_x.encoder_connected = NOT_CONNECTED;
 		}
 		else if((koruza_encoders.encoder_x.encoder.DIAAGC & 0x00FF) == 0x0000){
 			printf("encoder X: Magnetic field strength too high\n");
+			printf("encoder X: NOT CONNECTED - magnet problems");
+			koruza_encoders.encoder_x.encoder_connected = NOT_CONNECTED;
 		}
 		else{
 			printf("encoder X: Magnetic field strength OK\n");
@@ -178,9 +182,13 @@ int main(void){
 		printf("encoder Y: CONNECTED\n");
 		if((koruza_encoders.encoder_y.encoder.DIAAGC & 0x00FF) == 0x00FF){
 			printf("encoder Y: Magnetic field strength too low\n");
+			printf("encoder Y: NOT CONNECTED - magnet problems");
+			koruza_encoders.encoder_y.encoder_connected = NOT_CONNECTED;
 		}
 		else if((koruza_encoders.encoder_y.encoder.DIAAGC & 0x00FF) == 0x0000){
 			printf("encoder Y: Magnetic field strength too high\n");
+			printf("encoder Y: NOT CONNECTED - magnet problems");
+			koruza_encoders.encoder_y.encoder_connected = NOT_CONNECTED;
 		}
 		else{
 			printf("encoder Y: Magnetic field strength OK\n");
@@ -196,42 +204,20 @@ int main(void){
 	MX_TIM3_Init();
 	HAL_TIM_Base_MspInit(&TimHandle);
 
-/*
-	int a = 0;
-	while(koruza_encoders.encoder_x.abs_angle == 0);{
-		a++;
-		if(a > 1000){
-			break;
-		}
-	}*/
-
-/*
-while(1){
-	HAL_Delay(5000);
-	if(koruza_encoders.encoder_x.turn_cnt >= 0){
-		printf("\ntrue angle X: %f\tabs angle X: %f", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_x.abs_angle);
-	}
-	else{
-		printf("\ntrue angle X: %f\tabs angle X: -%f", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_x.abs_angle);
-	}
-	//printf("\nAngle Y: %ld", koruza_encoders.encoder_y.abs_angle);
-}
-*/
 	driver_state_t state = IDLE;
-
-
 
 	//TODO: calculate the read delay for the encoders, so they start working properly
 	/* Delay for encoders to start working properly*/
 	/* Encoders max power-on time is 10 ms */
 	HAL_Delay(200000);
-	set_motor_coordinate(&koruza_steppers.stepper_x.stepper, (long)koruza_encoders.encoder_x.steps);
-	current_motor_position.x = (int32_t)(koruza_encoders.encoder_x.steps);
-
-	set_motor_coordinate(&koruza_steppers.stepper_y.stepper, (long)koruza_encoders.encoder_y.steps);
-	current_motor_position.y = (int32_t)(koruza_encoders.encoder_y.steps);
-	//current_motor_position.x = 100;
-	AS5047D_Get_All_Data(&koruza_encoders.encoder_x.encoder);
+	if(koruza_encoders.encoder_x.encoder_connected == CONNECTED){
+		set_motor_coordinate(&koruza_steppers.stepper_x.stepper, (long)koruza_encoders.encoder_x.steps);
+		current_motor_position.x = (int32_t)(koruza_encoders.encoder_x.steps);
+	}
+	if(koruza_encoders.encoder_x.encoder_connected){
+		set_motor_coordinate(&koruza_steppers.stepper_y.stepper, (long)koruza_encoders.encoder_y.steps);
+		current_motor_position.y = (int32_t)(koruza_encoders.encoder_y.steps);
+	}
 
 #ifdef DEBUG_MODE_MSG_GENERATOR
 	/* Generate message - test message */
@@ -239,7 +225,7 @@ while(1){
 	message_init(&msg);
 	//message_tlv_add_command(&msg, COMMAND_MOVE_MOTOR);
 	message_tlv_add_command(&msg, COMMAND_MOVE_MOTOR);
-	tlv_motor_position_t position = {-100000, -100000, -100000};
+	tlv_motor_position_t position = {-50000, 0, 0};
 	message_tlv_add_motor_position(&msg, &position);
 	message_tlv_add_checksum(&msg);
 
@@ -307,12 +293,9 @@ while(1){
 		if(koruza_encoders.encoder_x.end != ENCODER_RUN){
 			printf("\nencoder end X: %d", koruza_encoders.encoder_x.end);
 		}
-		if(koruza_encoders.encoder_x.turn_cnt < 0){
-			printf("\nAngle X: -%f\tSteps X: %f\tStepper X: %ld", koruza_encoders.encoder_x.abs_angle, koruza_encoders.encoder_x.steps, koruza_steppers.stepper_x.stepper._currentPos);
+			printf("turn X: %d\tAngle X: %f\tSteps X: %f\tStepper X: %ld\n",koruza_encoders.encoder_x.turn_cnt, koruza_encoders.encoder_x.abs_angle, koruza_encoders.encoder_x.steps, koruza_steppers.stepper_x.stepper._currentPos);
 
-		}else{
-			printf("\nAngle X: %f\tSteps X: %f\tStepper X: %ld", koruza_encoders.encoder_x.abs_angle, koruza_encoders.encoder_x.steps, koruza_steppers.stepper_x.stepper._currentPos);
-		}
+		//printf("\nAngle X: %f", koruza_encoders.encoder_x.encoder.true_angle);
 #endif
 		/* Move steppers. */
 		run_motors(&koruza_steppers, &koruza_encoders);
@@ -407,7 +390,7 @@ while(1){
 								//TODO: add if the encoders are not connected, just send the motors to specified location
 								koruza_steppers.mode = STEPPERS_HOMING_MODE;
 #ifdef DEBUG_MODE
-								printf("\nStart homing routin");
+								printf("homing routine: START\n");
 #endif
 								parsed_position.x = HOME_X_COORDINATE;
 								parsed_position.y = HOME_Y_COORDINATE;

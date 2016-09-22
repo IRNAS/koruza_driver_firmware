@@ -20,7 +20,7 @@
 #define MAX_DIF_ANGLE 200   //degrees
 //#define ENCODER_END_DIF 20 //degrees
 //TODO: check for the real value, 4096 is only for test homing
-#define ENCODER_STEPPER_MAX_ERROR 1000
+#define ENCODER_STEPPER_MAX_ERROR 1500
 
 #define STEPS_PER_ROTATION 4096
 #define ONE_ANGLE_STEPPS 11.37777777777778

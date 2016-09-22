@@ -23,6 +23,7 @@ koruza_steppers_t koruza_steppers;
 
 int home_x_flag = 0;
 int home_y_flag = 0;
+int center_reached = 0;
 
 void koruza_motors_init(koruza_steppers_t *steppers, stepper_connected_t stepper_con_x, stepper_connected_t stepper_con_y, stepper_connected_t stepper_con_z){
 
@@ -96,6 +97,7 @@ tlv_motor_position_t Claculate_motors_move_steps(tlv_motor_position_t *new_motor
 
 void run_motors(koruza_steppers_t *steppers, koruza_encoders_t *encoders){
 	//TODO: pogledaj da li stvarno trebaju ostali argumenti
+
 	/* Koruza stepper motors moving to new sent coordinates */
 	if(steppers->mode == STEPPERS_IDLE_MODE){
 		/* Motor X*/
@@ -133,9 +135,13 @@ void run_motors(koruza_steppers_t *steppers, koruza_encoders_t *encoders){
 		steppers->stepper_y.mode = run_motor(&steppers->stepper_y.stepper, &current_motor_position.y, &encoders->encoder_y);
 
 		/* Whait for encoder x to reach end */
-		if((steppers->stepper_x.mode == STEPPER_MAXIMUM_REACHED) || (steppers->stepper_x.stepper._currentPos > 80000)){
+		if((steppers->stepper_x.mode == STEPPER_MAXIMUM_REACHED) || (steppers->stepper_x.stepper._currentPos > 10000)){
+			stop(&steppers->stepper_x.stepper);
 			if(encoders->encoder_x.encoder_connected == CONNECTED){
 				set_motor_coordinate(&steppers->stepper_x.stepper, encoders->encoder_x.steps);
+			}
+			else{
+				set_motor_coordinate(&steppers->stepper_x.stepper, steppers->stepper_x.stepper._currentPos);
 			}
 			current_motor_position.x = (int32_t)steppers->stepper_x.stepper._currentPos;
 			steppers->stepper_x.mode = STEPPER_IDLE;
@@ -143,15 +149,30 @@ void run_motors(koruza_steppers_t *steppers, koruza_encoders_t *encoders){
 		}
 
 		/* Whait for encoder y to reach end */
-		if((steppers->stepper_y.mode == STEPPER_MAXIMUM_REACHED) || (steppers->stepper_y.stepper._currentPos > 80000)){
+		if((steppers->stepper_y.mode == STEPPER_MAXIMUM_REACHED) || (steppers->stepper_y.stepper._currentPos > 10000)){
+			stop(&steppers->stepper_y.stepper);
 			if(encoders->encoder_y.encoder_connected == CONNECTED){
 				set_motor_coordinate(&steppers->stepper_y.stepper, encoders->encoder_y.steps);
+			}
+			else{
+				set_motor_coordinate(&steppers->stepper_y.stepper, steppers->stepper_y.stepper._currentPos);
 			}
 			current_motor_position.y = (int32_t)steppers->stepper_y.stepper._currentPos;
 			steppers->stepper_y.mode = STEPPER_IDLE;
 			home_y_flag = 1;
 		}
 
+		if(center_reached == 1){
+			if((steppers->stepper_x.mode == STEPPER_IDLE) && (steppers->stepper_y.mode == STEPPER_IDLE)){
+				printf("homing routine: center reached\n");
+				printf("homing routine: END\n");
+				//TODO: set "zero position"
+
+				center_reached = 0;
+				steppers->mode = STEPPERS_IDLE_MODE;
+			}
+
+		}
 		/* Both Koruza motors reached the maximum movement */
 		if((home_x_flag == 1) && (home_y_flag == 1)){
 			move(&steppers->stepper_x.stepper, STEPPER_X_CENTER);
@@ -159,11 +180,16 @@ void run_motors(koruza_steppers_t *steppers, koruza_encoders_t *encoders){
 			//TODO: set home coordinates for steppers and encoders
 			/* Set the zero coordinates */
 			//set_home_coordinates(steppers);
+			printf("homing routine: end reached\n");
+			printf("homing routine: go to center\n");
 			/* Set the Koruza steppers mode to IDLE*/
-			steppers->mode = STEPPERS_IDLE_MODE;
+			//steppers->mode = STEPPERS_IDLE_MODE;
 			home_x_flag = 0;
 			home_y_flag = 0;
+
+			center_reached = 1;
 		}
+
 	}
 }
 
@@ -264,6 +290,24 @@ void set_home_coordinates(koruza_steppers_t *steppers){
 void koruza_homing(koruza_steppers_t *steppers){
 
 	//run_motors(stepper_x, stepper_y, stepper_z);
+}
+/* TODO: test fals zero function */
+void koruza_set_false_zero(koruza_encoders_t *encoders, koruza_steppers_t *steppers, tlv_motor_position_t *currnet_position){
+	if(encoders->encoder_x.encoder_connected == CONNECTED){
+		encoders->encoder_x.turn_cnt = 0;
+		set_motor_coordinate(&steppers->stepper_x.stepper, (long)(encoders->encoder_x.encoder.true_angle * ONE_ANGLE_STEPPS));
+		currnet_position->x = steppers->stepper_x.stepper._currentPos;
+	}else{
+		set_motor_coordinate(&steppers->stepper_x.stepper, 0);
+	}
+
+	if(encoders->encoder_y.encoder_connected == CONNECTED){
+		encoders->encoder_y.turn_cnt = 0;
+		set_motor_coordinate(&steppers->stepper_y.stepper, (long)(encoders->encoder_y.encoder.true_angle * ONE_ANGLE_STEPPS));
+		currnet_position->y = steppers->stepper_y.stepper._currentPos;
+	}else{
+		set_motor_coordinate(&steppers->stepper_y.stepper, 0);
+	}
 }
 
 void koruza_encoder_stepper_error(koruza_steppers_t *steppers, koruza_encoders_t *encoders){

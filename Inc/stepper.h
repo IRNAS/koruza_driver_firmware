@@ -85,8 +85,8 @@ extern koruza_steppers_t koruza_steppers;
 #define HOME_Y_COORDINATE HOME_X_COORDINATE
 
 //TODO: put the right values for the center coordinates of the stepper
-#define STEPPER_X_CENTER -40000
-#define STEPPER_Y_CENTER -40000
+#define STEPPER_X_CENTER -25000
+#define STEPPER_Y_CENTER -25000
 /**
  * Initializes Koruza driver steppers.
  * This function should be called when program is in initialization
@@ -118,6 +118,8 @@ void set_motors_coordinates(koruza_steppers_t *steppers, int coordinate_x, int c
 void set_home_coordinates(koruza_steppers_t *steppers);
 
 void koruza_homing(koruza_steppers_t *steppers);
+
+void koruza_set_false_zero(koruza_encoders_t *encoders, koruza_steppers_t *steppers, tlv_motor_position_t *currnet_position);
 
 void koruza_encoder_stepper_error(koruza_steppers_t *steppers, koruza_encoders_t *encoders);
 
