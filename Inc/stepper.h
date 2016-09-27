@@ -81,7 +81,7 @@ extern koruza_steppers_t koruza_steppers;
 #define MOTOR_PORT_Z_3 GPIOA
 #define MOTOR_PORT_Z_4 GPIOA
 
-#define HOME_X_COORDINATE 80000
+#define HOME_X_COORDINATE 250000
 #define HOME_Y_COORDINATE HOME_X_COORDINATE
 
 //TODO: put the right values for the center coordinates of the stepper
@@ -122,5 +122,7 @@ void koruza_homing(koruza_steppers_t *steppers);
 void koruza_set_false_zero(koruza_encoders_t *encoders, koruza_steppers_t *steppers, tlv_motor_position_t *currnet_position);
 
 void koruza_encoder_stepper_error(koruza_steppers_t *steppers, koruza_encoders_t *encoders);
+
+void koruza_set_stored_values(koruza_encoders_t *encoders, koruza_steppers_t *steppers, tlv_motor_position_t stored_motor_values);
 
 #endif /* STEPPER_H_ */

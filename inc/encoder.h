@@ -10,6 +10,7 @@
 
 #include "AS4047D.h"
 #include "gpio.h"
+#include "math.h"
 //#include "stepper.h"
 
 /* Uncomment to get debug messages in the UART2 terminal about encoder status */
@@ -20,19 +21,25 @@
 #define MAX_DIF_ANGLE 200   //degrees
 //#define ENCODER_END_DIF 20 //degrees
 //TODO: check for the real value, 4096 is only for test homing
-#define ENCODER_STEPPER_MAX_ERROR 1500
+#define ENCODER_STEPPER_MAX_ERROR 500
 
 #define STEPS_PER_ROTATION 4096
 #define ONE_ANGLE_STEPPS 11.37777777777778
 
 #define CORRECTION_FACOTR 1.2
 /* Encoder X port and pin for chip select*/
-#define AS4047D_CS1_Port GPIOB
-#define AS4047D_CS1_Pin GPIO_PIN_12
+#define AS4047D_CS2_Port GPIOB
+#define AS4047D_CS2_Pin GPIO_PIN_12
 
 /* Encoder Y port and pin for chip select*/
-#define AS4047D_CS2_Port GPIOC
-#define AS4047D_CS2_Pin GPIO_PIN_6
+#define AS4047D_CS1_Port GPIOC
+#define AS4047D_CS1_Pin GPIO_PIN_6
+
+// Converts degrees to radians.
+#define degreesToRadians(angleDegrees) (angleDegrees * M_PI / 180.0)
+
+// Converts radians to degrees.
+#define radiansToDegrees(angleRadians) (angleRadians * 180.0 / M_PI)
 
 typedef enum{
 	ENCODER_END_MAX = 0,
@@ -47,6 +54,12 @@ typedef enum{
 }encoder_connected_t;
 
 typedef struct{
+	double start;
+	double amplitude;
+	double offset;
+}encoder_calibration_parameters_t;
+
+typedef struct{
 	encoder_as5047_t encoder;
 	encoder_connected_t encoder_connected;
 	long encoder_absolute_pos;
@@ -56,6 +69,7 @@ typedef struct{
 	int turn_cnt;
 	encoder_end_t end;
 	double steps;
+	encoder_calibration_parameters_t calibration;
 }koruza_encoder_t;
 
 typedef struct{
@@ -67,6 +81,7 @@ typedef struct{
 extern koruza_encoders_t koruza_encoders;
 
 void koruza_encoder_check(koruza_encoders_t *encoders);
+void koruza_encoders_sin(koruza_encoder_t *encoder);
 void koruza_encoders_init(koruza_encoders_t *encoders, encoder_connected_t encoder_x_con, encoder_connected_t encoder_y_con);
 void koruza_encoders_get_angles(koruza_encoders_t *encoders);
 void koruza_encoders_get_all_data(koruza_encoders_t *encoders);

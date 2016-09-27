@@ -12,8 +12,23 @@
 koruza_encoders_t koruza_encoders;
 
 void koruza_encoder_check(koruza_encoders_t *encoders){
+	/* Get angles form encoder X and encoder Y */
+	koruza_encoders_get_angles(encoders);
+	//koruza_encoders_sin(&encoders->encoder_x);
+	/* Calculate absolute position of encoders */
+	koruza_encoders_absolute_position(encoders);
+	/* check stepper motor error */
+	koruza_encoders_absolute_position_steps(encoders);
 
 }
+
+void koruza_encoders_sin(koruza_encoder_t *encoder){
+	if(encoder->encoder_connected == CONNECTED){
+		encoder->encoder.true_angle += (encoder->calibration.amplitude * sin(degreesToRadians((double)encoder->encoder.true_angle - encoder->calibration.start)) + encoder->calibration.offset)/ONE_ANGLE_STEPPS;
+	}
+
+}
+
 void koruza_encoders_init(koruza_encoders_t *encoders, encoder_connected_t encoder_x_con, encoder_connected_t encoder_y_con){
 	/* Initialize AS4047D */
 
@@ -38,6 +53,7 @@ void koruza_encoders_init(koruza_encoders_t *encoders, encoder_connected_t encod
 				printf("\n");
 				printf("encoder X magnet problem");
 #endif
+				encoders->encoder_x.encoder_connected = NOT_CONNECTED;
 			}
 		}
 		//AS5047D_enable_MAG(&encoders->encoder_x.encoder);
@@ -61,6 +77,7 @@ void koruza_encoders_init(koruza_encoders_t *encoders, encoder_connected_t encod
 				//printf("\n");
 				printf("encoder Y magnet problem");
 #endif
+				encoders->encoder_y.encoder_connected = NOT_CONNECTED;
 			}
 		}
 		//AS5047D_enable_MAG(&encoders->encoder_y.encoder);
