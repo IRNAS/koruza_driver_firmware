@@ -47,16 +47,29 @@ void koruza_encoders_init(koruza_encoders_t *encoders, encoder_connected_t encod
 #endif
 		}
 		else{
-			if(AS5047D_check_MAG(&encoders->encoder_x.encoder) == 0){
-
 #ifdef DEBUG_ENCODER_MODE
-				printf("\n");
-				printf("encoder X magnet problem");
+			printf("encoder X: CONNECTED\n");
 #endif
-				encoders->encoder_x.encoder_connected = NOT_CONNECTED;
+			if((koruza_encoders.encoder_x.encoder.DIAAGC & 0x00FF) == 0x00FF){
+#ifdef DEBUG_ENCODER_MODE
+				printf("encoder X: Magnetic field strength too low\n");
+				printf("encoder X: NOT CONNECTED - magnet problems");
+#endif
+				koruza_encoders.encoder_x.encoder_connected = NOT_CONNECTED;
+			}
+			else if((koruza_encoders.encoder_x.encoder.DIAAGC & 0x00FF) == 0x0000){
+#ifdef DEBUG_ENCODER_MODE
+				printf("encoder X: Magnetic field strength too high\n");
+				printf("encoder X: NOT CONNECTED - magnet problems");
+#endif
+				koruza_encoders.encoder_x.encoder_connected = NOT_CONNECTED;
+			}
+			else{
+#ifdef DEBUG_ENCODER_MODE
+				printf("encoder X: Magnetic field strength OK\n");
+#endif
 			}
 		}
-		//AS5047D_enable_MAG(&encoders->encoder_x.encoder);
 	}
 	if(encoders->encoder_y.encoder_connected == CONNECTED){
 		encoders->encoder_y.encoder.CS_port = AS4047D_CS2_Port;
@@ -72,15 +85,29 @@ void koruza_encoders_init(koruza_encoders_t *encoders, encoder_connected_t encod
 #endif
 		}
 		else{
-			if(AS5047D_check_MAG(&encoders->encoder_y.encoder) == 0){
 #ifdef DEBUG_ENCODER_MODE
-				//printf("\n");
-				printf("encoder Y magnet problem");
+			printf("encoder Y: CONNECTED\n");
 #endif
-				encoders->encoder_y.encoder_connected = NOT_CONNECTED;
+			if((koruza_encoders.encoder_y.encoder.DIAAGC & 0x00FF) == 0x00FF){
+#ifdef DEBUG_ENCODER_MODE
+				printf("encoder Y: Magnetic field strength too low\n");
+				printf("encoder Y: NOT CONNECTED - magnet problems");
+#endif
+				koruza_encoders.encoder_y.encoder_connected = NOT_CONNECTED;
+			}
+			else if((koruza_encoders.encoder_y.encoder.DIAAGC & 0x00FF) == 0x0000){
+#ifdef DEBUG_ENCODER_MODE
+				printf("encoder Y: Magnetic field strength too high\n");
+				printf("encoder Y: NOT CONNECTED - magnet problems");
+#endif
+				koruza_encoders.encoder_y.encoder_connected = NOT_CONNECTED;
+			}
+			else{
+#ifdef DEBUG_ENCODER_MODE
+				printf("encoder Y: Magnetic field strength OK\n");
+#endif
 			}
 		}
-		//AS5047D_enable_MAG(&encoders->encoder_y.encoder);
 	}
 	encoders->encoder_x.end = ENCODER_RUN;
 	encoders->encoder_y.end = ENCODER_RUN;
@@ -91,14 +118,23 @@ static float koruza_encoders_get_x_angle(koruza_encoders_t *encoders){
 static float koruza_encoders_get_y_angle(koruza_encoders_t *encoders){
 	return AS5047D_Get_True_Angle_Value(&encoders->encoder_y.encoder);
 }
+
 void koruza_encoders_get_angles(koruza_encoders_t *encoders){
 	if(encoders->encoder_x.encoder_connected == CONNECTED){
 		encoders->encoder_x.encoder.true_angle = koruza_encoders_get_x_angle(encoders);
 	}
+	else{
+		encoders->encoder_x.encoder.true_angle = 0;
+	}
 	if(encoders->encoder_y.encoder_connected == CONNECTED){
 		encoders->encoder_y.encoder.true_angle = koruza_encoders_get_y_angle(encoders);
 	}
+	else{
+		encoders->encoder_y.encoder.true_angle = 0;
+	}
 }
+
+
 void koruza_encoders_get_all_data(koruza_encoders_t *encoders){
 	if(encoders->encoder_x.encoder_connected == CONNECTED){
 		AS5047D_Get_All_Data(&encoders->encoder_x.encoder);
@@ -120,38 +156,52 @@ void koruza_encoders_absolute_position(koruza_encoders_t *encoders){
 	if(encoders->encoder_x.encoder_connected == CONNECTED){
 		if(labs((long)encoders->encoder_x.new_angle - (long)encoders->encoder_x.last_angle) > MAX_DIF_ANGLE){
 			if((long)encoders->encoder_x.new_angle - (long)encoders->encoder_x.last_angle < 0){
-				encoders->encoder_x.turn_cnt--;
+				//encoders->encoder_x.turn_cnt--;
+				encoders->encoder_x.turn_cnt++;
 			}
 			else{
-				encoders->encoder_x.turn_cnt++;
+				//encoders->encoder_x.turn_cnt++;
+				encoders->encoder_x.turn_cnt--;
 			}
 		}
 		/* Calculate positive direction dif_angle */
 		if(encoders->encoder_x.turn_cnt >= 0){
-			dif_angle_x = encoders->encoder_x.turn_cnt * 360 + (360 - encoders->encoder_x.new_angle) - encoders->encoder_x.abs_angle;
+			//dif_angle_x = encoders->encoder_x.turn_cnt * 360 + (360 - encoders->encoder_x.new_angle) - encoders->encoder_x.abs_angle;
+			dif_angle_x = encoders->encoder_x.turn_cnt * 360 + encoders->encoder_x.new_angle - encoders->encoder_x.abs_angle;
+
 		}
 		/* Calculate negative direction dif_angle */
 		else{
-			dif_angle_x = (abs(encoders->encoder_x.turn_cnt)-1) * 360 + encoders->encoder_x.new_angle - encoders->encoder_x.abs_angle;
+			//dif_angle_x = (abs(encoders->encoder_x.turn_cnt)-1) * 360 + encoders->encoder_x.new_angle - encoders->encoder_x.abs_angle;
+			dif_angle_x = (abs(encoders->encoder_x.turn_cnt)-1) * 360 + (360 - encoders->encoder_x.new_angle) - encoders->encoder_x.abs_angle;
+
 		}
 		encoders->encoder_x.abs_angle += dif_angle_x;
 	}
 	if(encoders->encoder_y.encoder_connected == CONNECTED){
 		if(labs((long)(encoders->encoder_y.new_angle - (long)encoders->encoder_y.last_angle)) > MAX_DIF_ANGLE){
 			if((long)encoders->encoder_y.new_angle - encoders->encoder_y.last_angle < 0){
-				encoders->encoder_y.turn_cnt--;
+				//encoders->encoder_y.turn_cnt--;
+				encoders->encoder_y.turn_cnt++;
+
 			}
 			else{
-				encoders->encoder_y.turn_cnt++;
+				//encoders->encoder_y.turn_cnt++;
+				encoders->encoder_y.turn_cnt--;
+
 			}
 		}
 		/* Calculate positive direction dif_angle */
 		if(encoders->encoder_y.turn_cnt >= 0){
-			dif_angle_y = encoders->encoder_y.turn_cnt * 360 + (360 - encoders->encoder_y.new_angle) - encoders->encoder_y.abs_angle;
+			//dif_angle_y = encoders->encoder_y.turn_cnt * 360 + (360 - encoders->encoder_y.new_angle) - encoders->encoder_y.abs_angle;
+			dif_angle_y = encoders->encoder_y.turn_cnt * 360 + encoders->encoder_y.new_angle - encoders->encoder_y.abs_angle;
+
 		}
 		/* Calculate negative direction dif_angle */
 		else{
-			dif_angle_y = (abs(encoders->encoder_y.turn_cnt)-1) * 360 + encoders->encoder_y.new_angle - encoders->encoder_y.abs_angle;
+			//dif_angle_y = (abs(encoders->encoder_y.turn_cnt)-1) * 360 + encoders->encoder_y.new_angle - encoders->encoder_y.abs_angle;
+			dif_angle_y = (abs(encoders->encoder_y.turn_cnt)-1) * 360 + (360 - encoders->encoder_y.new_angle) - encoders->encoder_y.abs_angle;
+
 		}
 
 		encoders->encoder_y.abs_angle += dif_angle_y;

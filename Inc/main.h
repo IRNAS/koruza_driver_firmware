@@ -37,7 +37,7 @@
 //#define DEBUG_MOTOR_MOVE_MODE
 
 /* Uncomment to get debug messages in the UART2 terminal about encoder positions */
-#define DEBUG_ENCODER_POSITION_MODE
+//#define DEBUG_ENCODER_POSITION_MODE
 
 /* Uncoment to get generated TLV message at the beginning */
 //#define DEBUG_MODE_MSG_GENERATOR

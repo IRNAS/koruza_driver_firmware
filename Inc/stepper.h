@@ -17,11 +17,11 @@ extern tlv_motor_position_t current_motor_position;
 //extern Stepper_t stepper_motor_z;
 
 typedef enum{
-	STEPPER_IDLE = 0,
+	STEPPER_ERROR = 0,
 	STEPPER_MOVING = 1,
 	STEPPER_MINIMUM_REACHED = 2,
 	STEPPER_MAXIMUM_REACHED = 3,
-	STEPPER_ERROR = 4,
+	STEPPER_IDLE = 4,
 }koruza_stepper_mode;
 
 typedef enum{
@@ -38,6 +38,7 @@ typedef struct{
 	Stepper_t stepper;
 	stepper_connected_t stepper_connected;
 	koruza_stepper_mode mode;
+	koruza_stepper_mode s_mode;
 }koruza_stepper_t;
 
 typedef struct{
@@ -81,12 +82,14 @@ extern koruza_steppers_t koruza_steppers;
 #define MOTOR_PORT_Z_3 GPIOA
 #define MOTOR_PORT_Z_4 GPIOA
 
-#define HOME_X_COORDINATE 250000
+#define HOME_X_COORDINATE -250000
 #define HOME_Y_COORDINATE HOME_X_COORDINATE
 
 //TODO: put the right values for the center coordinates of the stepper
-#define STEPPER_X_CENTER -25000
-#define STEPPER_Y_CENTER -25000
+#define STEPPER_X_CENTER 25000
+#define STEPPER_Y_CENTER 25000
+
+#define DIFF_END_SW 100
 /**
  * Initializes Koruza driver steppers.
  * This function should be called when program is in initialization
@@ -109,7 +112,7 @@ tlv_motor_position_t Claculate_motors_move_steps(tlv_motor_position_t *new_motor
 
 void run_motors(koruza_steppers_t *steppers, koruza_encoders_t *encoders);
 
-koruza_stepper_mode run_motor(Stepper_t *stepper, int32_t *location, koruza_encoder_t *encoder);
+void run_motor(koruza_stepper_t *stepper, int32_t *location, koruza_encoder_t *encoder);
 
 void set_motor_coordinate(Stepper_t *stepper, long coordinate);
 
@@ -122,6 +125,8 @@ void koruza_homing(koruza_steppers_t *steppers);
 void koruza_set_false_zero(koruza_encoders_t *encoders, koruza_steppers_t *steppers, tlv_motor_position_t *currnet_position);
 
 void koruza_encoder_stepper_error(koruza_steppers_t *steppers, koruza_encoders_t *encoders);
+
+void koruza_steppers_encoder_error_calculation(koruza_encoders_t *encoders, koruza_steppers_t *steppers);
 
 void koruza_set_stored_values(koruza_encoders_t *encoders, koruza_steppers_t *steppers, tlv_motor_position_t stored_motor_values);
 

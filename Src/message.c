@@ -275,3 +275,22 @@ uint32_t message_checksum(const message_t *message)
   }
   return htonl(checksum);
 }
+
+message_result_t message_tlv_add_error_report(message_t *message, const tlv_error_report_t *report)
+{
+	tlv_error_report_t tmp;
+	tmp.code = htonl(report->code);
+	return message_tlv_add(message, TLV_ERROR_REPORT, sizeof(tlv_error_report_t), (uint8_t*) &tmp);
+}
+
+message_result_t message_tlv_get_error_report(const message_t *message, tlv_error_report_t *report)
+{
+  message_result_t result = message_tlv_get(message, TLV_ERROR_REPORT, (uint8_t*) report, sizeof(tlv_error_report_t));
+  if (result != MESSAGE_SUCCESS) {
+    return result;
+  }
+
+  report->code = ntohl(report->code);
+
+  return MESSAGE_SUCCESS;
+}

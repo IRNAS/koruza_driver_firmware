@@ -14,26 +14,26 @@
 //#include "stepper.h"
 
 /* Uncomment to get debug messages in the UART2 terminal about encoder status */
-//#define DEBUG_ENCODER_MODE
+#define DEBUG_ENCODER_MODE
 
 //TODO: proveri koji bi ovo bio ugao
 /* Maximum angle to check when the full circle*/
 #define MAX_DIF_ANGLE 200   //degrees
 //#define ENCODER_END_DIF 20 //degrees
 //TODO: check for the real value, 4096 is only for test homing
-#define ENCODER_STEPPER_MAX_ERROR 500
+#define ENCODER_STEPPER_MAX_ERROR 1000
 
 #define STEPS_PER_ROTATION 4096
 #define ONE_ANGLE_STEPPS 11.37777777777778
 
 #define CORRECTION_FACOTR 1.2
 /* Encoder X port and pin for chip select*/
-#define AS4047D_CS2_Port GPIOB
-#define AS4047D_CS2_Pin GPIO_PIN_12
+#define AS4047D_CS1_Port GPIOB
+#define AS4047D_CS1_Pin GPIO_PIN_12
 
 /* Encoder Y port and pin for chip select*/
-#define AS4047D_CS1_Port GPIOC
-#define AS4047D_CS1_Pin GPIO_PIN_6
+#define AS4047D_CS2_Port GPIOC
+#define AS4047D_CS2_Pin GPIO_PIN_6
 
 // Converts degrees to radians.
 #define degreesToRadians(angleDegrees) (angleDegrees * M_PI / 180.0)
@@ -70,6 +70,7 @@ typedef struct{
 	encoder_end_t end;
 	double steps;
 	encoder_calibration_parameters_t calibration;
+	double diff;
 }koruza_encoder_t;
 
 typedef struct{

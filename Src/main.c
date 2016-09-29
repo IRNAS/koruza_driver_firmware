@@ -12,6 +12,7 @@
 #include "main.h"
 #include <inttypes.h>
 #include "stdlib.h"
+#include "eeprom.h"
 
 
 #ifdef __GNUC__
@@ -116,24 +117,26 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* AdcHandle) {
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	if(htim->Instance==TIM3){
 		/* Get angles form encoder X and encoder Y */
-		koruza_encoders_get_angles(&koruza_encoders);
+		//koruza_encoders_get_angles(&koruza_encoders);
 		/* Calculate absolute position of encoders */
-		koruza_encoders_absolute_position(&koruza_encoders);
+		//koruza_encoders_absolute_position(&koruza_encoders);
 		/* check stepper motor error */
-		koruza_encoders_absolute_position_steps(&koruza_encoders);
+		//koruza_encoders_absolute_position_steps(&koruza_encoders);
 
-		koruza_encoder_stepper_error(&koruza_steppers, &koruza_encoders);
+		//koruza_encoder_stepper_error(&koruza_steppers, &koruza_encoders);
 
 
 	}
 }
 
+/* Virtual address defined by the user: 0xFFFF value is prohibited */
+uint16_t VirtAddVarTab[NB_OF_VAR] = {0x5555, 0x6666, 0x7777};
+uint16_t VarDataTab[NB_OF_VAR] = {0, 0, 0};
+uint16_t VarValue = 0x1234,VarDataTmp = 0;
 int main(void){
 	/* MCU Configuration----------------------------------------------------------*/
-
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 	HAL_Init();
-
 	/* Configure the system clock */
 	SystemClock_Config();
 
@@ -161,73 +164,27 @@ int main(void){
 	/* Wait for encoders to boot*/
 	HAL_Delay(200000);
 
+
 	/* Stepper motors initialization */
 	koruza_motors_init(&koruza_steppers, STEPPER_CONNECTED, STEPPER_CONNECTED, STEPPER_NOT_CONNECTED);
+	/* Encoder initialization with connection and magnetic field check*/
 	koruza_encoders_init(&koruza_encoders, CONNECTED, CONNECTED);
-#ifdef DEBUG_MODE
-	if(koruza_encoders.encoder_x.encoder_connected == CONNECTED){
-		printf("encoder X: CONNECTED\n");
-		if((koruza_encoders.encoder_x.encoder.DIAAGC & 0x00FF) == 0x00FF){
-			printf("encoder X: Magnetic field strength too low\n");
-			printf("encoder X: NOT CONNECTED - magnet problems");
-			koruza_encoders.encoder_x.encoder_connected = NOT_CONNECTED;
-		}
-		else if((koruza_encoders.encoder_x.encoder.DIAAGC & 0x00FF) == 0x0000){
-			printf("encoder X: Magnetic field strength too high\n");
-			printf("encoder X: NOT CONNECTED - magnet problems");
-			koruza_encoders.encoder_x.encoder_connected = NOT_CONNECTED;
-		}
-		else{
-			printf("encoder X: Magnetic field strength OK\n");
-		}
-	}
-	else{
-		printf("encoder X: NOT CONNECTED\n");
-	}
-
-
-	if(koruza_encoders.encoder_y.encoder_connected == CONNECTED){
-		printf("encoder Y: CONNECTED\n");
-		if((koruza_encoders.encoder_y.encoder.DIAAGC & 0x00FF) == 0x00FF){
-			printf("encoder Y: Magnetic field strength too low\n");
-			printf("encoder Y: NOT CONNECTED - magnet problems");
-			koruza_encoders.encoder_y.encoder_connected = NOT_CONNECTED;
-		}
-		else if((koruza_encoders.encoder_y.encoder.DIAAGC & 0x00FF) == 0x0000){
-			printf("encoder Y: Magnetic field strength too high\n");
-			printf("encoder Y: NOT CONNECTED - magnet problems");
-			koruza_encoders.encoder_y.encoder_connected = NOT_CONNECTED;
-		}
-		else{
-			printf("encoder Y: Magnetic field strength OK\n");
-		}
-	}
-	else{
-		printf("encoder Y: NOT CONNECTED\n");
-	}
-#endif
-
-
-	/* Start timer for checking encoders*/
-	//MX_TIM3_Init();
-	//HAL_TIM_Base_MspInit(&TimHandle);
-
 
 	driver_state_t state = IDLE;
 
-	//TODO: calculate the read delay for the encoders, so they start working properly
-	/* Delay for encoders to start working properly*/
 	/* Encoders max power-on time is 10 ms */
 	HAL_Delay(200000);
 
-	koruza_encoder_check(&koruza_encoders);
+	/* Get encoder angles for start position calculation */
+	koruza_encoders_get_angles(&koruza_encoders);
+
 	if(koruza_encoders.encoder_x.encoder_connected == CONNECTED){
-		set_motor_coordinate(&koruza_steppers.stepper_x.stepper, (long)koruza_encoders.encoder_x.steps);
-		current_motor_position.x = (int32_t)(koruza_encoders.encoder_x.steps);
+		set_motor_coordinate(&koruza_steppers.stepper_x.stepper, (long)(koruza_encoders.encoder_x.encoder.true_angle * ONE_ANGLE_STEPPS));
+		current_motor_position.x = (int32_t)(koruza_encoders.encoder_x.encoder.true_angle * ONE_ANGLE_STEPPS);
 	}
 	if(koruza_encoders.encoder_y.encoder_connected == CONNECTED){
-		set_motor_coordinate(&koruza_steppers.stepper_y.stepper, (long)koruza_encoders.encoder_y.steps);
-		current_motor_position.y = (int32_t)(koruza_encoders.encoder_y.steps);
+		set_motor_coordinate(&koruza_steppers.stepper_y.stepper, (long)(koruza_encoders.encoder_y.encoder.true_angle * ONE_ANGLE_STEPPS));
+		current_motor_position.y = (int32_t)(koruza_encoders.encoder_y.encoder.true_angle * ONE_ANGLE_STEPPS);
 	}
 
 #ifdef DEBUG_MODE_MSG_GENERATOR
@@ -298,46 +255,40 @@ int main(void){
 	printf("\nKoruza driver ready\n");
 #endif
 #ifdef DEBUG_ENCODER_POSITION_MODE
-	double step_error_x = 0;
-
-	double step_error_y = 0;
-
-	double peak_error_x = 0;
-	double peak_error_y = 0;
-/*
 	tlv_motor_position_t test_position;
 	test_position.x = 30000;
 	test_position.y = 10000;
 	test_position.z = 0;
 	koruza_set_stored_values(&koruza_encoders, &koruza_steppers, test_position);
-*/
 #endif
+
 	/* Infinite loop */
 	while(True){
 		test = 0;
 #ifdef DEBUG_ENCODER_POSITION_MODE
-		if(koruza_encoders.encoder_x.end != ENCODER_RUN){
-			printf("\nencoder end X: %d", koruza_encoders.encoder_x.end);
-		}
-		step_error_x = koruza_encoders.encoder_x.steps - (double)koruza_steppers.stepper_x.stepper._currentPos;
-		step_error_y = koruza_encoders.encoder_y.steps - (double)koruza_steppers.stepper_y.stepper._currentPos;
-
-		if(peak_error_x < (labs(step_error_x))){
-			peak_error_x = labs(step_error_x);
-		}
-		if(peak_error_y < (labs(step_error_y))){
-			peak_error_y = labs(step_error_y);
-		}
 		//printf("%f, %f, %ld\n", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_x.steps, koruza_steppers.stepper_x.stepper._currentPos);//, koruza_encoders.encoder_y.steps, koruza_steppers.stepper_y.stepper._currentPos);
 		//printf("$%d %d %d;", (int)koruza_encoders.encoder_x.steps, (int)koruza_steppers.stepper_x.stepper._currentPos, (int)(degreesToRadians((double)koruza_encoders.encoder_x.encoder.true_angle - koruza_encoders.encoder_x.calibration.start)));
+		//true_angle_calibrate_x += (float)(koruza_encoders.encoder_x.calibration.amplitude * sin(degreesToRadians((double)koruza_encoders.encoder_x.encoder.true_angle - koruza_encoders.encoder_x.calibration.start)) + koruza_encoders.encoder_x.calibration.offset)/ONE_ANGLE_STEPPS;
+		//true_angle_calibrate_y += (float)(koruza_encoders.encoder_y.calibration.amplitude * sin(degreesToRadians((double)koruza_encoders.encoder_y.encoder.true_angle - koruza_encoders.encoder_y.calibration.start)) + koruza_encoders.encoder_y.calibration.offset)/ONE_ANGLE_STEPPS;
 
-		//printf("true angle X: %f\tAngle X: %f\tSteps X: %f\tStepper X: %ld\n",koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_x.abs_angle, koruza_encoders.encoder_x.steps, koruza_steppers.stepper_x.stepper._currentPos);
+		//printf("%ld, %f, %f, %ld, %f, %f\n", koruza_steppers.stepper_x.stepper._currentPos, koruza_encoders.encoder_x.encoder.true_angle, true_angle_calibrate_x, koruza_steppers.stepper_y.stepper._currentPos, koruza_encoders.encoder_y.encoder.true_angle, true_angle_calibrate_y);
+		//printf("true angle X: %f\tAngle X: %f\tSteps X: %f\tStepper X: %ld\t",koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_x.abs_angle, koruza_encoders.encoder_x.steps, koruza_steppers.stepper_x.stepper._currentPos);
+		//printf("true angle y: %f\tAngle y: %f\tSteps y: %f\tStepper y: %ld\n",koruza_encoders.encoder_y.encoder.true_angle, koruza_encoders.encoder_y.abs_angle, koruza_encoders.encoder_y.steps, koruza_steppers.stepper_y.stepper._currentPos);
+
 		//printf("Error X: %f\tPeak Hold X: %f\tError Y: %f\tPeak Hold Y: %f\n", step_error_x, peak_error_x, step_error_y, peak_error_y);
-		//printf("\nAngle X: %f", koruza_encoders.encoder_x.encoder.true_angle);
+		//printf("Angle X: %f\t Angle Y: %f\t", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_y.encoder.true_angle);
+		printf("step X: %ld\tangle x: %f\tstep y: %ld\tangle y: %f\n", koruza_steppers.stepper_x.stepper._currentPos, koruza_encoders.encoder_x.encoder.true_angle, koruza_steppers.stepper_y.stepper._currentPos, koruza_encoders.encoder_y.encoder.true_angle);
 #endif
 		/* Read encoder and check if end is reached */
-		koruza_encoder_check(&koruza_encoders);
-		koruza_encoder_stepper_error(&koruza_steppers, &koruza_encoders);
+		//printf("step X: %ld\tangle x: %f\tstep y: %ld\tangle y: %f", koruza_steppers.stepper_x.stepper._currentPos, koruza_encoders.encoder_x.encoder.true_angle, koruza_steppers.stepper_y.stepper._currentPos, koruza_encoders.encoder_y.encoder.true_angle);
+		//printf("angle x: %f\tangle y: %f\t", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_y.encoder.true_angle);
+		printf("%ld, %f, %ld, %f, %f, %f\n", koruza_steppers.stepper_x.stepper._currentPos, koruza_encoders.encoder_x.encoder.true_angle, koruza_steppers.stepper_y.stepper._currentPos, koruza_encoders.encoder_y.encoder.true_angle, koruza_encoders.encoder_x.diff, koruza_encoders.encoder_y.diff);
+
+		/* Get new angles from encoders */
+		koruza_encoders_get_angles(&koruza_encoders);
+		/* Get error between stepper and encoder*/
+		koruza_steppers.stepper_x.mode = STEPPER_MAXIMUM_REACHED;
+		koruza_steppers_encoder_error_calculation(&koruza_encoders, &koruza_steppers);
 
 		/* Move steppers. */
 		run_motors(&koruza_steppers, &koruza_encoders);
@@ -427,36 +378,36 @@ int main(void){
 								(long)parsed_position.x, (long)parsed_position.y, (long)parsed_position.z
 							  );
 #endif
-							/* Koruza motors X and Y homing*/
-							if(parsed_position.x == -100000 && parsed_position.y == -100000 && parsed_position.z == -100000){
-								//TODO: add if the encoders are not connected, just send the motors to specified location
-								koruza_steppers.mode = STEPPERS_HOMING_MODE;
-#ifdef DEBUG_MODE
-								printf("homing routine: START\n");
-#endif
-								parsed_position.x = HOME_X_COORDINATE;
-								parsed_position.y = HOME_Y_COORDINATE;
-								parsed_position.z = 0;
-								/* Calculate number of move steps to new position */
-								move_steppers = Claculate_motors_move_steps(&parsed_position, &current_motor_position);
-								/* Move motors to homing position */
-								move(&koruza_steppers.stepper_x.stepper, (long)move_steppers.x);
-								move(&koruza_steppers.stepper_y.stepper, (long)move_steppers.y);
-								move(&koruza_steppers.stepper_z.stepper, (long)move_steppers.z);
 
-							}
-							/* Move Koruza motors to received coordinates*/
-							else{
-								koruza_steppers.mode = STEPPERS_IDLE_MODE;
-								/* Calculate number of move steps to new position */
-								move_steppers = Claculate_motors_move_steps(&parsed_position, &current_motor_position);
-								/* Move motors to sent position */
-								move(&koruza_steppers.stepper_x.stepper, (long)move_steppers.x);
-								move(&koruza_steppers.stepper_y.stepper, (long)move_steppers.y);
-								move(&koruza_steppers.stepper_z.stepper, (long)move_steppers.z);
-							}
+							koruza_steppers.mode = STEPPERS_IDLE_MODE;
+							/* Calculate number of move steps to new position */
+							//parsed_position.x *= -1;
+							//parsed_position.y *= -1;
+							move_steppers = Claculate_motors_move_steps(&parsed_position, &current_motor_position);
+							/* Move motors to sent position */
+							move(&koruza_steppers.stepper_x.stepper, (long)move_steppers.x);
+							move(&koruza_steppers.stepper_y.stepper, (long)move_steppers.y);
+							move(&koruza_steppers.stepper_z.stepper, (long)move_steppers.z);
+
 							state = END_STATE;
 						}
+
+						break;
+					case COMMAND_HOMING:
+						koruza_steppers.mode = STEPPERS_HOMING_MODE;
+#ifdef DEBUG_MODE
+						printf("homing routine: START\n");
+#endif
+						parsed_position.x = HOME_X_COORDINATE;
+						parsed_position.y = HOME_Y_COORDINATE;
+						parsed_position.z = 0;
+						/* Calculate number of move steps to new position */
+						move_steppers = Claculate_motors_move_steps(&parsed_position, &current_motor_position);
+						/* Move motors to homing position */
+						move(&koruza_steppers.stepper_x.stepper, (long)move_steppers.x);
+						move(&koruza_steppers.stepper_y.stepper, (long)move_steppers.y);
+						move(&koruza_steppers.stepper_z.stepper, (long)move_steppers.z);
+						state = END_STATE;
 
 						break;
 					case COMMAND_SEND_IR:
