@@ -53,14 +53,14 @@ void koruza_encoders_init(koruza_encoders_t *encoders, encoder_connected_t encod
 			if((koruza_encoders.encoder_x.encoder.DIAAGC & 0x00FF) == 0x00FF){
 #ifdef DEBUG_ENCODER_MODE
 				printf("encoder X: Magnetic field strength too low\n");
-				printf("encoder X: NOT CONNECTED - magnet problems");
+				printf("encoder X: NOT CONNECTED - magnet problems\n");
 #endif
 				koruza_encoders.encoder_x.encoder_connected = NOT_CONNECTED;
 			}
 			else if((koruza_encoders.encoder_x.encoder.DIAAGC & 0x00FF) == 0x0000){
 #ifdef DEBUG_ENCODER_MODE
 				printf("encoder X: Magnetic field strength too high\n");
-				printf("encoder X: NOT CONNECTED - magnet problems");
+				printf("encoder X: NOT CONNECTED - magnet problems\n");
 #endif
 				koruza_encoders.encoder_x.encoder_connected = NOT_CONNECTED;
 			}

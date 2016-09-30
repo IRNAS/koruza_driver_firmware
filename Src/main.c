@@ -262,9 +262,27 @@ int main(void){
 	koruza_set_stored_values(&koruza_encoders, &koruza_steppers, test_position);
 #endif
 
+
+	int restore_receive = 0;
 	/* Infinite loop */
 	while(True){
 		test = 0;
+		if(restore_receive == 0){
+			message_t msg;
+			message_init(&msg);
+			message_tlv_add_command(&msg, COMMAND_RESTORE_MOTOR);
+			message_tlv_add_motor_position(&msg, &move_steppers);
+			message_tlv_add_checksum(&msg);
+			frame_size = frame_message(frame, sizeof(frame), &msg);
+			//printf("\nResponce serialized protocol message:\n");
+			//for (size_t i = 0; i < frame_size; i++){
+			//	printf("%02X ", frame[i]);
+			//}
+			//printf("\n");
+			HAL_UART_Transmit(&huart1, (uint8_t *)&frame, frame_size, 1000);
+			message_free(&msg);
+			HAL_Delay(50000);
+		}
 #ifdef DEBUG_ENCODER_POSITION_MODE
 		//printf("%f, %f, %ld\n", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_x.steps, koruza_steppers.stepper_x.stepper._currentPos);//, koruza_encoders.encoder_y.steps, koruza_steppers.stepper_y.stepper._currentPos);
 		//printf("$%d %d %d;", (int)koruza_encoders.encoder_x.steps, (int)koruza_steppers.stepper_x.stepper._currentPos, (int)(degreesToRadians((double)koruza_encoders.encoder_x.encoder.true_angle - koruza_encoders.encoder_x.calibration.start)));
@@ -355,8 +373,9 @@ int main(void){
 						printf("\n");
 #endif
 						//send status message
-						HAL_UART_Transmit(&huart1, (uint8_t *)&frame, frame_size, 1000);
-
+						if(restore_receive == 1){
+							HAL_UART_Transmit(&huart1, (uint8_t *)&frame, frame_size, 1000);
+						}
 						message_free(&msg_responce);
 
 						state = END_STATE;
@@ -410,6 +429,21 @@ int main(void){
 						state = END_STATE;
 
 						break;
+
+					case COMMAND_RESTORE_MOTOR:
+						if (message_tlv_get_motor_position(&msg_parsed, &parsed_position) != MESSAGE_SUCCESS) {
+#ifdef DEBUG_MODE
+							printf("Failed to get motor position TLV.\n");
+#endif
+							message_free(&msg_parsed);
+							state = ERROR_STATE;
+						}else{
+							koruza_set_stored_values(&koruza_encoders, &koruza_steppers, parsed_position);
+							restore_receive = 1;
+						}
+						state = END_STATE;
+						break;
+
 					case COMMAND_SEND_IR:
 
 						break;
