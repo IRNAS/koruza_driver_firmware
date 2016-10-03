@@ -192,9 +192,13 @@ int main(void){
 	message_t msg;
 	message_init(&msg);
 	//message_tlv_add_command(&msg, COMMAND_MOVE_MOTOR);
-	message_tlv_add_command(&msg, COMMAND_MOVE_MOTOR);
-	tlv_motor_position_t position = {-100000, -100000, -100000};
-	message_tlv_add_motor_position(&msg, &position);
+	//message_tlv_add_command(&msg, COMMAND_MOVE_MOTOR);
+	message_tlv_add_reply(&msg, REPLY_ERROR_REPORT);
+	//tlv_motor_position_t position = {-100000, -100000, -100000};
+	//message_tlv_add_motor_position(&msg, &position);
+	tlv_error_report_t error_report;
+	error_report.code = 35;
+	message_tlv_add_error_report(&msg, &error_report);
 	message_tlv_add_checksum(&msg);
 
 	uint8_t test_frame[1024];
@@ -220,6 +224,8 @@ int main(void){
 	printf("\n");
 	message_free(&msg);
 #endif
+
+	message_t msg_rep;
 	/* Parsed message */
 	message_t msg_parsed;
 	tlv_command_t parsed_command;
@@ -228,6 +234,10 @@ int main(void){
 	/* Response message */
 	message_t msg_responce;
 
+	/* Error report */
+	tlv_error_report_t koruza_error_report;
+	koruza_error_report.code = 0;//0xFFFFFFFF;
+	uint32_t koruza_error_report_check = koruza_error_report.code;//0xFFFFFFFF;
 
 	/* Move steppers for, from absolute position */
 	tlv_motor_position_t move_steppers;
@@ -237,6 +247,9 @@ int main(void){
 
 	uint8_t frame[1024];
 	ssize_t frame_size;
+
+	uint8_t frame_rep[1024];
+	ssize_t frame_size_rep;
 
 	/* Activate UART RX interrupt every time receiving 1 byte. */
 	if(HAL_UART_Receive_IT(&huart1, (uint8_t *)&Rx_data, 1) != HAL_OK){
@@ -264,25 +277,73 @@ int main(void){
 
 
 	int restore_receive = 0;
+
 	/* Infinite loop */
 	while(True){
 		test = 0;
+		/* Send command RESTORE_MOTOR until witi is ready*/
 		if(restore_receive == 0){
-			message_t msg;
-			message_init(&msg);
-			message_tlv_add_command(&msg, COMMAND_RESTORE_MOTOR);
-			message_tlv_add_motor_position(&msg, &move_steppers);
-			message_tlv_add_checksum(&msg);
-			frame_size = frame_message(frame, sizeof(frame), &msg);
+			message_init(&msg_rep);
+			message_tlv_add_command(&msg_rep, COMMAND_RESTORE_MOTOR);
+			message_tlv_add_motor_position(&msg_rep, &move_steppers);
+			message_tlv_add_checksum(&msg_rep);
+			frame_size = frame_message(frame, sizeof(frame), &msg_rep);
 			//printf("\nResponce serialized protocol message:\n");
 			//for (size_t i = 0; i < frame_size; i++){
 			//	printf("%02X ", frame[i]);
 			//}
 			//printf("\n");
 			HAL_UART_Transmit(&huart1, (uint8_t *)&frame, frame_size, 1000);
-			message_free(&msg);
+			message_free(&msg_rep);
 			HAL_Delay(50000);
 		}
+		else{
+			if(koruza_encoders.encoder_x.encoder_connected == CONNECTED){
+				koruza_error_report_check |= 1 << 0;
+			}else{
+				koruza_error_report_check &= ~(1 << 0);
+			}
+			if(koruza_encoders.encoder_y.encoder_connected == CONNECTED){
+				koruza_error_report_check |= 1 << 1;
+			}else{
+				koruza_error_report_check &= ~(1 << 1);
+			}
+			if((koruza_encoders.encoder_x.encoder.DIAAGC & 0x00FF) == 0x00FF){
+				/* Magnetic field X too low */
+				koruza_error_report_check |= 1 << 2;
+			}else if ((koruza_encoders.encoder_x.encoder.DIAAGC & 0x00FF) == 0x0000){
+				/* Magnetic field X too high */
+				koruza_error_report_check |= 1 << 4;
+			}else{
+				/* Magnetic field X OK */
+				koruza_error_report_check &= ~(1 << 2);
+				koruza_error_report_check &= ~(1 << 4);
+			}
+			if((koruza_encoders.encoder_y.encoder.DIAAGC & 0x00FF) == 0x00FF){
+				/* Magnetic field X too low */
+				koruza_error_report_check |= 1 << 3;
+			}else if ((koruza_encoders.encoder_y.encoder.DIAAGC & 0x00FF) == 0x0000){
+				/* Magnetic field X too high */
+				koruza_error_report_check |= 1 << 5;
+			}else{
+				/* Magnetic field X OK */
+				koruza_error_report_check &= ~(1 << 3);
+				koruza_error_report_check &= ~(1 << 5);
+			}
+
+			/* If status has changed send message to witi*/
+			if(koruza_error_report_check != koruza_error_report.code){
+				koruza_error_report.code = koruza_error_report_check;
+				message_init(&msg_rep);
+				message_tlv_add_reply(&msg_rep, REPLY_ERROR_REPORT);
+				message_tlv_add_error_report(&msg_rep, &koruza_error_report);
+				message_tlv_add_checksum(&msg_rep);
+				frame_size_rep = frame_message(frame_rep, sizeof(frame_rep), &msg_rep);
+				HAL_UART_Transmit(&huart1, (uint8_t *)&frame_rep, frame_size_rep, 1000);
+				message_free(&msg_rep);
+			}
+		}
+
 #ifdef DEBUG_ENCODER_POSITION_MODE
 		//printf("%f, %f, %ld\n", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_x.steps, koruza_steppers.stepper_x.stepper._currentPos);//, koruza_encoders.encoder_y.steps, koruza_steppers.stepper_y.stepper._currentPos);
 		//printf("$%d %d %d;", (int)koruza_encoders.encoder_x.steps, (int)koruza_steppers.stepper_x.stepper._currentPos, (int)(degreesToRadians((double)koruza_encoders.encoder_x.encoder.true_angle - koruza_encoders.encoder_x.calibration.start)));
@@ -300,7 +361,7 @@ int main(void){
 		/* Read encoder and check if end is reached */
 		//printf("step X: %ld\tangle x: %f\tstep y: %ld\tangle y: %f", koruza_steppers.stepper_x.stepper._currentPos, koruza_encoders.encoder_x.encoder.true_angle, koruza_steppers.stepper_y.stepper._currentPos, koruza_encoders.encoder_y.encoder.true_angle);
 		//printf("angle x: %f\tangle y: %f\t", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_y.encoder.true_angle);
-		printf("%ld, %f, %ld, %f, %f, %f\n", koruza_steppers.stepper_x.stepper._currentPos, koruza_encoders.encoder_x.encoder.true_angle, koruza_steppers.stepper_y.stepper._currentPos, koruza_encoders.encoder_y.encoder.true_angle, koruza_encoders.encoder_x.diff, koruza_encoders.encoder_y.diff);
+		//printf("%ld, %f, %ld, %f, %f, %f\n", koruza_steppers.stepper_x.stepper._currentPos, koruza_encoders.encoder_x.encoder.true_angle, koruza_steppers.stepper_y.stepper._currentPos, koruza_encoders.encoder_y.encoder.true_angle, koruza_encoders.encoder_x.diff, koruza_encoders.encoder_y.diff);
 
 		/* Get new angles from encoders */
 		koruza_encoders_get_angles(&koruza_encoders);
