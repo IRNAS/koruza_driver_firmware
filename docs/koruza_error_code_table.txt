@@ -1,0 +1,11 @@
+koruza error check
+uint32_t code:
+
+bit	| description								 |
+-------------------------------------------------|
+0	| encoder X connected = 1; not connected = 0;|
+1	| encoder Y connected = 1; not connected = 0;|
+2	| encoder X magnetic field too low = 1;      |
+3	| encoder Y magnetic field too low = 1;      |
+4	| encoder X magnetic field too high = 1;     |
+5	| encoder y magnetic field too high = 1;     |
