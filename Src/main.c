@@ -299,14 +299,14 @@ int main(void){
 		}
 		else{
 			if(koruza_encoders.encoder_x.encoder_connected == CONNECTED){
-				koruza_error_report_check |= 1 << 0;
-			}else{
 				koruza_error_report_check &= ~(1 << 0);
+			}else{
+				koruza_error_report_check |= 1 << 0;
 			}
 			if(koruza_encoders.encoder_y.encoder_connected == CONNECTED){
-				koruza_error_report_check |= 1 << 1;
-			}else{
 				koruza_error_report_check &= ~(1 << 1);
+			}else{
+				koruza_error_report_check |= 1 << 1;
 			}
 			if((koruza_encoders.encoder_x.encoder.DIAAGC & 0x00FF) == 0x00FF){
 				/* Magnetic field X too low */
