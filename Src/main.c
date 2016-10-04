@@ -39,6 +39,12 @@ char test1 = 0;
 /* Variable used to get converted value */
 __IO uint16_t uhADCxConvertedValue = 0;
 
+message_t msg_rep;
+tlv_error_report_t koruza_error_report;
+uint32_t koruza_error_report_check;
+
+uint8_t frame_rep[1024];
+ssize_t frame_size_rep;
 
 /* UART RX Interrupt callback routine */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
@@ -46,7 +52,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	/* Use selected UART for receive */
 	if (huart->Instance == USART1){
 
-		//TODO: check if this is necessary!!!
 		/* Clear Rx_Buffer before receiving new data */
 		if (Rx_indx==0){
 			for (i=0;i<100;i++) Rx_Buffer[i]=0;
@@ -103,8 +108,20 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* AdcHandle) {
 		Error_Handler();
 	}else{
 		if(uhADCxConvertedValue >= OVERCURRENT_LIMIT){
-			//TODO: add current protection system
+			koruza_error_report_check |= 1 << 0;
+			//send the error report to witi
+			koruza_error_report.code = koruza_error_report_check;
+			message_init(&msg_rep);
+			message_tlv_add_reply(&msg_rep, REPLY_ERROR_REPORT);
+			message_tlv_add_error_report(&msg_rep, &koruza_error_report);
+			message_tlv_add_checksum(&msg_rep);
+			frame_size_rep = frame_message(frame_rep, sizeof(frame_rep), &msg_rep);
+			HAL_UART_Transmit(&huart1, (uint8_t *)&frame_rep, frame_size_rep, 1000);
+			message_free(&msg_rep);
+			//restart the MCU
 			NVIC_SystemReset();
+		}else{
+			koruza_error_report_check &= ~(1 << 0);
 		}
 	}
 }
@@ -225,7 +242,6 @@ int main(void){
 	message_free(&msg);
 #endif
 
-	message_t msg_rep;
 	/* Parsed message */
 	message_t msg_parsed;
 	tlv_command_t parsed_command;
@@ -235,9 +251,8 @@ int main(void){
 	message_t msg_responce;
 
 	/* Error report */
-	tlv_error_report_t koruza_error_report;
-	koruza_error_report.code = 0;//0xFFFFFFFF;
-	uint32_t koruza_error_report_check = koruza_error_report.code;//0xFFFFFFFF;
+	koruza_error_report.code = 3;
+	koruza_error_report_check = koruza_error_report.code;
 
 	/* Move steppers for, from absolute position */
 	tlv_motor_position_t move_steppers;
@@ -248,8 +263,7 @@ int main(void){
 	uint8_t frame[1024];
 	ssize_t frame_size;
 
-	uint8_t frame_rep[1024];
-	ssize_t frame_size_rep;
+
 
 	/* Activate UART RX interrupt every time receiving 1 byte. */
 	if(HAL_UART_Receive_IT(&huart1, (uint8_t *)&Rx_data, 1) != HAL_OK){

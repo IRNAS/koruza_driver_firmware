@@ -85,7 +85,7 @@ extern koruza_steppers_t koruza_steppers;
 #define HOME_X_COORDINATE -250000
 #define HOME_Y_COORDINATE HOME_X_COORDINATE
 
-//TODO: put the right values for the center coordinates of the stepper
+
 #define STEPPER_X_CENTER 25000
 #define STEPPER_Y_CENTER 25000
 

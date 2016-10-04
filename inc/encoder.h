@@ -16,11 +16,10 @@
 /* Uncomment to get debug messages in the UART2 terminal about encoder status */
 #define DEBUG_ENCODER_MODE
 
-//TODO: proveri koji bi ovo bio ugao
 /* Maximum angle to check when the full circle*/
 #define MAX_DIF_ANGLE 200   //degrees
 //#define ENCODER_END_DIF 20 //degrees
-//TODO: check for the real value, 4096 is only for test homing
+
 #define ENCODER_STEPPER_MAX_ERROR 1000
 
 #define STEPS_PER_ROTATION 4096

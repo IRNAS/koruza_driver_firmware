@@ -182,6 +182,7 @@ void run_motors(koruza_steppers_t *steppers, koruza_encoders_t *encoders){
 
 		/* Both Koruza motors reached the maximum movement */
 		if((home_x_flag == 1) && (home_y_flag == 1)){
+			/* Set current position around -25000, based on encoders if connected*/
 			if(encoders->encoder_x.encoder_connected == CONNECTED){
 				set_motor_coordinate(&steppers->stepper_x.stepper, -25000 + encoders->encoder_x.encoder.true_angle * ONE_ANGLE_STEPPS);
 			}
@@ -197,15 +198,13 @@ void run_motors(koruza_steppers_t *steppers, koruza_encoders_t *encoders){
 			current_motor_position.x = (int32_t)steppers->stepper_x.stepper._currentPos;
 			current_motor_position.y = (int32_t)steppers->stepper_y.stepper._currentPos;
 
+			/* Go to zero*/
 			moveTo(&steppers->stepper_x.stepper, 0);
 			moveTo(&steppers->stepper_y.stepper, 0);
-			//TODO: set home coordinates for steppers and encoders
-			/* Set the zero coordinates */
-			//set_home_coordinates(steppers);
-			printf("homing routine: end reached\n");
-			printf("homing routine: go to center\n");
+
+			//printf("homing routine: end reached\n");
+			//printf("homing routine: go to center\n");
 			/* Set the Koruza steppers mode to IDLE*/
-			//steppers->mode = STEPPERS_IDLE_MODE;
 			home_x_flag = 0;
 			home_y_flag = 0;
 			steppers->mode = STEPPERS_IDLE_MODE;
@@ -223,27 +222,6 @@ void run_motor(koruza_stepper_t *stepper, int32_t *location, koruza_encoder_t *e
 	// 4 - maximum reached
 	// 5 - error
 
-	//koruza_stepper_mode return_data = STEPPER_IDLE;
-	//TODO: proveri ovaj deo koda
-	/* Negative direction end reached */
-	/*
-	if(encoder->end == ENCODER_END_MIN){
-		if(targetPosition(stepper) < currentPosition(stepper)){
-			stop(stepper);
-			moveTo(stepper, currentPosition(stepper));
-			return_data = STEPPER_MINIMUM_REACHED;
-		}
-	}
-*/
-	/* Positive direction end reached */
-	/*
-	else if(encoder->end == ENCODER_END_MAX){
-		if(targetPosition(stepper) > currentPosition(stepper)){
-			stop(stepper);
-			moveTo(stepper, currentPosition(stepper));
-			return_data = STEPPER_MAXIMUM_REACHED;
-		}
-	}*/
 	if(encoder->end == ENCODER_END){
 		/* Negative direction end reached */
 		if(targetPosition(&stepper->stepper) < currentPosition(&stepper->stepper)){
@@ -312,7 +290,7 @@ void koruza_homing(koruza_steppers_t *steppers){
 
 	//run_motors(stepper_x, stepper_y, stepper_z);
 }
-/* TODO: test fals zero function */
+
 void koruza_set_false_zero(koruza_encoders_t *encoders, koruza_steppers_t *steppers, tlv_motor_position_t *currnet_position){
 	if(encoders->encoder_x.encoder_connected == CONNECTED){
 		set_motor_coordinate(&steppers->stepper_x.stepper, (long)(encoders->encoder_x.encoder.true_angle * ONE_ANGLE_STEPPS));

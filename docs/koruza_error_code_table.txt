@@ -9,3 +9,4 @@ bit	| description								 |
 3	| encoder Y magnetic field too low = 1;      |
 4	| encoder X magnetic field too high = 1;     |
 5	| encoder y magnetic field too high = 1;     |
+6	| current protection; overlimit = 1;         |
