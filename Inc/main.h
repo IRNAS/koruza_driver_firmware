@@ -5,7 +5,7 @@
  *      Author: vojis
  */
 
-#include "message.h"
+//#include "message.h"
 #include "bootloader.h"
 #include "spi.h"
 #include "tim.h"

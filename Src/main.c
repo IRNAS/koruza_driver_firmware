@@ -40,8 +40,8 @@ char test1 = 0;
 __IO uint16_t uhADCxConvertedValue = 0;
 
 message_t msg_rep;
-tlv_error_report_t koruza_error_report;
-uint32_t koruza_error_report_check;
+//tlv_error_report_t koruza_error_report;
+//uint32_t koruza_error_report_check;
 
 uint8_t frame_rep[1024];
 ssize_t frame_size_rep;
@@ -107,10 +107,11 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* AdcHandle) {
 		/* Start Conversation Error */
 		Error_Handler();
 	}else{
+		//TODO: test over current limit error message
 		if(uhADCxConvertedValue >= OVERCURRENT_LIMIT){
-			koruza_error_report_check |= 1 << 0;
+			koruza_error_report_ch.code |= 1 << 0;
 			//send the error report to witi
-			koruza_error_report.code = koruza_error_report_check;
+			koruza_error_report.code = koruza_error_report_ch.code;
 			message_init(&msg_rep);
 			message_tlv_add_reply(&msg_rep, REPLY_ERROR_REPORT);
 			message_tlv_add_error_report(&msg_rep, &koruza_error_report);
@@ -185,7 +186,7 @@ int main(void){
 	/* Stepper motors initialization */
 	koruza_motors_init(&koruza_steppers, STEPPER_CONNECTED, STEPPER_CONNECTED, STEPPER_NOT_CONNECTED);
 	/* Encoder initialization with connection and magnetic field check*/
-	koruza_encoders_init(&koruza_encoders, CONNECTED, CONNECTED);
+	koruza_encoders_init(&koruza_encoders, NOT_CONNECTED, CONNECTED);
 
 	driver_state_t state = IDLE;
 
@@ -251,8 +252,8 @@ int main(void){
 	message_t msg_responce;
 
 	/* Error report */
-	koruza_error_report.code = 3;
-	koruza_error_report_check = koruza_error_report.code;
+	koruza_error_report.code = 0xFFFFFFFF;
+	koruza_error_report_check = 0x00000000;
 
 	/* Move steppers for, from absolute position */
 	tlv_motor_position_t move_steppers;
@@ -312,49 +313,19 @@ int main(void){
 			HAL_Delay(50000);
 		}
 		else{
-			if(koruza_encoders.encoder_x.encoder_connected == CONNECTED){
-				koruza_error_report_check &= ~(1 << 0);
-			}else{
-				koruza_error_report_check |= 1 << 0;
-			}
-			if(koruza_encoders.encoder_y.encoder_connected == CONNECTED){
-				koruza_error_report_check &= ~(1 << 1);
-			}else{
-				koruza_error_report_check |= 1 << 1;
-			}
-			if((koruza_encoders.encoder_x.encoder.DIAAGC & 0x00FF) == 0x00FF){
-				/* Magnetic field X too low */
-				koruza_error_report_check |= 1 << 2;
-			}else if ((koruza_encoders.encoder_x.encoder.DIAAGC & 0x00FF) == 0x0000){
-				/* Magnetic field X too high */
-				koruza_error_report_check |= 1 << 4;
-			}else{
-				/* Magnetic field X OK */
-				koruza_error_report_check &= ~(1 << 2);
-				koruza_error_report_check &= ~(1 << 4);
-			}
-			if((koruza_encoders.encoder_y.encoder.DIAAGC & 0x00FF) == 0x00FF){
-				/* Magnetic field X too low */
-				koruza_error_report_check |= 1 << 3;
-			}else if ((koruza_encoders.encoder_y.encoder.DIAAGC & 0x00FF) == 0x0000){
-				/* Magnetic field X too high */
-				koruza_error_report_check |= 1 << 5;
-			}else{
-				/* Magnetic field X OK */
-				koruza_error_report_check &= ~(1 << 3);
-				koruza_error_report_check &= ~(1 << 5);
-			}
+			/* Check the status of the encoders*/
+			koruza_encoders_magnetic_filed_check(&koruza_error_report_ch.code, &koruza_encoders, 0);
 
 			/* If status has changed send message to witi*/
-			if(koruza_error_report_check != koruza_error_report.code){
-				koruza_error_report.code = koruza_error_report_check;
-				message_init(&msg_rep);
-				message_tlv_add_reply(&msg_rep, REPLY_ERROR_REPORT);
-				message_tlv_add_error_report(&msg_rep, &koruza_error_report);
-				message_tlv_add_checksum(&msg_rep);
-				frame_size_rep = frame_message(frame_rep, sizeof(frame_rep), &msg_rep);
+			if(koruza_error_report_ch.code != koruza_error_report.code){
+				koruza_error_report.code = koruza_error_report_ch.code;
+				message_init(&msg_responce);
+				message_tlv_add_reply(&msg_responce, REPLY_ERROR_REPORT);
+				message_tlv_add_error_report(&msg_responce, &koruza_error_report);
+				message_tlv_add_checksum(&msg_responce);
+				frame_size_rep = frame_message(frame_rep, sizeof(frame_rep), &msg_responce);
 				HAL_UART_Transmit(&huart1, (uint8_t *)&frame_rep, frame_size_rep, 1000);
-				message_free(&msg_rep);
+				message_free(&msg_responce);
 			}
 		}
 
@@ -380,7 +351,7 @@ int main(void){
 		/* Get new angles from encoders */
 		koruza_encoders_get_angles(&koruza_encoders);
 		/* Get error between stepper and encoder*/
-		koruza_steppers.stepper_x.mode = STEPPER_MAXIMUM_REACHED;
+		//koruza_steppers.stepper_x.mode = STEPPER_MAXIMUM_REACHED;
 		koruza_steppers_encoder_error_calculation(&koruza_encoders, &koruza_steppers);
 
 		/* Move steppers. */

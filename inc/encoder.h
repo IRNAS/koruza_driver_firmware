@@ -11,6 +11,7 @@
 #include "AS4047D.h"
 #include "gpio.h"
 #include "math.h"
+#include "message.h"
 //#include "stepper.h"
 
 /* Uncomment to get debug messages in the UART2 terminal about encoder status */
@@ -79,6 +80,9 @@ typedef struct{
 }koruza_encoders_t;
 
 extern koruza_encoders_t koruza_encoders;
+extern tlv_error_report_t koruza_error_report;
+extern tlv_error_report_t koruza_error_report_ch;
+extern uint32_t koruza_error_report_check;
 
 void koruza_encoder_check(koruza_encoders_t *encoders);
 void koruza_encoders_sin(koruza_encoder_t *encoder);
@@ -87,5 +91,6 @@ void koruza_encoders_get_angles(koruza_encoders_t *encoders);
 void koruza_encoders_get_all_data(koruza_encoders_t *encoders);
 void koruza_encoders_absolute_position(koruza_encoders_t *encoders);
 void koruza_encoders_absolute_position_steps(koruza_encoders_t *encoders);
+void koruza_encoders_magnetic_filed_check(uint32_t *new_error_report, koruza_encoders_t *encoders, uint8_t get_data);
 //void koruza_encoders_end_position(koruza_encoders_t *encoders, koruza_steppers_t *steppers);
 #endif /* ENCODER_H_ */

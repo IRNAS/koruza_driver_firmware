@@ -202,6 +202,8 @@ void run_motors(koruza_steppers_t *steppers, koruza_encoders_t *encoders){
 			moveTo(&steppers->stepper_x.stepper, 0);
 			moveTo(&steppers->stepper_y.stepper, 0);
 
+			/* Check magnetic field after reaching end */
+			koruza_encoders_magnetic_filed_check(&koruza_error_report_ch.code, &koruza_encoders, 1);
 			//printf("homing routine: end reached\n");
 			//printf("homing routine: go to center\n");
 			/* Set the Koruza steppers mode to IDLE*/

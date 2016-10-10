@@ -10,6 +10,9 @@
 #include <stdio.h>
 
 koruza_encoders_t koruza_encoders;
+tlv_error_report_t koruza_error_report;
+tlv_error_report_t koruza_error_report_ch;
+uint32_t koruza_error_report_check;
 
 void koruza_encoder_check(koruza_encoders_t *encoders){
 	/* Get angles form encoder X and encoder Y */
@@ -229,3 +232,49 @@ void koruza_encoders_absolute_position_steps(koruza_encoders_t *encoders){
 		}
 	}
 }
+
+void koruza_encoders_magnetic_filed_check(uint32_t *new_error_report, koruza_encoders_t *encoders, uint8_t get_data){
+	/* Get data from encoders */
+	if(get_data == 1){
+		if(encoders->encoder_x.encoder_connected == CONNECTED){
+			AS5047D_Get_All_Data(&encoders->encoder_x.encoder);
+		}
+		if(encoders->encoder_y.encoder_connected == CONNECTED){
+			AS5047D_Get_All_Data(&encoders->encoder_y.encoder);
+		}
+	}
+
+	if(encoders->encoder_x.encoder_connected == CONNECTED){
+		*new_error_report &= ~(1 << 0);
+	}else{
+		*new_error_report |= 1 << 0;
+	}
+	if(encoders->encoder_y.encoder_connected == CONNECTED){
+		*new_error_report &= ~(1 << 1);
+	}else{
+		*new_error_report |= 1 << 1;
+	}
+	if((encoders->encoder_x.encoder.DIAAGC & 0x00FF) == 0x00FF){
+		/* Magnetic field X too low */
+		*new_error_report |= 1 << 2;
+	}else if ((encoders->encoder_x.encoder.DIAAGC & 0x00FF) == 0x0000){
+		/* Magnetic field X too high */
+		*new_error_report |= 1 << 4;
+	}else{
+		/* Magnetic field X OK */
+		*new_error_report &= ~(1 << 2);
+		*new_error_report &= ~(1 << 4);
+	}
+	if((encoders->encoder_y.encoder.DIAAGC & 0x00FF) == 0x00FF){
+		/* Magnetic field X too low */
+		*new_error_report |= 1 << 3;
+	}else if ((encoders->encoder_y.encoder.DIAAGC & 0x00FF) == 0x0000){
+		/* Magnetic field X too high */
+		*new_error_report |= 1 << 5;
+	}else{
+		/* Magnetic field X OK */
+		*new_error_report &= ~(1 << 3);
+		*new_error_report &= ~(1 << 5);
+	}
+}
+
