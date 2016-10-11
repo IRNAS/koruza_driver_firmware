@@ -53,10 +53,11 @@
 extern TIM_HandleTypeDef htim9;
 extern TIM_HandleTypeDef    TimHandle;
 
+extern TIM_HandleTypeDef htim2;
+extern TIM_HandleTypeDef htim3;
+
 extern void Error_Handler(void);
 
-void MX_TIM9_Init(void);
-void MX_TIM3_Init(void);
 
 #ifdef __cplusplus
 }

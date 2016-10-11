@@ -14,6 +14,8 @@
 #include "stdlib.h"
 #include "eeprom.h"
 
+#include "IRremote.h"
+#include "IRremoteInt.h"
 
 #ifdef __GNUC__
 #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
@@ -127,25 +129,6 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* AdcHandle) {
 	}
 }
 
-/**
-  * @brief  Period elapsed callback in non blocking mode
-  * @param  htim : TIM handle
-  * @retval None
-  */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-	if(htim->Instance==TIM3){
-		/* Get angles form encoder X and encoder Y */
-		//koruza_encoders_get_angles(&koruza_encoders);
-		/* Calculate absolute position of encoders */
-		//koruza_encoders_absolute_position(&koruza_encoders);
-		/* check stepper motor error */
-		//koruza_encoders_absolute_position_steps(&koruza_encoders);
-
-		//koruza_encoder_stepper_error(&koruza_steppers, &koruza_encoders);
-
-
-	}
-}
 
 /* Virtual address defined by the user: 0xFFFF value is prohibited */
 uint16_t VirtAddVarTab[NB_OF_VAR] = {0x5555, 0x6666, 0x7777};
@@ -164,7 +147,40 @@ int main(void){
 	MX_ADC1_Init();
 	MX_USART1_UART_Init();
 	MX_USART2_UART_Init();
+/*********************************************************************************/
+	/* COMMENT THIS IF TRANSMITTING ! */
+//	volatile unsigned long xyz = 0;
+//	ir_decode_results results;
+//
+//	__HAL_RCC_GPIOB_CLK_ENABLE();
+//	IRrecv_IRrecvInit(GPIOB, GPIO_PIN_4);
+//	IRrecv_enableIRIn(); // Start the receiver
+	/* COMMENT THIS IF TRANSMITTING ! */
 
+	while (1)
+	{
+		/* COMMENT THIS IF RECEIVING ! */
+		for (int i = 0; i < 3; i++)
+		{
+			IRsend_sendSony(0x40, 7);
+			HAL_Delay(4000); //400ms delay
+		}
+		HAL_Delay(50000); //5s delay
+		/* COMMENT THIS IF RECEIVING ! */
+
+		/* COMMENT THIS IF TRANSMITTING ! */
+//		if (IRrecv_decode(&results))
+//		{
+//			xyz = results.value;
+//		    IRrecv_resume(); // Receive the next value
+//		}
+//		HAL_Delay(1000); //1s delay
+		/* COMMENT THIS IF TRANSMITTING ! */
+	}
+
+	//while(xyz); // To prevent compiler from optimizing it out, otherwise not necessary !
+
+/*********************************************************************************/
 #ifdef DEBUG_MODE
 	printf("\n*********Hello*********\r\nKoruza driver terminal \r\n");
 	printf("***********************");

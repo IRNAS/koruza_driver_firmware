@@ -64,6 +64,7 @@ void DMA2_Stream0_IRQHandler(void);
 void TIM1_BRK_TIM9_IRQHandler(void);
 void TIM3_IRQHandler(void);
 void SPI2_IRQHandler(void);
+void TIM2_IRQHandler(void);
 
 #ifdef __cplusplus
 }

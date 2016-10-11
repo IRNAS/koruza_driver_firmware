@@ -29,6 +29,7 @@ DMA_HandleTypeDef hdma_adc1;
 extern TIM_HandleTypeDef    TimHandle;
 extern SPI_HandleTypeDef hspi2;
 extern TIM_HandleTypeDef htim9;
+extern TIM_HandleTypeDef htim2;
 
 /******************************************************************************/
 /*            	  	    Processor Exceptions Handlers                         */
@@ -165,16 +166,6 @@ void TIM1_BRK_TIM9_IRQHandler(void)
 }
 
 /**
-  * @brief  This function handles TIM interrupt request.
-  * @param  None
-  * @retval None
-  */
-void TIM3_IRQHandler(void)
-{
-	HAL_TIM_IRQHandler(&TimHandle);
-}
-
-/**
 * @brief This function handles SPI2 global interrupt.
 */
 void SPI2_IRQHandler(void)
@@ -182,3 +173,11 @@ void SPI2_IRQHandler(void)
   HAL_SPI_IRQHandler(&hspi2);
 }
 
+
+/**
+* @brief This function handles TIM2 global interrupt.
+*/
+void TIM2_IRQHandler(void)
+{
+  HAL_TIM_IRQHandler(&htim2);
+}

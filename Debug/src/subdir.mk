@@ -6,6 +6,7 @@
 C_SRCS += \
 ../src/AS4047D.c \
 ../src/AccelStepper.c \
+../src/IRremote.c \
 ../src/adc.c \
 ../src/bootloader.c \
 ../src/crc32.c \
@@ -15,6 +16,9 @@ C_SRCS += \
 ../src/frame.c \
 ../src/gpio.c \
 ../src/inet.c \
+../src/irRecv.c \
+../src/irSend.c \
+../src/ir_Sony.c \
 ../src/koruza_eeprom.c \
 ../src/main.c \
 ../src/message.c \
@@ -30,6 +34,7 @@ C_SRCS += \
 OBJS += \
 ./src/AS4047D.o \
 ./src/AccelStepper.o \
+./src/IRremote.o \
 ./src/adc.o \
 ./src/bootloader.o \
 ./src/crc32.o \
@@ -39,6 +44,9 @@ OBJS += \
 ./src/frame.o \
 ./src/gpio.o \
 ./src/inet.o \
+./src/irRecv.o \
+./src/irSend.o \
+./src/ir_Sony.o \
 ./src/koruza_eeprom.o \
 ./src/main.o \
 ./src/message.o \
@@ -54,6 +62,7 @@ OBJS += \
 C_DEPS += \
 ./src/AS4047D.d \
 ./src/AccelStepper.d \
+./src/IRremote.d \
 ./src/adc.d \
 ./src/bootloader.d \
 ./src/crc32.d \
@@ -63,6 +72,9 @@ C_DEPS += \
 ./src/frame.d \
 ./src/gpio.d \
 ./src/inet.d \
+./src/irRecv.d \
+./src/irSend.d \
+./src/ir_Sony.d \
 ./src/koruza_eeprom.d \
 ./src/main.d \
 ./src/message.d \

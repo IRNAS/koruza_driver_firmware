@@ -74,7 +74,10 @@ src/main.o: ../src/main.c \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/encoder.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/AS4047D.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/gpio.h \
- C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/eeprom.h
+ C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/eeprom.h \
+ C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/IRremote.h \
+ C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/IRremoteInt.h \
+ C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/IRremoteInt.h
 
 C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal.h:
 
@@ -227,3 +230,9 @@ C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/AS4047D.h:
 C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/gpio.h:
 
 C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/eeprom.h:
+
+C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/IRremote.h:
+
+C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/IRremoteInt.h:
+
+C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/IRremoteInt.h:

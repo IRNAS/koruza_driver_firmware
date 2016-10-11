@@ -63,60 +63,54 @@ uint32_t uwCapturedValue = 0;
       2) by calling HAL API function HAL_RCC_GetSysClockFreq()
       3) each time HAL_RCC_ClockConfig() is called to configure the system clock frequency
   ----------------------------------------------------------------------- */
-static void calculate_clk(void){
-	/* Compute the prescaler value to have TIM3 counter clock equal to 10 KHz */
-	uwPrescalerValue = (uint32_t) ((SystemCoreClock / 10000) - 1);
-}
 
-void MX_TIM3_Init(void){
-	calculate_clk();
-	/* Set TIMx instance */
-	TimHandle.Instance = TIM3;
+TIM_HandleTypeDef htim2;
+TIM_HandleTypeDef htim3;
 
-	/* Initialize TIM3 peripheral as follow:
-	   + Period = 10000 - 1
-	   + Prescaler = ((SystemCoreClock/2)/10000) - 1
-	   + ClockDivision = 0
-	   + Counter direction = Up
-	*/
-	TimHandle.Init.Period = 10000 - 1;
-	TimHandle.Init.Prescaler = uwPrescalerValue;
-	TimHandle.Init.ClockDivision = 0;
-	TimHandle.Init.CounterMode = TIM_COUNTERMODE_UP;
-	if(HAL_TIM_Base_Init(&TimHandle) != HAL_OK){
-	/* Initialization Error */
-	Error_Handler();
-	}
-
-	/*##-2- Start the TIM Base generation in interrupt mode ####################*/
-	/* Start Channel1 */
-	if(HAL_TIM_Base_Start_IT(&TimHandle) != HAL_OK){
-		/* Starting Error */
-		Error_Handler();
-	}
-}
-/**
-  * @brief TIM MSP Initialization
-  *        This function configures the hardware resources used in this example:
-  *           - Peripheral's clock enable
-  *           - Peripheral's GPIO Configuration
-  * @param htim: TIM handle pointer
-  * @retval None
-  */
-void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim)
+void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* tim_baseHandle)
 {
-  /*##-1- Enable peripherals and GPIO Clocks #################################*/
-  /* TIM3 Peripheral clock enable */
-  __HAL_RCC_TIM3_CLK_ENABLE();
+	if(tim_baseHandle->Instance==TIM3)
+	{
+		/* Peripheral clock enable */
+		__HAL_RCC_TIM3_CLK_ENABLE();
+	}
+	else if(tim_baseHandle->Instance==TIM2)
+	{
+		/* Peripheral clock enable */
+		__HAL_RCC_TIM2_CLK_ENABLE();
 
-  /*##-2- Configure the NVIC for TIM3 ########################################*/
-  /* Set Interrupt Group Priority */
-  HAL_NVIC_SetPriority(TIM3_IRQn, 4, 0);
+		/* Peripheral interrupt init */
+		HAL_NVIC_SetPriority(TIM2_IRQn, 1, 0);
+		HAL_NVIC_EnableIRQ(TIM2_IRQn);
 
-  /* Enable the TIM3 global Interrupt */
-  HAL_NVIC_EnableIRQ(TIM3_IRQn);
+		if(HAL_TIM_Base_Start_IT(tim_baseHandle) != HAL_OK)
+		{
+			Error_Handler();
+		}
+	}
 }
 
+void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
+{
+	if(tim_baseHandle->Instance==TIM2)
+	{
+		if(HAL_TIM_Base_Stop_IT(tim_baseHandle) != HAL_OK)
+	    {
+			Error_Handler();
+	    }
+
+	    /* Peripheral clock disable */
+	    __HAL_RCC_TIM2_CLK_DISABLE();
+
+	    /* Peripheral interrupt Deinit*/
+	    HAL_NVIC_DisableIRQ(TIM2_IRQn);
+	}
+	else if(tim_baseHandle->Instance==TIM3)
+	{
+		/* Peripheral clock disable */
+		__HAL_RCC_TIM3_CLK_DISABLE();
+	}
+}
 
 
 /**
