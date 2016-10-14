@@ -148,37 +148,39 @@ int main(void){
 	MX_USART1_UART_Init();
 	MX_USART2_UART_Init();
 /*********************************************************************************/
-	/* COMMENT THIS IF TRANSMITTING ! */
-//	volatile unsigned long xyz = 0;
-//	ir_decode_results results;
+//	/* COMMENT THIS IF TRANSMITTING ! */
+	volatile unsigned long xyz = 0;
+	ir_decode_results results;
 //
-//	__HAL_RCC_GPIOB_CLK_ENABLE();
-//	IRrecv_IRrecvInit(GPIOB, GPIO_PIN_4);
-//	IRrecv_enableIRIn(); // Start the receiver
-	/* COMMENT THIS IF TRANSMITTING ! */
-
-	while (1)
-	{
-		/* COMMENT THIS IF RECEIVING ! */
-		for (int i = 0; i < 3; i++)
-		{
-			IRsend_sendSony(0x40, 7);
-			HAL_Delay(4000); //400ms delay
-		}
-		HAL_Delay(50000); //5s delay
-		/* COMMENT THIS IF RECEIVING ! */
-
-		/* COMMENT THIS IF TRANSMITTING ! */
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+	IRrecv_IRrecvInit(GPIOB, GPIO_PIN_4);
+	IRrecv_enableIRIn(); // Start the receiver
+//	/* COMMENT THIS IF TRANSMITTING ! */
+//	printf("start ir\n");
+//
+//	while (1)
+//	{
+//		/* COMMENT THIS IF RECEIVING ! */
+////		for (int i = 0; i < 3; i++)
+////		{
+////			IRsend_sendSony(0xF00, 12);
+////			HAL_Delay(4000); //400ms delay
+////		}
+////		HAL_Delay(50000); //5s delay
+//		/* COMMENT THIS IF RECEIVING ! */
+//
+//		/* COMMENT THIS IF TRANSMITTING ! */
 //		if (IRrecv_decode(&results))
 //		{
 //			xyz = results.value;
+//			printf("got signal %#08x\n", (unsigned int)xyz);
 //		    IRrecv_resume(); // Receive the next value
 //		}
 //		HAL_Delay(1000); //1s delay
-		/* COMMENT THIS IF TRANSMITTING ! */
-	}
-
-	//while(xyz); // To prevent compiler from optimizing it out, otherwise not necessary !
+//		/* COMMENT THIS IF TRANSMITTING ! */
+//	}
+//
+//	while(xyz); // To prevent compiler from optimizing it out, otherwise not necessary !
 
 /*********************************************************************************/
 #ifdef DEBUG_MODE
@@ -202,7 +204,7 @@ int main(void){
 	/* Stepper motors initialization */
 	koruza_motors_init(&koruza_steppers, STEPPER_CONNECTED, STEPPER_CONNECTED, STEPPER_NOT_CONNECTED);
 	/* Encoder initialization with connection and magnetic field check*/
-	koruza_encoders_init(&koruza_encoders, NOT_CONNECTED, CONNECTED);
+	koruza_encoders_init(&koruza_encoders, CONNECTED, CONNECTED);
 
 	driver_state_t state = IDLE;
 
@@ -345,6 +347,19 @@ int main(void){
 			}
 		}
 
+//		for (int i = 0; i < 3; i++)
+//		{
+//			IRsend_sendSony(0xF00, 12);
+//			HAL_Delay(4000); //400ms delay
+//		}
+//		HAL_Delay(50000);
+		if (IRrecv_decode(&results))
+		{
+			xyz = results.value;
+			printf("got signal %#08x\n", (unsigned int)xyz);
+		    IRrecv_resume(); // Receive the next value
+		}
+		//HAL_Delay(1000); //1s delay
 #ifdef DEBUG_ENCODER_POSITION_MODE
 		//printf("%f, %f, %ld\n", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_x.steps, koruza_steppers.stepper_x.stepper._currentPos);//, koruza_encoders.encoder_y.steps, koruza_steppers.stepper_y.stepper._currentPos);
 		//printf("$%d %d %d;", (int)koruza_encoders.encoder_x.steps, (int)koruza_steppers.stepper_x.stepper._currentPos, (int)(degreesToRadians((double)koruza_encoders.encoder_x.encoder.true_angle - koruza_encoders.encoder_x.calibration.start)));
@@ -551,6 +566,7 @@ int main(void){
 
 		}//end switch(state)
 	}//end while(true)
+	while(xyz);
 }//end main()
 
 /**Prototype for the printf() function**/
@@ -577,9 +593,9 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSICalibrationValue = 16;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLM = 16;
-  RCC_OscInitStruct.PLL.PLLN = 336;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV4;
+  RCC_OscInitStruct.PLL.PLLM = 8;//16;
+  RCC_OscInitStruct.PLL.PLLN = 100;//336;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;//RCC_PLLP_DIV4;
   RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
