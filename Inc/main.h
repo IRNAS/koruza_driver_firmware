@@ -12,6 +12,7 @@
 //#include "AS4047D.h"
 //#include "encoder.h"
 #include "stepper.h"
+#include "ir_link.h"
 
 #ifndef MAIN_H_
 #define MAIN_H_
@@ -41,6 +42,9 @@
 
 /* Uncoment to get generated TLV message at the beginning */
 //#define DEBUG_MODE_MSG_GENERATOR
+
+/* Uncoment to send ir data when status is send */
+#define DEBUG_IRLINK
 
 typedef enum states{
 	IDLE = 1,

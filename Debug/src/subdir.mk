@@ -19,6 +19,7 @@ C_SRCS += \
 ../src/irRecv.c \
 ../src/irSend.c \
 ../src/ir_Sony.c \
+../src/ir_link.c \
 ../src/koruza_eeprom.c \
 ../src/main.c \
 ../src/message.c \
@@ -47,6 +48,7 @@ OBJS += \
 ./src/irRecv.o \
 ./src/irSend.o \
 ./src/ir_Sony.o \
+./src/ir_link.o \
 ./src/koruza_eeprom.o \
 ./src/main.o \
 ./src/message.o \
@@ -75,6 +77,7 @@ C_DEPS += \
 ./src/irRecv.d \
 ./src/irSend.d \
 ./src/ir_Sony.d \
+./src/ir_link.d \
 ./src/koruza_eeprom.d \
 ./src/main.d \
 ./src/message.d \

@@ -81,6 +81,7 @@
 "src/irRecv.o"
 "src/irSend.o"
 "src/ir_Sony.o"
+"src/ir_link.o"
 "src/koruza_eeprom.o"
 "src/main.o"
 "src/message.o"

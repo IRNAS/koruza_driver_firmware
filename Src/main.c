@@ -14,8 +14,8 @@
 #include "stdlib.h"
 #include "eeprom.h"
 
-#include "IRremote.h"
-#include "IRremoteInt.h"
+//#include "IRremote.h"
+//#include "IRremoteInt.h"
 
 #ifdef __GNUC__
 #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
@@ -147,42 +147,13 @@ int main(void){
 	MX_ADC1_Init();
 	MX_USART1_UART_Init();
 	MX_USART2_UART_Init();
-/*********************************************************************************/
-//	/* COMMENT THIS IF TRANSMITTING ! */
-	volatile unsigned long xyz = 0;
-	ir_decode_results results;
-//
-	__HAL_RCC_GPIOB_CLK_ENABLE();
-	IRrecv_IRrecvInit(GPIOB, GPIO_PIN_4);
-	IRrecv_enableIRIn(); // Start the receiver
-//	/* COMMENT THIS IF TRANSMITTING ! */
-//	printf("start ir\n");
-//
-//	while (1)
-//	{
-//		/* COMMENT THIS IF RECEIVING ! */
-////		for (int i = 0; i < 3; i++)
-////		{
-////			IRsend_sendSony(0xF00, 12);
-////			HAL_Delay(4000); //400ms delay
-////		}
-////		HAL_Delay(50000); //5s delay
-//		/* COMMENT THIS IF RECEIVING ! */
-//
-//		/* COMMENT THIS IF TRANSMITTING ! */
-//		if (IRrecv_decode(&results))
-//		{
-//			xyz = results.value;
-//			printf("got signal %#08x\n", (unsigned int)xyz);
-//		    IRrecv_resume(); // Receive the next value
-//		}
-//		HAL_Delay(1000); //1s delay
-//		/* COMMENT THIS IF TRANSMITTING ! */
-//	}
-//
-//	while(xyz); // To prevent compiler from optimizing it out, otherwise not necessary !
 
-/*********************************************************************************/
+	ir_decode_results results;
+	koruza_irlink_init(&koruza_irlink);
+//	__HAL_RCC_GPIOB_CLK_ENABLE();
+//	IRrecv_IRrecvInit(GPIOB, GPIO_PIN_4);
+//	IRrecv_enableIRIn(); // Start the receiver
+
 #ifdef DEBUG_MODE
 	printf("\n*********Hello*********\r\nKoruza driver terminal \r\n");
 	printf("***********************");
@@ -199,7 +170,6 @@ int main(void){
 	koruza_encoders.encoder_y.calibration.offset = -16;
 	/* Wait for encoders to boot*/
 	HAL_Delay(200000);
-
 
 	/* Stepper motors initialization */
 	koruza_motors_init(&koruza_steppers, STEPPER_CONNECTED, STEPPER_CONNECTED, STEPPER_NOT_CONNECTED);
@@ -347,19 +317,15 @@ int main(void){
 			}
 		}
 
-//		for (int i = 0; i < 3; i++)
+		/* IR link receive check */
+		koruza_irlink_receive(&koruza_irlink);
+//		if (IRrecv_decode(&results))
 //		{
-//			IRsend_sendSony(0xF00, 12);
-//			HAL_Delay(4000); //400ms delay
+//			//TODO: when received than what?
+//			//xyz = results.value;
+//			printf("got signal %#08x\n", (unsigned int)results.value);
+//		    IRrecv_resume(); // Receive the next value
 //		}
-//		HAL_Delay(50000);
-		if (IRrecv_decode(&results))
-		{
-			xyz = results.value;
-			printf("got signal %#08x\n", (unsigned int)xyz);
-		    IRrecv_resume(); // Receive the next value
-		}
-		//HAL_Delay(1000); //1s delay
 #ifdef DEBUG_ENCODER_POSITION_MODE
 		//printf("%f, %f, %ld\n", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_x.steps, koruza_steppers.stepper_x.stepper._currentPos);//, koruza_encoders.encoder_y.steps, koruza_steppers.stepper_y.stepper._currentPos);
 		//printf("$%d %d %d;", (int)koruza_encoders.encoder_x.steps, (int)koruza_steppers.stepper_x.stepper._currentPos, (int)(degreesToRadians((double)koruza_encoders.encoder_x.encoder.true_angle - koruza_encoders.encoder_x.calibration.start)));
@@ -454,7 +420,9 @@ int main(void){
 							HAL_UART_Transmit(&huart1, (uint8_t *)&frame, frame_size, 1000);
 						}
 						message_free(&msg_responce);
-
+#ifdef DEBUG_IRLINK
+						//koruza_irlink_send(&koruza_irlink, 0xF00, 12);
+#endif
 						state = END_STATE;
 						break;
 
@@ -522,6 +490,8 @@ int main(void){
 						break;
 
 					case COMMAND_SEND_IR:
+						//test code
+						//koruza_irlink_send(&koruza_irlink, 0xF00, 12);
 
 						break;
 					case COMMAND_REBOOT:
@@ -566,7 +536,6 @@ int main(void){
 
 		}//end switch(state)
 	}//end while(true)
-	while(xyz);
 }//end main()
 
 /**Prototype for the printf() function**/
