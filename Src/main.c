@@ -135,6 +135,9 @@ uint16_t VirtAddVarTab[NB_OF_VAR] = {0x5555, 0x6666, 0x7777};
 uint16_t VarDataTab[NB_OF_VAR] = {0, 0, 0};
 uint16_t VarValue = 0x1234,VarDataTmp = 0;
 int main(void){
+
+	int send_ir_test_count = 0;
+	unsigned long send_ir_test[] = {0x001, 0x002, 0x003, 0x004, 0x005};
 	/* MCU Configuration----------------------------------------------------------*/
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 	HAL_Init();
@@ -421,7 +424,12 @@ int main(void){
 						}
 						message_free(&msg_responce);
 #ifdef DEBUG_IRLINK
-						//koruza_irlink_send(&koruza_irlink, 0xF00, 12);
+						koruza_irlink_send(&koruza_irlink, send_ir_test[send_ir_test_count], 12);
+						if(send_ir_test_count == 4){
+							send_ir_test_count = 0;
+						}else{
+							send_ir_test_count++;
+						}
 #endif
 						state = END_STATE;
 						break;
