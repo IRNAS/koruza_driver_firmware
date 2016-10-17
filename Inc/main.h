@@ -44,7 +44,9 @@
 //#define DEBUG_MODE_MSG_GENERATOR
 
 /* Uncoment to send ir data when status is send */
-#define DEBUG_IRLINK
+/* This should be used ONLY if transmitting for testing purposes*/
+/* Receive does not work in this mode!*/
+//#define DEBUG_IRLINK
 
 typedef enum states{
 	IDLE = 1,
