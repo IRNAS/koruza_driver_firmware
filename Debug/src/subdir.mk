@@ -7,6 +7,7 @@ C_SRCS += \
 ../src/AS4047D.c \
 ../src/AccelStepper.c \
 ../src/IRremote.c \
+../src/WS2812B.c \
 ../src/adc.c \
 ../src/bootloader.c \
 ../src/crc32.c \
@@ -36,6 +37,7 @@ OBJS += \
 ./src/AS4047D.o \
 ./src/AccelStepper.o \
 ./src/IRremote.o \
+./src/WS2812B.o \
 ./src/adc.o \
 ./src/bootloader.o \
 ./src/crc32.o \
@@ -65,6 +67,7 @@ C_DEPS += \
 ./src/AS4047D.d \
 ./src/AccelStepper.d \
 ./src/IRremote.d \
+./src/WS2812B.d \
 ./src/adc.d \
 ./src/bootloader.d \
 ./src/crc32.d \

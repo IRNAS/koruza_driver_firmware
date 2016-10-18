@@ -20,11 +20,11 @@ void koruza_irlink_init(koruza_irlink_t *irlink){
 
 // nbits = 12
 void koruza_irlink_send(koruza_irlink_t *irlink, unsigned long data, int nbits){
-	for (int i = 0; i < 3; i++)
-	{
+	//for (int i = 0; i < 3; i++)
+	//{
 		IRsend_sendSony(data, nbits);
-		HAL_Delay(4000); //400ms delay
-	}
+		//HAL_Delay(4000); //400ms delay
+	//}
 }
 
 void koruza_irlink_receive(koruza_irlink_t *irlink){

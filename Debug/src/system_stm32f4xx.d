@@ -9,6 +9,7 @@ src/system_stm32f4xx.o: ../src/system_stm32f4xx.c \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/CMSIS/device/system_stm32f4xx.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal_conf.h \
+ C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/mxconstants.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal_def.h \
  C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/Legacy/stm32_hal_legacy.h \
@@ -79,6 +80,8 @@ C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/CMSIS/device/system
 C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal.h:
 
 C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal_conf.h:
+
+C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/inc/mxconstants.h:
 
 C:/Users/vojis/Documents/stm_projects/koruza_driver_firmware/HAL_Driver/Inc/stm32f4xx_hal_rcc.h:
 

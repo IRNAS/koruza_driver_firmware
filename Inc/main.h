@@ -13,6 +13,7 @@
 //#include "encoder.h"
 #include "stepper.h"
 #include "ir_link.h"
+#include "WS2812B.h"
 
 #ifndef MAIN_H_
 #define MAIN_H_

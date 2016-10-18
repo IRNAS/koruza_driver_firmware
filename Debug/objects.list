@@ -69,6 +69,7 @@
 "src/AS4047D.o"
 "src/AccelStepper.o"
 "src/IRremote.o"
+"src/WS2812B.o"
 "src/adc.o"
 "src/bootloader.o"
 "src/crc32.o"

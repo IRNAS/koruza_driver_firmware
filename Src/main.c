@@ -153,9 +153,15 @@ int main(void){
 
 	ir_decode_results results;
 	koruza_irlink_init(&koruza_irlink);
-//	__HAL_RCC_GPIOB_CLK_ENABLE();
-//	IRrecv_IRrecvInit(GPIOB, GPIO_PIN_4);
-//	IRrecv_enableIRIn(); // Start the receiver
+
+	/* LED variable init */
+	WS2812B_color_t special_LED_color;
+	special_LED_color.red = 0xFF;
+	special_LED_color.green = 0x00;
+	special_LED_color.blue = 0xFF;
+
+	/* LEDs init, all off*/
+	WS2812B_level_indicator_wLED(special_LED_color, 10, 23);
 
 #ifdef DEBUG_MODE
 	printf("\n*********Hello*********\r\nKoruza driver terminal \r\n");
