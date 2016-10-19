@@ -35,7 +35,7 @@ volatile uint8_t Rx_Buffer[100];
 uint8_t Rx_data[2];
 uint8_t tx_responce_buffer[1024];
 int Rx_indx;
-int Transfer_cplt;
+volatile int Transfer_cplt;
 char Rx_last[2] = {0, 0};
 char test1 = 0;
 /* Variable used to get converted value */
@@ -327,7 +327,8 @@ int main(void){
 		}
 
 		/* IR link receive check */
-		koruza_irlink_receive(&koruza_irlink);
+		//koruza_irlink_receive(&koruza_irlink);
+		//HAL_Delay(400);
 //		if (IRrecv_decode(&results))
 //		{
 //			//TODO: when received than what?
@@ -622,6 +623,15 @@ void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
   * @param  None
   * @retval None
   */
+
+void IRrecv_DataReadyCallback(unsigned long data)
+{
+	//IRsend_sendSony(0xF00, 12);
+	//HAL_Delay(10000); //1000ms delay
+	printf("got signal %#08x\n", (unsigned int)data);
+	IRrecv_resume(); // Receive the next value
+}
+
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler */
