@@ -161,7 +161,7 @@ int main(void){
 	special_LED_color.blue = 0xFF;
 
 	/* LEDs init, all off*/
-	WS2812B_level_indicator_wLED(special_LED_color, 10, 23);
+	WS2812B_level_indicator_wLED(special_LED_color, 0, 23);
 
 #ifdef DEBUG_MODE
 	printf("\n*********Hello*********\r\nKoruza driver terminal \r\n");
@@ -206,14 +206,15 @@ int main(void){
 	/* Generate message - test message */
 	message_t msg;
 	message_init(&msg);
+	message_tlv_add_command(&msg, COMMAND_GET_STATUS);
 	//message_tlv_add_command(&msg, COMMAND_MOVE_MOTOR);
-	//message_tlv_add_command(&msg, COMMAND_MOVE_MOTOR);
-	message_tlv_add_reply(&msg, REPLY_ERROR_REPORT);
+	//message_tlv_add_reply(&msg, REPLY_ERROR_REPORT);
 	//tlv_motor_position_t position = {-100000, -100000, -100000};
 	//message_tlv_add_motor_position(&msg, &position);
-	tlv_error_report_t error_report;
-	error_report.code = 35;
-	message_tlv_add_error_report(&msg, &error_report);
+	message_tlv_add_power_reading(&msg, 0x0444);
+	//tlv_error_report_t error_report;
+	//error_report.code = 35;
+	//message_tlv_add_error_report(&msg, &error_report);
 	message_tlv_add_checksum(&msg);
 
 	uint8_t test_frame[1024];

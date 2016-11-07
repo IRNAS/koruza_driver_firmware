@@ -42,7 +42,7 @@
 //#define DEBUG_ENCODER_POSITION_MODE
 
 /* Uncoment to get generated TLV message at the beginning */
-//#define DEBUG_MODE_MSG_GENERATOR
+#define DEBUG_MODE_MSG_GENERATOR
 
 /* Uncoment to send ir data when status is send */
 /* This should be used ONLY if transmitting for testing purposes*/

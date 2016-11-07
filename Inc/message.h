@@ -35,6 +35,7 @@ typedef enum {
   TLV_MOTOR_POSITION = 4,
   TLV_CURRENT_READING = 5,
   TLV_ERROR_REPORT = 7,
+  TLV_POWER_READING = 8,
 } tlv_type_t;
 
 /**
@@ -254,22 +255,40 @@ ssize_t message_serialize(uint8_t *buffer, size_t length, const message_t *messa
 void message_print(const message_t *message);
 
 /**
-+ * Adds an error report TLV to a protocol message.
-+ *
-+ * @param message Destination message instance to add the TLV to
-+ * @param report Error report structure
-+ * @return Operation result code
-+ */
+  * Adds an error report TLV to a protocol message.
+  *
+  * @param message Destination message instance to add the TLV to
+  * @param report Error report structure
+  * @return Operation result code
+  */
 message_result_t message_tlv_add_error_report(message_t *message, const tlv_error_report_t *report);
 
 /**
-+ * Find the first error report TLV in a message and copies it.
-+ *
-+ * @param message Message instance to get the TLV from
-+ * @param report Destination error report variable
-+ * @return Operation result code
-+ */
+  * Find the first error report TLV in a message and copies it.
+  *
+  * @param message Message instance to get the TLV from
+  * @param report Destination error report variable
+  * @return Operation result code
+  */
 message_result_t message_tlv_get_error_report(const message_t *message, tlv_error_report_t *report);
+
+/**
+  * Adds a power reading TLV to a protocol message.
+  *
+  * @param message Destination message instance to add the TLV to
+  * @param power Power reading
+  * @return Operation result code
+  */
+message_result_t message_tlv_add_power_reading(message_t *message, uint16_t power);
+
+/**
+ * Find the first power reading TLV in a message and copies it.
+ *
+ * @param message Message instance to get the TLV from
+ * @param current Destination current variable
+ * @return Operation result code
+ */
+message_result_t message_tlv_get_power_reading(const message_t *message, uint16_t *power);
 
 
 #endif
