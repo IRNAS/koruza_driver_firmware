@@ -147,3 +147,18 @@ void WS2812B_level_indicator_wLED(WS2812B_color_t special_LED_color, uint32_t st
 
 	WS2812B_send_packet(packet, length + 1);
 }
+
+void koruza_led_ring_calc(uint16_t rx_power, int *led_ring_num){
+    int i = 0;
+    if(rx_power < 10000 && rx_power > 0){
+        for(i = 1; i < 24; i++){
+            if(rx_power < i*400){
+               *led_ring_num = i;
+               break;
+            }
+        }
+    }else{
+        /* False data*/
+        *led_ring_num = 0;
+    }
+}

@@ -138,6 +138,8 @@ int main(void){
 
 	int send_ir_test_count = 0;
 	unsigned long send_ir_test[] = {0x001, 0x002, 0x003, 0x004, 0x005};
+	uint16_t koruza_rx_power = 0;
+	int koruza_led_ring_num = 0;
 	/* MCU Configuration----------------------------------------------------------*/
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 	HAL_Init();
@@ -417,6 +419,18 @@ int main(void){
 			case ACTICVE_STATE:
 				switch(parsed_command){
 					case COMMAND_GET_STATUS:
+						/* Read rx_power value form TLV message*/
+						if (message_tlv_get_power_reading(&msg_parsed, &koruza_rx_power) != MESSAGE_SUCCESS){
+#ifdef DEBUG_MODE
+							printf("Failed to get rx power TLV.\n");
+#endif
+						}else{
+							/* If value for rx power is ok, then write to LEDs */
+							koruza_led_ring_calc(koruza_rx_power, &koruza_led_ring_num);
+							WS2812B_level_indicator_wLED(special_LED_color, koruza_led_ring_num, 23);
+							koruza_rx_power = 0;
+							koruza_led_ring_num = 0;
+						}
 						//Response message
 						message_init(&msg_responce);
 						message_tlv_add_reply(&msg_responce, REPLY_STATUS_REPORT);
