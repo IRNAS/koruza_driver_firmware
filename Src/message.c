@@ -308,7 +308,7 @@ message_result_t message_tlv_get_power_reading(const message_t *message, uint16_
     return result;
   }
 
-  *power = ntohl(*power);
+  *power = ntohs(*power);
 
   return MESSAGE_SUCCESS;
 }
