@@ -27,7 +27,7 @@
 #define OVERCURRENT_LIMIT 5000
 
 /* Uncomment to get debug messages in the UART2 terminal*/
-#define DEBUG_MODE
+//#define DEBUG_MODE
 
 /* Uncomment to get debug messages in the UART2 terminal about received message command*/
 //#define DEBUG_RECEIVE_MSG_MODE
@@ -42,12 +42,12 @@
 //#define DEBUG_ENCODER_POSITION_MODE
 
 /* Uncoment to get generated TLV message at the beginning */
-#define DEBUG_MODE_MSG_GENERATOR
+//#define DEBUG_MODE_MSG_GENERATOR
 
 /* Uncoment to send ir data when status is send */
 /* This should be used ONLY if transmitting for testing purposes*/
 /* Receive does not work in this mode!*/
-#define DEBUG_IRLINK
+//#define DEBUG_IRLINK
 
 typedef enum states{
 	IDLE = 1,

@@ -289,22 +289,8 @@ int main(void){
 	test_position.z = 0;
 	koruza_set_stored_values(&koruza_encoders, &koruza_steppers, test_position);
 #endif
-
-
 	int restore_receive = 0;
 
-	/* LEDs init, all off*//*
-	int test = 0;
-	while(1){
-		WS2812B_level_indicator_wLED(special_LED_color, test, 23);
-		test++;
-		if(test > 23){
-			test = 0;
-		}
-		HAL_Delay(50000);
-	}
-		WS2812B_level_indicator_wLED(special_LED_color, 1, 23);
-*/
 	/* Infinite loop */
 	while(True){
 		test = 0;
@@ -365,10 +351,6 @@ int main(void){
 		//printf("Angle X: %f\t Angle Y: %f\t", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_y.encoder.true_angle);
 		printf("step X: %ld\tangle x: %f\tstep y: %ld\tangle y: %f\n", koruza_steppers.stepper_x.stepper._currentPos, koruza_encoders.encoder_x.encoder.true_angle, koruza_steppers.stepper_y.stepper._currentPos, koruza_encoders.encoder_y.encoder.true_angle);
 #endif
-		/* Read encoder and check if end is reached */
-		//printf("step X: %ld\tangle x: %f\tstep y: %ld\tangle y: %f", koruza_steppers.stepper_x.stepper._currentPos, koruza_encoders.encoder_x.encoder.true_angle, koruza_steppers.stepper_y.stepper._currentPos, koruza_encoders.encoder_y.encoder.true_angle);
-		//printf("angle x: %f\tangle y: %f\t", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_y.encoder.true_angle);
-		//printf("%ld, %f, %ld, %f, %f, %f\n", koruza_steppers.stepper_x.stepper._currentPos, koruza_encoders.encoder_x.encoder.true_angle, koruza_steppers.stepper_y.stepper._currentPos, koruza_encoders.encoder_y.encoder.true_angle, koruza_encoders.encoder_x.diff, koruza_encoders.encoder_y.diff);
 
 		/* Get new angles from encoders */
 		koruza_encoders_get_angles(&koruza_encoders);
@@ -428,9 +410,10 @@ int main(void){
 							/* If value for rx power is ok, then write to LEDs */
 							koruza_led_ring_calc(koruza_rx_power, &koruza_led_ring_num);
 							WS2812B_level_indicator_wLED(special_LED_color, koruza_led_ring_num, 23);
-							koruza_rx_power = 0;
-							koruza_led_ring_num = 0;
 						}
+						koruza_rx_power = 0;
+						koruza_led_ring_num = 0;
+
 						//Response message
 						message_init(&msg_responce);
 						message_tlv_add_reply(&msg_responce, REPLY_STATUS_REPORT);
