@@ -294,3 +294,22 @@ message_result_t message_tlv_get_error_report(const message_t *message, tlv_erro
 
   return MESSAGE_SUCCESS;
 }
+
+message_result_t message_tlv_add_power_reading(message_t *message, uint16_t power)
+{
+	power = htons(power);
+	return message_tlv_add(message, TLV_POWER_READING, sizeof(uint16_t), (uint8_t*) &power);
+}
+
+message_result_t message_tlv_get_power_reading(const message_t *message, uint16_t *power)
+{
+  message_result_t result = message_tlv_get(message, TLV_POWER_READING, (uint8_t*) power, sizeof(uint16_t));
+  if (result != MESSAGE_SUCCESS) {
+    return result;
+  }
+
+  *power = ntohs(*power);
+
+  return MESSAGE_SUCCESS;
+}
+

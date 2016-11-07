@@ -57,7 +57,8 @@
 #define SWO_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
-
+#define LED_sdata_Pin GPIO_PIN_8
+#define LED_sdata_GPIO_Port GPIOC
 /* USER CODE END Private defines */
 
 /**

@@ -12,6 +12,8 @@
 //#include "AS4047D.h"
 //#include "encoder.h"
 #include "stepper.h"
+#include "ir_link.h"
+#include "WS2812B.h"
 
 #ifndef MAIN_H_
 #define MAIN_H_
@@ -25,7 +27,7 @@
 #define OVERCURRENT_LIMIT 5000
 
 /* Uncomment to get debug messages in the UART2 terminal*/
-#define DEBUG_MODE
+//#define DEBUG_MODE
 
 /* Uncomment to get debug messages in the UART2 terminal about received message command*/
 //#define DEBUG_RECEIVE_MSG_MODE
@@ -41,6 +43,11 @@
 
 /* Uncoment to get generated TLV message at the beginning */
 //#define DEBUG_MODE_MSG_GENERATOR
+
+/* Uncoment to send ir data when status is send */
+/* This should be used ONLY if transmitting for testing purposes*/
+/* Receive does not work in this mode!*/
+//#define DEBUG_IRLINK
 
 typedef enum states{
 	IDLE = 1,

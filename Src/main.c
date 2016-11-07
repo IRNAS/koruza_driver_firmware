@@ -14,6 +14,8 @@
 #include "stdlib.h"
 #include "eeprom.h"
 
+//#include "IRremote.h"
+//#include "IRremoteInt.h"
 
 #ifdef __GNUC__
 #define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
@@ -33,7 +35,7 @@ volatile uint8_t Rx_Buffer[100];
 uint8_t Rx_data[2];
 uint8_t tx_responce_buffer[1024];
 int Rx_indx;
-int Transfer_cplt;
+volatile int Transfer_cplt;
 char Rx_last[2] = {0, 0};
 char test1 = 0;
 /* Variable used to get converted value */
@@ -127,31 +129,17 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* AdcHandle) {
 	}
 }
 
-/**
-  * @brief  Period elapsed callback in non blocking mode
-  * @param  htim : TIM handle
-  * @retval None
-  */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-	if(htim->Instance==TIM3){
-		/* Get angles form encoder X and encoder Y */
-		//koruza_encoders_get_angles(&koruza_encoders);
-		/* Calculate absolute position of encoders */
-		//koruza_encoders_absolute_position(&koruza_encoders);
-		/* check stepper motor error */
-		//koruza_encoders_absolute_position_steps(&koruza_encoders);
-
-		//koruza_encoder_stepper_error(&koruza_steppers, &koruza_encoders);
-
-
-	}
-}
 
 /* Virtual address defined by the user: 0xFFFF value is prohibited */
 uint16_t VirtAddVarTab[NB_OF_VAR] = {0x5555, 0x6666, 0x7777};
 uint16_t VarDataTab[NB_OF_VAR] = {0, 0, 0};
 uint16_t VarValue = 0x1234,VarDataTmp = 0;
 int main(void){
+
+	int send_ir_test_count = 0;
+	unsigned long send_ir_test[] = {0x001, 0x002, 0x003, 0x004, 0x005};
+	uint16_t koruza_rx_power = 0;
+	int koruza_led_ring_num = 0;
 	/* MCU Configuration----------------------------------------------------------*/
 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
 	HAL_Init();
@@ -164,6 +152,18 @@ int main(void){
 	MX_ADC1_Init();
 	MX_USART1_UART_Init();
 	MX_USART2_UART_Init();
+
+	ir_decode_results results;
+	koruza_irlink_init(&koruza_irlink);
+
+	/* LED variable init */
+	WS2812B_color_t special_LED_color;
+	special_LED_color.red = 0xFF;
+	special_LED_color.green = 0x00;
+	special_LED_color.blue = 0xFF;
+
+	/* LEDs init, all off*/
+	WS2812B_level_indicator_wLED(special_LED_color, 0, 23);
 
 #ifdef DEBUG_MODE
 	printf("\n*********Hello*********\r\nKoruza driver terminal \r\n");
@@ -182,11 +182,10 @@ int main(void){
 	/* Wait for encoders to boot*/
 	HAL_Delay(200000);
 
-
 	/* Stepper motors initialization */
 	koruza_motors_init(&koruza_steppers, STEPPER_CONNECTED, STEPPER_CONNECTED, STEPPER_NOT_CONNECTED);
 	/* Encoder initialization with connection and magnetic field check*/
-	koruza_encoders_init(&koruza_encoders, NOT_CONNECTED, CONNECTED);
+	koruza_encoders_init(&koruza_encoders, CONNECTED, CONNECTED);
 
 	driver_state_t state = IDLE;
 
@@ -209,14 +208,15 @@ int main(void){
 	/* Generate message - test message */
 	message_t msg;
 	message_init(&msg);
+	message_tlv_add_command(&msg, COMMAND_GET_STATUS);
 	//message_tlv_add_command(&msg, COMMAND_MOVE_MOTOR);
-	//message_tlv_add_command(&msg, COMMAND_MOVE_MOTOR);
-	message_tlv_add_reply(&msg, REPLY_ERROR_REPORT);
+	//message_tlv_add_reply(&msg, REPLY_ERROR_REPORT);
 	//tlv_motor_position_t position = {-100000, -100000, -100000};
 	//message_tlv_add_motor_position(&msg, &position);
-	tlv_error_report_t error_report;
-	error_report.code = 35;
-	message_tlv_add_error_report(&msg, &error_report);
+	message_tlv_add_power_reading(&msg, 0x0444);
+	//tlv_error_report_t error_report;
+	//error_report.code = 35;
+	//message_tlv_add_error_report(&msg, &error_report);
 	message_tlv_add_checksum(&msg);
 
 	uint8_t test_frame[1024];
@@ -289,8 +289,6 @@ int main(void){
 	test_position.z = 0;
 	koruza_set_stored_values(&koruza_encoders, &koruza_steppers, test_position);
 #endif
-
-
 	int restore_receive = 0;
 
 	/* Infinite loop */
@@ -329,6 +327,16 @@ int main(void){
 			}
 		}
 
+		/* IR link receive check */
+		//koruza_irlink_receive(&koruza_irlink);
+		//HAL_Delay(400);
+//		if (IRrecv_decode(&results))
+//		{
+//			//TODO: when received than what?
+//			//xyz = results.value;
+//			printf("got signal %#08x\n", (unsigned int)results.value);
+//		    IRrecv_resume(); // Receive the next value
+//		}
 #ifdef DEBUG_ENCODER_POSITION_MODE
 		//printf("%f, %f, %ld\n", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_x.steps, koruza_steppers.stepper_x.stepper._currentPos);//, koruza_encoders.encoder_y.steps, koruza_steppers.stepper_y.stepper._currentPos);
 		//printf("$%d %d %d;", (int)koruza_encoders.encoder_x.steps, (int)koruza_steppers.stepper_x.stepper._currentPos, (int)(degreesToRadians((double)koruza_encoders.encoder_x.encoder.true_angle - koruza_encoders.encoder_x.calibration.start)));
@@ -343,10 +351,6 @@ int main(void){
 		//printf("Angle X: %f\t Angle Y: %f\t", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_y.encoder.true_angle);
 		printf("step X: %ld\tangle x: %f\tstep y: %ld\tangle y: %f\n", koruza_steppers.stepper_x.stepper._currentPos, koruza_encoders.encoder_x.encoder.true_angle, koruza_steppers.stepper_y.stepper._currentPos, koruza_encoders.encoder_y.encoder.true_angle);
 #endif
-		/* Read encoder and check if end is reached */
-		//printf("step X: %ld\tangle x: %f\tstep y: %ld\tangle y: %f", koruza_steppers.stepper_x.stepper._currentPos, koruza_encoders.encoder_x.encoder.true_angle, koruza_steppers.stepper_y.stepper._currentPos, koruza_encoders.encoder_y.encoder.true_angle);
-		//printf("angle x: %f\tangle y: %f\t", koruza_encoders.encoder_x.encoder.true_angle, koruza_encoders.encoder_y.encoder.true_angle);
-		//printf("%ld, %f, %ld, %f, %f, %f\n", koruza_steppers.stepper_x.stepper._currentPos, koruza_encoders.encoder_x.encoder.true_angle, koruza_steppers.stepper_y.stepper._currentPos, koruza_encoders.encoder_y.encoder.true_angle, koruza_encoders.encoder_x.diff, koruza_encoders.encoder_y.diff);
 
 		/* Get new angles from encoders */
 		koruza_encoders_get_angles(&koruza_encoders);
@@ -397,6 +401,19 @@ int main(void){
 			case ACTICVE_STATE:
 				switch(parsed_command){
 					case COMMAND_GET_STATUS:
+						/* Read rx_power value form TLV message*/
+						if (message_tlv_get_power_reading(&msg_parsed, &koruza_rx_power) != MESSAGE_SUCCESS){
+#ifdef DEBUG_MODE
+							printf("Failed to get rx power TLV.\n");
+#endif
+						}else{
+							/* If value for rx power is ok, then write to LEDs */
+							koruza_led_ring_calc(koruza_rx_power, &koruza_led_ring_num);
+							WS2812B_level_indicator_wLED(special_LED_color, koruza_led_ring_num, 23);
+						}
+						koruza_rx_power = 0;
+						koruza_led_ring_num = 0;
+
 						//Response message
 						message_init(&msg_responce);
 						message_tlv_add_reply(&msg_responce, REPLY_STATUS_REPORT);
@@ -423,7 +440,14 @@ int main(void){
 							HAL_UART_Transmit(&huart1, (uint8_t *)&frame, frame_size, 1000);
 						}
 						message_free(&msg_responce);
-
+#ifdef DEBUG_IRLINK
+						koruza_irlink_send(&koruza_irlink, send_ir_test[send_ir_test_count], 12);
+						if(send_ir_test_count == 4){
+							send_ir_test_count = 0;
+						}else{
+							send_ir_test_count++;
+						}
+#endif
 						state = END_STATE;
 						break;
 
@@ -491,6 +515,8 @@ int main(void){
 						break;
 
 					case COMMAND_SEND_IR:
+						//test code
+						//koruza_irlink_send(&koruza_irlink, 0xF00, 12);
 
 						break;
 					case COMMAND_REBOOT:
@@ -561,9 +587,9 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSICalibrationValue = 16;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
-  RCC_OscInitStruct.PLL.PLLM = 16;
-  RCC_OscInitStruct.PLL.PLLN = 336;
-  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV4;
+  RCC_OscInitStruct.PLL.PLLM = 8;//16;
+  RCC_OscInitStruct.PLL.PLLN = 100;//336;
+  RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;//RCC_PLLP_DIV4;
   RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
@@ -607,6 +633,15 @@ void HAL_SPI_ErrorCallback(SPI_HandleTypeDef *hspi)
   * @param  None
   * @retval None
   */
+
+void IRrecv_DataReadyCallback(unsigned long data)
+{
+	//IRsend_sendSony(0xF00, 12);
+	//HAL_Delay(10000); //1000ms delay
+	printf("got signal %#08x\n", (unsigned int)data);
+	IRrecv_resume(); // Receive the next value
+}
+
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler */
