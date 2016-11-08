@@ -290,7 +290,19 @@ int main(void){
 	koruza_set_stored_values(&koruza_encoders, &koruza_steppers, test_position);
 #endif
 	int restore_receive = 0;
+	WS2812B_level_indicator_wLED(special_LED_color, 0, 23);
 
+	/* LEDs init, all off*/
+//	 int test = 0;
+//	 while(1){
+//	 	WS2812B_level_indicator_wLED(special_LED_color, test, 23);
+//	 	test++;
+//	 	if(test > 23){
+//	 		test = 0;
+//	 	}
+//	 	HAL_Delay(50000);
+//	 }
+//	 	WS2812B_level_indicator_wLED(special_LED_color, 1, 23);
 	/* Infinite loop */
 	while(True){
 		test = 0;

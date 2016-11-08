@@ -26,7 +26,7 @@
 extern UART_HandleTypeDef huart1;
 DMA_HandleTypeDef hdma_adc1;
 
-//extern TIM_HandleTypeDef    TimHandle;
+extern TIM_HandleTypeDef    TimHandle;
 extern SPI_HandleTypeDef hspi2;
 extern TIM_HandleTypeDef htim9;
 extern TIM_HandleTypeDef htim2;

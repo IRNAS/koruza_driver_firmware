@@ -162,3 +162,58 @@ void koruza_led_ring_calc(uint16_t rx_power, int *led_ring_num){
         *led_ring_num = 0;
     }
 }
+
+void WS2812B_level_indicator_color(uint16_t rx_power, uint32_t length){
+	int led_num = 0;
+	//Devide by 10000 because it is mul when sent form witi
+	//rx_power /= 10000;
+
+	//if(rx_power > MAX_RX_POWER_mW) return;
+
+	WS2812B_color_t packet[length];
+
+	for(int i = 0; i < length; i++){
+		// First 5x green
+		if(i < 5){
+			packet[i].green = 0xFF;
+			packet[i].red = 0x00;
+			packet[i].blue = 0x00;
+		}
+		// Second 5x cyan
+		else if(i < 10){
+			packet[i].green = 0xFF;
+			packet[i].red = 0x00;
+			packet[i].blue = 0xFF;
+		}
+		// Third 4x blue
+		else if(i < 14){
+			packet[i].green = 0x00;
+			packet[i].red = 0x00;
+			packet[i].blue = 0xFF;
+		}
+		// Fourth 5x purple
+		else if(i < 19){
+			packet[i].green = 0x00;
+			packet[i].red = 0xFF;
+			packet[i].blue = 0xFF;
+		}
+		// Fifth 5x red
+		else if(i < 24){
+			packet[i].green = 0x00;
+			packet[i].red = 0xFF;
+			packet[i].blue = 0x00;
+		}
+	}
+
+	koruza_led_ring_calc(rx_power, &led_num);
+
+	for(int i = led_num; i < length; i++){
+			packet[i].green = 0x00;
+			packet[i].red = 0x00;
+			packet[i].blue = 0x00;
+	}
+
+
+	WS2812B_send_packet(packet, length);
+}
+
