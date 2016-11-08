@@ -18734,78 +18734,79 @@ LOAD c:/ac6/systemworkbench/plugins/fr.ac6.mcu.externaltools.arm-none.win32_1.7.
                 0x0800682c      0x14c src/WS2812B.o
                 0x0800682c                WS2812B_level_indicator_wLED
  .text.WS2812B_level_indicator_color
-                0x08006978      0x220 src/WS2812B.o
+                0x08006978      0x21c src/WS2812B.o
                 0x08006978                WS2812B_level_indicator_color
  .text.MX_ADC1_Init
-                0x08006b98       0x8c src/adc.o
-                0x08006b98                MX_ADC1_Init
+                0x08006b94       0x8c src/adc.o
+                0x08006b94                MX_ADC1_Init
  .text.HAL_ADC_MspInit
-                0x08006c24       0xc0 src/adc.o
-                0x08006c24                HAL_ADC_MspInit
+                0x08006c20       0xc0 src/adc.o
+                0x08006c20                HAL_ADC_MspInit
  .text.JumpToBootLoader
-                0x08006ce4       0x6c src/bootloader.o
-                0x08006ce4                JumpToBootLoader
- .text.crc32    0x08006d50       0x54 src/crc32.o
-                0x08006d50                crc32
+                0x08006ce0       0x6c src/bootloader.o
+                0x08006ce0                JumpToBootLoader
+ .text.crc32    0x08006d4c       0x54 src/crc32.o
+                0x08006d4c                crc32
  .text.MX_DMA_Init
-                0x08006da4       0x40 src/dma.o
-                0x08006da4                MX_DMA_Init
+                0x08006da0       0x40 src/dma.o
+                0x08006da0                MX_DMA_Init
  .text.koruza_encoders_init
-                0x08006de4      0x1b8 src/encoder.o
-                0x08006de4                koruza_encoders_init
+                0x08006de0      0x1b8 src/encoder.o
+                0x08006de0                koruza_encoders_init
  .text.koruza_encoders_get_x_angle
-                0x08006f9c       0x20 src/encoder.o
+                0x08006f98       0x20 src/encoder.o
  .text.koruza_encoders_get_y_angle
-                0x08006fbc       0x20 src/encoder.o
+                0x08006fb8       0x20 src/encoder.o
  .text.koruza_encoders_get_angles
-                0x08006fdc       0x5c src/encoder.o
-                0x08006fdc                koruza_encoders_get_angles
+                0x08006fd8       0x5c src/encoder.o
+                0x08006fd8                koruza_encoders_get_angles
  .text.koruza_encoders_magnetic_filed_check
-                0x08007038      0x120 src/encoder.o
-                0x08007038                koruza_encoders_magnetic_filed_check
+                0x08007034      0x120 src/encoder.o
+                0x08007034                koruza_encoders_magnetic_filed_check
  .text.frame_parser
-                0x08007158      0x120 src/frame.o
-                0x08007158                frame_parser
+                0x08007154      0x120 src/frame.o
+                0x08007154                frame_parser
  .text.frame_message
-                0x08007278       0xf8 src/frame.o
-                0x08007278                frame_message
+                0x08007274       0xf8 src/frame.o
+                0x08007274                frame_message
  .text.MX_GPIO_Init
-                0x08007370      0x104 src/gpio.o
-                0x08007370                MX_GPIO_Init
- .text.htons    0x08007474       0x2c src/inet.o
-                0x08007474                htons
- .text.htonl    0x080074a0       0x30 src/inet.o
-                0x080074a0                htonl
- .text.ntohs    0x080074d0       0x1c src/inet.o
-                0x080074d0                ntohs
- .text.ntohl    0x080074ec       0x18 src/inet.o
-                0x080074ec                ntohl
+                0x0800736c      0x104 src/gpio.o
+                0x0800736c                MX_GPIO_Init
+ .text.htons    0x08007470       0x2c src/inet.o
+                0x08007470                htons
+ .text.htonl    0x0800749c       0x30 src/inet.o
+                0x0800749c                htonl
+ .text.ntohs    0x080074cc       0x1c src/inet.o
+                0x080074cc                ntohs
+ .text.ntohl    0x080074e8       0x18 src/inet.o
+                0x080074e8                ntohl
  .text.IRrecv_decode
-                0x08007504       0x5c src/irRecv.o
-                0x08007504                IRrecv_decode
+                0x08007500       0x5c src/irRecv.o
+                0x08007500                IRrecv_decode
  .text.IRrecv_IRrecvInit
-                0x08007560       0x30 src/irRecv.o
-                0x08007560                IRrecv_IRrecvInit
+                0x0800755c       0x30 src/irRecv.o
+                0x0800755c                IRrecv_IRrecvInit
  .text.IRrecv_enableIRIn
-                0x08007590       0x94 src/irRecv.o
-                0x08007590                IRrecv_enableIRIn
+                0x0800758c       0x94 src/irRecv.o
+                0x0800758c                IRrecv_enableIRIn
  .text.IRrecv_resume
-                0x08007624       0x20 src/irRecv.o
-                0x08007624                IRrecv_resume
+                0x08007620       0x20 src/irRecv.o
+                0x08007620                IRrecv_resume
  .text.IRrecv_decodeSony
-                0x08007644      0x124 src/ir_Sony.o
-                0x08007644                IRrecv_decodeSony
+                0x08007640      0x124 src/ir_Sony.o
+                0x08007640                IRrecv_decodeSony
  .text.koruza_irlink_init
-                0x08007768       0x40 src/ir_link.o
-                0x08007768                koruza_irlink_init
+                0x08007764       0x40 src/ir_link.o
+                0x08007764                koruza_irlink_init
  .text.NVIC_SystemReset
-                0x080077a8       0x28 src/main.o
+                0x080077a4       0x28 src/main.o
  .text.HAL_UART_RxCpltCallback
-                0x080077d0      0x154 src/main.o
-                0x080077d0                HAL_UART_RxCpltCallback
+                0x080077cc      0x154 src/main.o
+                0x080077cc                HAL_UART_RxCpltCallback
  .text.HAL_ADC_ConvCpltCallback
-                0x08007924       0xc4 src/main.o
-                0x08007924                HAL_ADC_ConvCpltCallback
+                0x08007920       0xc4 src/main.o
+                0x08007920                HAL_ADC_ConvCpltCallback
+ *fill*         0x080079e4        0x4 
  .text.main     0x080079e8      0x650 src/main.o
                 0x080079e8                main
  .text.__io_putchar
@@ -19709,7 +19710,7 @@ LOAD c:/ac6/systemworkbench/plugins/fr.ac6.mcu.externaltools.arm-none.win32_1.7.
                 0x000013ab       0x22 c:/ac6/systemworkbench/plugins/fr.ac6.mcu.externaltools.arm-none.win32_1.7.0.201602121829/tools/compiler/bin/../lib/gcc/arm-none-eabi/5.2.1/armv7e-m/fpu/crtn.o
 OUTPUT(koruza_driver_firmware.elf elf32-littlearm)
 
-.debug_info     0x00000000    0x16234
+.debug_info     0x00000000    0x16226
  .debug_info    0x00000000      0x7e8 HAL_Driver/Src/stm32f4xx_hal.o
  .debug_info    0x000007e8      0xc55 HAL_Driver/Src/stm32f4xx_hal_adc.o
  .debug_info    0x0000143d      0xc7b HAL_Driver/Src/stm32f4xx_hal_cortex.o
@@ -19724,29 +19725,29 @@ OUTPUT(koruza_driver_firmware.elf elf32-littlearm)
  .debug_info    0x00009501      0xa88 src/AS4047D.o
  .debug_info    0x00009f89      0xce8 src/AccelStepper.o
  .debug_info    0x0000ac71      0x8d4 src/IRremote.o
- .debug_info    0x0000b545      0x5ab src/WS2812B.o
- .debug_info    0x0000baf0      0x92b src/adc.o
- .debug_info    0x0000c41b      0x221 src/bootloader.o
- .debug_info    0x0000c63c      0x13f src/crc32.o
- .debug_info    0x0000c77b      0x45d src/dma.o
- .debug_info    0x0000cbd8      0x5ed src/encoder.o
- .debug_info    0x0000d1c5      0x30d src/frame.o
- .debug_info    0x0000d4d2      0x449 src/gpio.o
- .debug_info    0x0000d91b      0x145 src/inet.o
- .debug_info    0x0000da60      0x985 src/irRecv.o
- .debug_info    0x0000e3e5      0x378 src/ir_Sony.o
- .debug_info    0x0000e75d      0x582 src/ir_link.o
- .debug_info    0x0000ecdf     0x251d src/main.o
- .debug_info    0x000111fc      0x9c4 src/message.o
- .debug_info    0x00011bc0      0xa9b src/spi.o
- .debug_info    0x0001265b      0xae2 src/stepper.o
- .debug_info    0x0001313d      0xa2d src/stm32f4xx_hal_msp.o
- .debug_info    0x00013b6a      0xb0d src/stm32f4xx_it.o
- .debug_info    0x00014677      0x667 src/syscalls.o
- .debug_info    0x00014cde      0x4da src/system_stm32f4xx.o
- .debug_info    0x000151b8      0xa62 src/tim.o
- .debug_info    0x00015c1a      0x591 src/uart.o
- .debug_info    0x000161ab       0x89 startup/startup_stm32f411xe.o
+ .debug_info    0x0000b545      0x59d src/WS2812B.o
+ .debug_info    0x0000bae2      0x92b src/adc.o
+ .debug_info    0x0000c40d      0x221 src/bootloader.o
+ .debug_info    0x0000c62e      0x13f src/crc32.o
+ .debug_info    0x0000c76d      0x45d src/dma.o
+ .debug_info    0x0000cbca      0x5ed src/encoder.o
+ .debug_info    0x0000d1b7      0x30d src/frame.o
+ .debug_info    0x0000d4c4      0x449 src/gpio.o
+ .debug_info    0x0000d90d      0x145 src/inet.o
+ .debug_info    0x0000da52      0x985 src/irRecv.o
+ .debug_info    0x0000e3d7      0x378 src/ir_Sony.o
+ .debug_info    0x0000e74f      0x582 src/ir_link.o
+ .debug_info    0x0000ecd1     0x251d src/main.o
+ .debug_info    0x000111ee      0x9c4 src/message.o
+ .debug_info    0x00011bb2      0xa9b src/spi.o
+ .debug_info    0x0001264d      0xae2 src/stepper.o
+ .debug_info    0x0001312f      0xa2d src/stm32f4xx_hal_msp.o
+ .debug_info    0x00013b5c      0xb0d src/stm32f4xx_it.o
+ .debug_info    0x00014669      0x667 src/syscalls.o
+ .debug_info    0x00014cd0      0x4da src/system_stm32f4xx.o
+ .debug_info    0x000151aa      0xa62 src/tim.o
+ .debug_info    0x00015c0c      0x591 src/uart.o
+ .debug_info    0x0001619d       0x89 startup/startup_stm32f411xe.o
 
 .debug_abbrev   0x00000000     0x3c69
  .debug_abbrev  0x00000000      0x23a HAL_Driver/Src/stm32f4xx_hal.o
@@ -20059,7 +20060,7 @@ OUTPUT(koruza_driver_firmware.elf elf32-littlearm)
  .debug_macro   0x00019cb6      0x45b src/tim.o
  .debug_macro   0x0001a111      0x45c src/uart.o
 
-.debug_line     0x00000000    0x1af1d
+.debug_line     0x00000000    0x1af1c
  .debug_line    0x00000000      0xc44 HAL_Driver/Src/stm32f4xx_hal.o
  .debug_line    0x00000c44      0xebc HAL_Driver/Src/stm32f4xx_hal_adc.o
  .debug_line    0x00001b00      0xd74 HAL_Driver/Src/stm32f4xx_hal_cortex.o
@@ -20074,31 +20075,31 @@ OUTPUT(koruza_driver_firmware.elf elf32-littlearm)
  .debug_line    0x0000ab4f      0xc18 src/AS4047D.o
  .debug_line    0x0000b767     0x1084 src/AccelStepper.o
  .debug_line    0x0000c7eb      0xbab src/IRremote.o
- .debug_line    0x0000d396      0xd1e src/WS2812B.o
- .debug_line    0x0000e0b4      0xaf7 src/adc.o
- .debug_line    0x0000ebab      0xac5 src/bootloader.o
- .debug_line    0x0000f670      0x3be src/crc32.o
- .debug_line    0x0000fa2e      0xa9c src/dma.o
- .debug_line    0x000104ca      0xc10 src/encoder.o
- .debug_line    0x000110da      0x4ad src/frame.o
- .debug_line    0x00011587      0xae4 src/gpio.o
- .debug_line    0x0001206b      0x43a src/inet.o
- .debug_line    0x000124a5      0xb60 src/irRecv.o
- .debug_line    0x00013005      0xb17 src/ir_Sony.o
- .debug_line    0x00013b1c      0xb0b src/ir_link.o
- .debug_line    0x00014627      0xd96 src/main.o
- .debug_line    0x000153bd      0x6b2 src/message.o
- .debug_line    0x00015a6f      0xae0 src/spi.o
- .debug_line    0x0001654f      0xd05 src/stepper.o
- .debug_line    0x00017254      0xaec src/stm32f4xx_hal_msp.o
- .debug_line    0x00017d40      0xb9f src/stm32f4xx_it.o
- .debug_line    0x000188df      0x577 src/syscalls.o
- .debug_line    0x00018e56      0xac9 src/system_stm32f4xx.o
- .debug_line    0x0001991f      0xac0 src/tim.o
- .debug_line    0x0001a3df      0xabf src/uart.o
- .debug_line    0x0001ae9e       0x7f startup/startup_stm32f411xe.o
+ .debug_line    0x0000d396      0xd1d src/WS2812B.o
+ .debug_line    0x0000e0b3      0xaf7 src/adc.o
+ .debug_line    0x0000ebaa      0xac5 src/bootloader.o
+ .debug_line    0x0000f66f      0x3be src/crc32.o
+ .debug_line    0x0000fa2d      0xa9c src/dma.o
+ .debug_line    0x000104c9      0xc10 src/encoder.o
+ .debug_line    0x000110d9      0x4ad src/frame.o
+ .debug_line    0x00011586      0xae4 src/gpio.o
+ .debug_line    0x0001206a      0x43a src/inet.o
+ .debug_line    0x000124a4      0xb60 src/irRecv.o
+ .debug_line    0x00013004      0xb17 src/ir_Sony.o
+ .debug_line    0x00013b1b      0xb0b src/ir_link.o
+ .debug_line    0x00014626      0xd96 src/main.o
+ .debug_line    0x000153bc      0x6b2 src/message.o
+ .debug_line    0x00015a6e      0xae0 src/spi.o
+ .debug_line    0x0001654e      0xd05 src/stepper.o
+ .debug_line    0x00017253      0xaec src/stm32f4xx_hal_msp.o
+ .debug_line    0x00017d3f      0xb9f src/stm32f4xx_it.o
+ .debug_line    0x000188de      0x577 src/syscalls.o
+ .debug_line    0x00018e55      0xac9 src/system_stm32f4xx.o
+ .debug_line    0x0001991e      0xac0 src/tim.o
+ .debug_line    0x0001a3de      0xabf src/uart.o
+ .debug_line    0x0001ae9d       0x7f startup/startup_stm32f411xe.o
 
-.debug_str      0x00000000    0x77dd0
+.debug_str      0x00000000    0x77dc8
  .debug_str     0x00000000    0x6f28f HAL_Driver/Src/stm32f4xx_hal.o
                               0x6f639 (size before relaxing)
  .debug_str     0x0006f28f      0x642 HAL_Driver/Src/stm32f4xx_hal_adc.o
@@ -20127,49 +20128,49 @@ OUTPUT(koruza_driver_firmware.elf elf32-littlearm)
                               0x70506 (size before relaxing)
  .debug_str     0x00073f57      0x138 src/IRremote.o
                               0x6f3fd (size before relaxing)
- .debug_str     0x0007408f      0x128 src/WS2812B.o
-                              0x6edd5 (size before relaxing)
- .debug_str     0x000741b7       0x46 src/adc.o
+ .debug_str     0x0007408f      0x120 src/WS2812B.o
+                              0x6edcd (size before relaxing)
+ .debug_str     0x000741af       0x46 src/adc.o
                               0x6f210 (size before relaxing)
- .debug_str     0x000741fd       0x5f src/bootloader.o
+ .debug_str     0x000741f5       0x5f src/bootloader.o
                               0x6ecc6 (size before relaxing)
- .debug_str     0x0007425c       0x2f src/crc32.o
+ .debug_str     0x00074254       0x2f src/crc32.o
                                0x572d (size before relaxing)
- .debug_str     0x0007428b       0x19 src/dma.o
+ .debug_str     0x00074283       0x19 src/dma.o
                               0x6f0bb (size before relaxing)
- .debug_str     0x000742a4      0x3e2 src/encoder.o
+ .debug_str     0x0007429c      0x3e2 src/encoder.o
                               0x6febb (size before relaxing)
- .debug_str     0x00074686      0x22b src/frame.o
+ .debug_str     0x0007467e      0x22b src/frame.o
                                0x6f1b (size before relaxing)
- .debug_str     0x000748b1       0x1b src/gpio.o
+ .debug_str     0x000748a9       0x1b src/gpio.o
                               0x6fb94 (size before relaxing)
- .debug_str     0x000748cc       0x2f src/inet.o
+ .debug_str     0x000748c4       0x2f src/inet.o
                                0x6cd0 (size before relaxing)
- .debug_str     0x000748fb       0x7b src/irRecv.o
+ .debug_str     0x000748f3       0x7b src/irRecv.o
                               0x6f4e8 (size before relaxing)
- .debug_str     0x00074976       0xd9 src/ir_Sony.o
+ .debug_str     0x0007496e       0xd9 src/ir_Sony.o
                               0x6f01c (size before relaxing)
- .debug_str     0x00074a4f       0x6b src/ir_link.o
+ .debug_str     0x00074a47       0x6b src/ir_link.o
                               0x6f1a9 (size before relaxing)
- .debug_str     0x00074aba     0x1b94 src/main.o
+ .debug_str     0x00074ab2     0x1b94 src/main.o
                               0x7301f (size before relaxing)
- .debug_str     0x0007664e      0x2c0 src/message.o
+ .debug_str     0x00076646      0x2c0 src/message.o
                                0x7226 (size before relaxing)
- .debug_str     0x0007690e       0x24 src/spi.o
+ .debug_str     0x00076906       0x24 src/spi.o
                               0x6f5bf (size before relaxing)
- .debug_str     0x00076932      0x22f src/stepper.o
+ .debug_str     0x0007692a      0x22f src/stepper.o
                               0x704dd (size before relaxing)
- .debug_str     0x00076b61       0x1b src/stm32f4xx_hal_msp.o
+ .debug_str     0x00076b59       0x1b src/stm32f4xx_hal_msp.o
                               0x6f55f (size before relaxing)
- .debug_str     0x00076b7c      0x121 src/stm32f4xx_it.o
+ .debug_str     0x00076b74      0x121 src/stm32f4xx_it.o
                               0x6f470 (size before relaxing)
- .debug_str     0x00076c9d     0x1056 src/syscalls.o
+ .debug_str     0x00076c95     0x1056 src/syscalls.o
                                0x732f (size before relaxing)
- .debug_str     0x00077cf3       0x5a src/system_stm32f4xx.o
+ .debug_str     0x00077ceb       0x5a src/system_stm32f4xx.o
                               0x6edeb (size before relaxing)
- .debug_str     0x00077d4d       0x4d src/tim.o
+ .debug_str     0x00077d45       0x4d src/tim.o
                               0x6f61d (size before relaxing)
- .debug_str     0x00077d9a       0x36 src/uart.o
+ .debug_str     0x00077d92       0x36 src/uart.o
                               0x6f06e (size before relaxing)
 
 .comment        0x00000000       0x6e
