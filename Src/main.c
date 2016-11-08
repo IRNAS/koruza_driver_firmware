@@ -293,19 +293,19 @@ int main(void){
 	//WS2812B_level_indicator_wLED(special_LED_color, 0, 23);
 
 	/* LEDs init, all off*/
-	 int test = 0;
-	 uint16_t test_power = 100;
-	 while(1){
-		 WS2812B_level_indicator_color(test_power, 24);
-		 test_power += 400;
-		 test++;
-	 	if(test > 23){
-	 		test_power = 100;
-	 		test = 0;
-	 	}
-	 	HAL_Delay(20000);
-	 }
-	 	WS2812B_level_indicator_wLED(special_LED_color, 1, 23);
+//	 int test = 0;
+//	 uint16_t test_power = 100;
+//	 while(1){
+//		 WS2812B_level_indicator_color(test_power, 24);
+//		 test_power += 400;
+//		 test++;
+//	 	if(test > 23){
+//	 		test_power = 100;
+//	 		test = 0;
+//	 	}
+//	 	HAL_Delay(20000);
+//	 }
+//	 	WS2812B_level_indicator_wLED(special_LED_color, 1, 23);
 	/* Infinite loop */
 	while(True){
 		test = 0;
@@ -423,11 +423,10 @@ int main(void){
 #endif
 						}else{
 							/* If value for rx power is ok, then write to LEDs */
-							koruza_led_ring_calc(koruza_rx_power, &koruza_led_ring_num);
-							WS2812B_level_indicator_wLED(special_LED_color, koruza_led_ring_num, 23);
+							WS2812B_level_indicator_color(koruza_rx_power, 24);
 						}
 						koruza_rx_power = 0;
-						koruza_led_ring_num = 0;
+						//koruza_led_ring_num = 0;
 
 						//Response message
 						message_init(&msg_responce);
